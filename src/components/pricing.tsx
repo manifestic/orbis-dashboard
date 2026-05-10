@@ -1,119 +1,160 @@
-import { Check, Sparkles, Users } from "lucide-react";
+import { Check, Plus, Users } from "lucide-react";
 
-const base = {
-  tag: "Starter — everything you need to run your business",
-  price: 30,
-  features: [
-    "Full CRM — leads, pipeline, contacts",
-    "AI assistant — ask it anything, anytime",
-    "1,000 emails + 250 SMS per month included",
-    "Two-level affiliate earnings ($5 + $3/month per referral)",
-    "14-day free trial, cancel anytime",
-  ],
+type Tier = {
+  name: string;
+  price: number;
+  tagline: string;
+  includes: string[];
+  addons?: string[];
+  cta: string;
+  ctaSub: string;
+  popular?: boolean;
 };
 
-const addons = [
+const tiers: Tier[] = [
   {
-    name: "Landing page + AI chatbot + calendar",
-    price: 39,
-    desc: "Your branded page, AI that qualifies leads 24/7, and a booking calendar — prospects book calls while you sleep.",
-    featured: true,
+    name: "Starter",
+    price: 30,
+    tagline: "Everything you need to organize your leads and follow up consistently.",
+    includes: [
+      "Full CRM — leads, pipeline, notes",
+      "AI assistant (ask it anything)",
+      "1,000 emails + 250 SMS/month",
+      "Affiliate earnings on referrals",
+    ],
+    addons: ["Landing page & chatbot", "Content creation"],
+    cta: "Start free trial",
+    ctaSub: "CRM + AI only",
   },
-  { name: "Content Starter", price: 25, desc: "4 AI-written social posts/month, branded to your MLM and audience." },
-  { name: "Content Growth", price: 45, desc: "8 posts/month — 2 per week, variety of formats, scheduled for you." },
-  { name: "Content Daily", price: 79, desc: "30 posts/month — fully scheduled in your social planner." },
-  { name: "Lead Prospecting", price: 49, desc: "Monthly filtered lead list delivered straight to your CRM." },
-  { name: "Outreach Sequences", price: 29, desc: "Pre-written message sequences loaded into your CRM workflows." },
-  { name: "Full Concierge — done for you", price: 199, desc: "We manage everything: content creation, lead prospecting, CRM management, and funnel — you just show up to calls.", wide: true },
+  {
+    name: "Connected",
+    price: 69,
+    tagline: "Add a landing page, AI chatbot, and booking calendar — leads come to you.",
+    includes: [
+      "Everything in Starter",
+      "Your own branded landing page",
+      "AI chatbot — qualifies leads 24/7",
+      "Booking calendar — prospects book themselves",
+      "Auto follow-up on every new lead",
+    ],
+    addons: ["Content creation"],
+    cta: "Start free trial",
+    ctaSub: "$30 base + $39 funnel",
+    popular: true,
+  },
+  {
+    name: "Growth",
+    price: 94,
+    tagline: "Add consistent social content so leads see you everywhere, all month long.",
+    includes: [
+      "Everything in Connected",
+      "4 AI-written posts/month",
+      "Branded to your MLM & audience",
+      "Scheduled into your social planner",
+      "You approve before anything posts",
+    ],
+    addons: ["Lead prospecting"],
+    cta: "Start free trial",
+    ctaSub: "$69 + $25 content",
+  },
+  {
+    name: "Full System",
+    price: 197,
+    tagline: "Content, leads, and a full pipeline — your business runs while you focus on your team.",
+    includes: [
+      "Everything in Growth",
+      "30 posts/month (fully scheduled)",
+      "Monthly filtered lead list",
+      "Outreach sequences pre-loaded",
+      "Priority support",
+      "Team activity visibility",
+    ],
+    cta: "Start free trial",
+    ctaSub: "$69 + $79 content + $49 leads",
+  },
 ];
-
-function Price({ value, className = "" }: { value: number; className?: string }) {
-  return (
-    <div className={`flex items-baseline gap-1.5 ${className}`}>
-      <span className="text-4xl font-semibold tracking-tight tabular-nums md:text-5xl">${value}</span>
-      <span className="text-sm text-ink-muted">/month</span>
-    </div>
-  );
-}
 
 export function Pricing() {
   return (
     <section id="pricing" className="relative overflow-hidden bg-surface/50 py-32">
       <div className="absolute left-1/2 top-0 h-72 w-[700px] -translate-x-1/2 animate-aurora rounded-full bg-brand/15 blur-[140px]" />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-7xl px-6">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-glow">Simple, modular pricing</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-glow">Pricing</p>
           <h2 className="mt-4 text-4xl font-semibold md:text-5xl">
-            One base. <span className="text-shimmer">Add what you need.</span>
+            Simple pricing. <span className="text-shimmer">No surprises.</span>
           </h2>
           <p className="mt-5 text-ink-muted">
-            Start at $30. Stack only the add-ons your business actually uses — no bloated tiers, no forced bundles.
+            Start free for 14 days. No credit card required until you're ready.
           </p>
         </div>
 
-        {/* BASE PLAN */}
-        <div className="mt-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-muted">Base plan</p>
-          <div className="relative mt-3 overflow-hidden rounded-2xl glass-strong p-7 md:p-9">
-            <div className="absolute -right-24 -top-24 h-72 w-72 animate-aurora rounded-full bg-brand/20 blur-[120px]" />
-            <div className="relative">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-glow">
-                <Sparkles className="h-3.5 w-3.5" />
-                {base.tag}
+        {/* Tiers */}
+        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {tiers.map((t) => (
+            <div
+              key={t.name}
+              className={`relative flex flex-col rounded-2xl p-7 transition-all duration-300 hover:-translate-y-1 ${
+                t.popular
+                  ? "border border-brand/40 bg-brand/[0.08] shadow-glow lg:scale-[1.03]"
+                  : "glass hover:bg-white/[0.07]"
+              }`}
+            >
+              {t.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-gradient bg-pan px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-foreground shadow-glow">
+                  Most popular
+                </div>
+              )}
+
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-glow">{t.name}</div>
+              <div className="mt-3 flex items-baseline gap-1">
+                <span className="text-2xl font-medium">$</span>
+                <span className="text-5xl font-semibold tracking-tight tabular-nums">{t.price}</span>
               </div>
-              <Price value={base.price} className="mt-4" />
+              <div className="text-sm text-ink-muted">/month</div>
+
+              <p className="mt-5 text-sm leading-relaxed text-foreground/85">{t.tagline}</p>
+
               <div className="my-6 h-px bg-white/10" />
-              <ul className="grid gap-3 md:grid-cols-2">
-                {base.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm">
+
+              <ul className="space-y-3">
+                {t.includes.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-glow" />
                     <span className="text-foreground/90">{f}</span>
                   </li>
                 ))}
+                {t.addons?.map((a) => (
+                  <li key={a} className="flex items-start gap-2.5 text-sm text-ink-muted">
+                    <Plus className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>{a}</span>
+                  </li>
+                ))}
               </ul>
-              <button className="mt-8 rounded-full bg-brand-gradient bg-pan px-6 py-3 text-sm font-semibold text-brand-foreground shadow-glow transition-transform hover:scale-[1.03]">
-                Start 14-day free trial
-              </button>
-            </div>
-          </div>
-        </div>
 
-        {/* ADD-ONS */}
-        <div className="mt-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-muted">
-            Add-ons — add what you need, when you need it
-          </p>
-          <div className="mt-3 grid gap-4 md:grid-cols-2">
-            {addons.map((a) => {
-              const featured = a.featured;
-              return (
-                <div
-                  key={a.name}
-                  className={`group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 ${
-                    a.wide ? "md:col-span-2" : ""
-                  } ${
-                    featured
-                      ? "border border-brand/40 bg-brand/10 shadow-glow"
-                      : "glass hover:bg-white/[0.07]"
+              <div className="mt-auto pt-8">
+                <button
+                  className={`w-full rounded-full py-3 text-sm font-semibold transition-all ${
+                    t.popular
+                      ? "bg-brand-gradient bg-pan text-brand-foreground shadow-glow hover:scale-[1.02]"
+                      : "bg-white/[0.06] text-foreground hover:bg-white/[0.12]"
                   }`}
                 >
-                  {featured && (
-                    <div className="absolute right-4 top-4 rounded-full bg-brand-gradient px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-foreground shadow-glow">
-                      Most popular
-                    </div>
-                  )}
-                  <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand/10 blur-3xl opacity-0 transition-opacity group-hover:opacity-100" />
-                  <div className="relative">
-                    <h4 className={`text-base font-semibold ${featured ? "text-brand-glow" : ""}`}>{a.name}</h4>
-                    <Price value={a.price} className="mt-2" />
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">{a.desc}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  {t.cta}
+                </button>
+                <p className="mt-2.5 text-center text-xs text-ink-muted">{t.ctaSub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Concierge banner */}
+        <div className="mt-8 rounded-2xl glass-strong px-6 py-5 text-center text-sm text-foreground/85 md:text-base">
+          Need someone to run everything for you? Ask about{" "}
+          <span className="font-semibold text-foreground">Full Concierge at $229/month</span>{" "}
+          <span className="text-ink-muted">— we manage your CRM, content, and leads so you just show up to calls.</span>
         </div>
 
         {/* AFFILIATE */}
