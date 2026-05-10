@@ -25,11 +25,13 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <ScrollProgress />
       <SiteNav />
       <Hero />
       <CostTicker />
       <Features />
       <HowItWorks />
+      <LiveActivity />
       <NetworkSection />
       <Pricing />
       <CtaFooter />
