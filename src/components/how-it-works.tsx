@@ -1,8 +1,8 @@
 const steps = [
-  { n: "01", title: "We set up your account", desc: "Send us your existing tools, contacts, and brand assets. We migrate everything for you." },
-  { n: "02", title: "Connect your channels", desc: "Plug in Instagram, WhatsApp, Facebook, email, and your phone number in just a few clicks." },
-  { n: "03", title: "Share your booking link", desc: "Your calendar, your CRM, your funnel — all live behind one beautiful link you control." },
-  { n: "04", title: "Let the system work", desc: "AI follows up, automations qualify leads, and your pipeline fills while you focus on closing." },
+  { n: "01", title: "Sign up in 60 seconds", desc: "Create your account, import your existing contacts, and pick your pipeline stages. No setup call, no waiting." },
+  { n: "02", title: "Share your capture link", desc: "Your personal lead page goes live instantly at yourname.orbis.app. Share it anywhere — social, DMs, bio." },
+  { n: "03", title: "Let AI work the leads", desc: "Every new lead gets an automatic follow-up sequence. The AI chatbot qualifies them and books calls while you sleep." },
+  { n: "04", title: "Close and grow your team", desc: "Your pipeline fills itself. You show up to conversations that are already warm — and keep the ones that matter." },
 ];
 
 export function HowItWorks() {

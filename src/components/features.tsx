@@ -6,15 +6,15 @@ import { TiltCard } from "./motion-primitives";
 import { useInView } from "@/hooks/use-in-view";
 
 const features = [
-  { icon: Calendar, title: "Calendar & Booking Link", desc: "Personal booking pages, team round-robin, and automated reminders. Replaces Calendly.", replaces: "Calendly · 25min" },
-  { icon: Inbox, title: "Unified Inbox", desc: "Instagram, WhatsApp, SMS, email, and Messenger all in one thread. Reply once, anywhere.", replaces: "Front · 5 channels" },
-  { icon: Bot, title: "AI Assistant — Built In", desc: "Drafts replies, qualifies leads, summarizes calls, and writes follow-ups while you sleep.", replaces: "GPT Plus · OpenAI" },
-  { icon: Share2, title: "Social Media — 9 Channels", desc: "Schedule, publish, and track across IG, FB, TikTok, LinkedIn, X, YouTube, Pinterest + more.", replaces: "Hootsuite · 9 platforms" },
-  { icon: Filter, title: "Funnels & Landing Pages", desc: "Drag-and-drop pages, opt-ins, order forms, and upsells with A/B testing baked in.", replaces: "ClickFunnels · 1,000s of templates" },
-  { icon: Users2, title: "CRM & Pipeline", desc: "Visual pipelines, lead scoring, and full contact history — automatically synced from every channel.", replaces: "Salesforce · 100k contacts" },
-  { icon: Mail, title: "Email & SMS Campaigns", desc: "Broadcast, drip, and trigger-based sequences with deliverability you can actually trust.", replaces: "ActiveCampaign + Twilio" },
-  { icon: Search, title: "Facebook Group Intelligence", desc: "Identify hot leads, track member activity, and surface buying signals from any FB group.", replaces: "Group Leads · GroupTrack" },
-  { icon: BarChart3, title: "Analytics & Reporting", desc: "Revenue, pipeline velocity, ad ROAS, and team performance — one dashboard, real-time.", replaces: "Looker · GA4" },
+  { icon: Users2, title: "CRM & Pipeline", desc: "Visual pipelines built for network marketers — New Lead, Contacted, Presented, Enrolled. Full contact history, notes, and tags.", replaces: "Spreadsheets + sticky notes" },
+  { icon: Bot, title: "AI Assistant — Built In", desc: "Ask it anything: 'Who haven't I followed up with in 5 days?' It answers, drafts messages, and takes action.", replaces: "GPT Plus · $20/mo" },
+  { icon: Mail, title: "Drip Sequences", desc: "Automated follow-up that runs while you're offline. New lead added? A sequence starts immediately.", replaces: "ActiveCampaign + Twilio" },
+  { icon: Filter, title: "Landing Page & Lead Capture", desc: "Your personal capture page live at yourname.orbis.app the moment you sign up. Upgrade for custom domain and branding.", replaces: "Linktree + opt-in forms" },
+  { icon: Calendar, title: "Booking Calendar", desc: "Prospects book themselves directly into your calendar. Automated reminders cut no-shows in half.", replaces: "Calendly · $16/mo" },
+  { icon: Inbox, title: "Unified Inbox", desc: "SMS, email, and DMs all in one thread. Stop toggling between apps to find a conversation.", replaces: "Front · multiple apps" },
+  { icon: Share2, title: "Social Media Planner", desc: "Schedule posts across your channels weeks ahead. AI writes the content, you approve before anything goes live.", replaces: "Hootsuite · $99/mo" },
+  { icon: Search, title: "Facebook Group Intelligence", desc: "Surface buying signals and identify warm leads from any FB group you're in.", replaces: "Group Leads · GroupTrack", comingSoon: true },
+  { icon: BarChart3, title: "Analytics & Reporting", desc: "Pipeline velocity, follow-up rates, and team performance — all in one dashboard you can actually read.", replaces: "Nothing — most NM people fly blind" },
 ];
 
 export function Features() {
@@ -59,7 +59,14 @@ function FeatureCard({ f, i }: { f: Feature; i: number }) {
           <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-brand-foreground shadow-glow transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
             <f.icon className="h-5 w-5" />
           </div>
-          <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
+          <div className="mt-5 flex items-center gap-2">
+            <h3 className="text-lg font-semibold">{f.title}</h3>
+            {f.comingSoon && (
+              <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-ink-muted">
+                Soon
+              </span>
+            )}
+          </div>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted">{f.desc}</p>
           <div className="mt-4 inline-flex rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs text-brand-glow">
             Replaces {f.replaces}

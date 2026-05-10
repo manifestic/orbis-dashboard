@@ -26,18 +26,17 @@ export function Hero() {
       <div className="relative mx-auto max-w-5xl px-6 text-center">
         <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-xs font-medium text-brand-glow">
           <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-          Now with AI assistant + 9 channels
+          Built for network marketers — starts at $30/mo
         </div>
 
         <h1 className="animate-fade-up mt-6 text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl" style={{ animationDelay: "0.05s" }}>
-          Stop paying for{" "}
-          <span className="text-shimmer">10 tools</span>
+          Stop running your business{" "}
           <br />
-          that do what one should.
+          <span className="text-shimmer">from your DMs.</span>
         </h1>
 
         <p className="animate-fade-up mx-auto mt-7 max-w-2xl text-lg text-ink-muted md:text-xl" style={{ animationDelay: "0.1s" }}>
-          Orbis combines your CRM, inbox, calendar, social media, funnels, and AI assistant into one cloud platform — built for network marketers, agencies, and growing teams.
+          Orbis is a CRM built specifically for network marketers. Capture leads, run automated follow-up sequences, and let AI qualify your prospects — so you focus on building your team, not chasing people down.
         </p>
 
         <div className="animate-fade-up mt-10 flex flex-wrap items-center justify-center gap-4" style={{ animationDelay: "0.15s" }}>
@@ -58,10 +57,10 @@ export function Hero() {
         <OrbitalVisual />
 
         <div className="animate-fade-up mt-16 grid grid-cols-2 gap-8 md:grid-cols-4" style={{ animationDelay: "0.2s" }}>
-          <Stat value={9} suffix="+" label="Tools replaced" />
-          <Stat value={312} prefix="$" suffix="+" label="Saved monthly" />
-          <Stat value={10} suffix="min" label="Onboarding" />
-          <Stat value={1} label="Platform to rule them all" />
+          <Stat value={10} suffix="min" label="To get fully set up" />
+          <Stat value={5} suffix="×" label="More closes with auto follow-up" />
+          <Stat value={0} label="Leads that fall through the cracks" />
+          <Stat value={30} prefix="$" label="Starting price per month" />
         </div>
       </div>
     </section>
