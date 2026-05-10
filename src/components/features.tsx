@@ -2,6 +2,8 @@ import {
   Calendar, Inbox, Bot, Share2, Filter, Users2,
   Mail, Search, BarChart3,
 } from "lucide-react";
+import { TiltCard } from "./motion-primitives";
+import { useInView } from "@/hooks/use-in-view";
 
 const features = [
   { icon: Calendar, title: "Calendar & Booking Link", desc: "Personal booking pages, team round-robin, and automated reminders. Replaces Calendly.", replaces: "Calendly · 25min" },
@@ -33,23 +35,7 @@ export function Features() {
 
         <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
-            <div
-              key={f.title}
-              className="group relative overflow-hidden rounded-2xl glass p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.07]"
-              style={{ animationDelay: `${i * 0.04}s` }}
-            >
-              <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand/10 blur-3xl transition-opacity group-hover:opacity-100" />
-              <div className="relative">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-brand-foreground shadow-glow">
-                  <f.icon className="h-5 w-5" />
-                </div>
-                <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-muted">{f.desc}</p>
-                <div className="mt-4 inline-flex rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs text-brand-glow">
-                  Replaces {f.replaces}
-                </div>
-              </div>
-            </div>
+            <FeatureCard key={f.title} f={f} i={i} />
           ))}
         </div>
       </div>
