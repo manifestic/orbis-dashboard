@@ -140,6 +140,7 @@
     50% { transform: translateY(-12px) }
   }
   .animate-float { animation: float-slow 6s ease-in-out infinite; }
+  .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
   @keyframes ticker {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
