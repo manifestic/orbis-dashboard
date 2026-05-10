@@ -42,3 +42,30 @@ export function Features() {
     </section>
   );
 }
+
+type Feature = (typeof features)[number];
+
+function FeatureCard({ f, i }: { f: Feature; i: number }) {
+  const { ref, inView } = useInView<HTMLDivElement>();
+  return (
+    <div ref={ref} className={`reveal ${inView ? "in" : ""}`} style={{ transitionDelay: `${(i % 3) * 80}ms` }}>
+      <TiltCard className="group relative overflow-hidden rounded-2xl glass p-6 hover:bg-white/[0.07]">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{ background: "radial-gradient(400px circle at var(--mx,50%) var(--my,50%), oklch(0.74 0.16 175 / 0.18), transparent 40%)" }}
+        />
+        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand/10 blur-3xl" />
+        <div className="relative">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-brand-foreground shadow-glow transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+            <f.icon className="h-5 w-5" />
+          </div>
+          <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{f.desc}</p>
+          <div className="mt-4 inline-flex rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs text-brand-glow">
+            Replaces {f.replaces}
+          </div>
+        </div>
+      </TiltCard>
+    </div>
+  );
+}
