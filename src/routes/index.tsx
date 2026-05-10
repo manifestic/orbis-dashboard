@@ -1,26 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SiteNav } from "@/components/site-nav";
+import { Hero } from "@/components/hero";
+import { CostTicker } from "@/components/cost-ticker";
+import { Features } from "@/components/features";
+import { HowItWorks } from "@/components/how-it-works";
+import { NetworkSection } from "@/components/network-section";
+import { Pricing } from "@/components/pricing";
+import { CtaFooter } from "@/components/cta-footer";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Orbis — One platform. Every tool. Built for network marketers." },
+      { name: "description", content: "Orbis combines CRM, inbox, calendar, funnels, social, and AI into one platform — built for network marketers, agencies, and growing teams." },
+      { property: "og:title", content: "Orbis — Replace 10 tools with one." },
+      { property: "og:description", content: "CRM, inbox, calendar, funnels, social, and AI — unified. Built for network marketers." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <SiteNav />
+      <Hero />
+      <CostTicker />
+      <Features />
+      <HowItWorks />
+      <NetworkSection />
+      <Pricing />
+      <CtaFooter />
+    </main>
+  );
 }
