@@ -107,6 +107,7 @@ function formatDueDate(value?: string) {
 }
 
 function ClientCommandCenter() {
+  const [hydrated, setHydrated] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState(conversations[0].name);
   const [showAllMessages, setShowAllMessages] = useState(false);
@@ -129,6 +130,7 @@ function ClientCommandCenter() {
   };
 
   useEffect(() => {
+    setHydrated(true);
     const params = new URLSearchParams(window.location.search);
     setClient({
       locationId: params.get("locationId") || "",
@@ -136,6 +138,10 @@ function ClientCommandCenter() {
       logoUrl: params.get("logoUrl") || "",
     });
   }, []);
+
+  if (!hydrated) {
+    return <DashboardBootScreen />;
+  }
 
   useEffect(() => {
     if (!client.locationId) return;
@@ -197,6 +203,18 @@ function ClientCommandCenter() {
         </section>
       </div>
       {showAllMessages && <MessagePreviewModal conversations={visibleConversations} live={isLive} onClose={() => setShowAllMessages(false)} inboxHref={ghl("/conversations/conversations")} />}
+    </main>
+  );
+}
+
+function DashboardBootScreen() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#080b13] px-6 text-slate-100">
+      <div className="text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-lg font-black text-slate-950 shadow-[0_0_28px_rgba(59,130,246,0.35)]">M</div>
+        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Client Command Center</p>
+        <p className="mt-2 text-sm text-slate-500">Loading your workspace…</p>
+      </div>
     </main>
   );
 }
