@@ -140,16 +140,16 @@ function ClientCommandCenter() {
     });
   }, []);
 
-  if (!hydrated) {
-    return <DashboardBootScreen />;
-  }
-
   useEffect(() => {
     if (!client.locationId) return;
     void refreshLiveData();
     const interval = window.setInterval(() => void refreshLiveData(), 60_000);
     return () => window.clearInterval(interval);
   }, [client.locationId]);
+
+  if (!hydrated) {
+    return <DashboardBootScreen />;
+  }
 
   const clientDataRequested = Boolean(client.locationId);
   const isLive = Boolean(client.locationId && liveState.status === "ready");
