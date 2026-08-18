@@ -132,9 +132,10 @@ function ClientCommandCenter() {
   useEffect(() => {
     setHydrated(true);
     const params = new URLSearchParams(window.location.search);
+    const requestedName = params.get("clientName") || "Calvenn";
     setClient({
       locationId: params.get("locationId") || "",
-      name: params.get("clientName") || "Calvenn",
+      name: requestedName.includes("Adaptive CRM Core") ? "Calvenn" : requestedName,
       logoUrl: params.get("logoUrl") || "",
     });
   }, []);
