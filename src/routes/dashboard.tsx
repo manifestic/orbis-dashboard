@@ -79,6 +79,8 @@ type LiveDashboardData = { conversations: LiveConversation[]; appointments: Live
 type LiveState = { status: "idle" | "loading" | "ready" | "error"; data: LiveDashboardData; generatedAt?: string; message?: string; sources?: Record<string, string> };
 type ClientConfig = { locationId: string; name: string; logoUrl: string };
 
+const calvennLogoUrl = "https://assets.cdn.filesafe.space/QsbCjo5HFBGuRG0AKms0/media/5e87639f-90b5-4c90-94d9-393a5a224611.png";
+
 const emptyLiveData: LiveDashboardData = { conversations: [], appointments: [], tasks: [] };
 
 function formatRelativeTime(value?: string) {
@@ -136,7 +138,7 @@ function ClientCommandCenter() {
     setClient({
       locationId: params.get("locationId") || "",
       name: requestedName.includes("Adaptive CRM Core") ? "Calvenn" : requestedName,
-      logoUrl: params.get("logoUrl") || "",
+      logoUrl: params.get("logoUrl") || (params.get("locationId") === "QsbCjo5HFBGuRG0AKms0" ? calvennLogoUrl : ""),
     });
   }, []);
 
@@ -160,12 +162,28 @@ function ClientCommandCenter() {
   const firstAppointment = visibleAppointments[0];
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#080b13] text-slate-100">
-      <div className="pointer-events-none fixed inset-0 -z-0 bg-[radial-gradient(circle_at_78%_0%,rgba(99,102,241,0.18),transparent_30%),radial-gradient(circle_at_12%_28%,rgba(14,165,233,0.08),transparent_28%)]" />
+    <main className="ybq-dashboard min-h-screen overflow-x-hidden bg-[#f5f8fb] text-[#102336]">
+      <style>{`
+        .ybq-dashboard { --ybq-blue:#1377b8; --ybq-teal:#0e9a85; --ybq-ink:#102336; --ybq-muted:#607286; --ybq-line:#dbe5ed; }
+        .ybq-dashboard aside { background:#fff!important; border-color:var(--ybq-line)!important; }
+        .ybq-dashboard [class*="bg-[#0b0f1a]"], .ybq-dashboard [class*="bg-white/[0.025]"], .ybq-dashboard [class*="bg-white/[0.035]"], .ybq-dashboard [class*="bg-white/[0.04]"], .ybq-dashboard [class*="bg-white/[0.045]"] { background:#fff!important; }
+        .ybq-dashboard [class*="border-white/"] { border-color:var(--ybq-line)!important; }
+        .ybq-dashboard [class*="text-white"], .ybq-dashboard [class*="text-slate-100"], .ybq-dashboard [class*="text-slate-200"], .ybq-dashboard [class*="text-slate-300"] { color:var(--ybq-ink)!important; }
+        .ybq-dashboard [class*="text-slate-400"], .ybq-dashboard [class*="text-slate-500"], .ybq-dashboard [class*="text-slate-600"] { color:var(--ybq-muted)!important; }
+        .ybq-dashboard [class*="text-cyan-"] { color:var(--ybq-blue)!important; }
+        .ybq-dashboard [class*="text-violet-"] { color:var(--ybq-teal)!important; }
+        .ybq-dashboard [class*="bg-cyan-"] { background-color:#e8f4fa!important; }
+        .ybq-dashboard [class*="bg-violet-"] { background-color:#e8f5f4!important; }
+        .ybq-dashboard [class*="bg-amber-"] { background-color:#fff4e6!important; }
+        .ybq-dashboard [class*="bg-emerald-"] { background-color:#e9f7f1!important; }
+        .ybq-dashboard [class*="text-slate-950"] { color:#fff!important; }
+        .ybq-dashboard a[class*="bg-cyan-"], .ybq-dashboard button[class*="bg-cyan-"] { background:var(--ybq-blue)!important; color:#fff!important; }
+      `}</style>
+      <div className="pointer-events-none fixed inset-0 -z-0 bg-[radial-gradient(circle_at_78%_0%,rgba(19,119,184,0.09),transparent_30%),radial-gradient(circle_at_12%_28%,rgba(14,154,133,0.07),transparent_28%)]" />
       <div className="relative z-10 flex min-h-screen">
         <aside className="hidden w-[238px] shrink-0 border-r border-white/[0.07] bg-[#0b0f1a]/90 px-4 py-5 lg:flex lg:flex-col">
           <div className="flex items-center gap-3 px-3 pb-8">
-            {client.logoUrl ? <img src={client.logoUrl} alt={`${client.name} logo`} className="h-9 w-9 rounded-xl object-contain" /> : <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-sm font-black text-slate-950 shadow-[0_0_28px_rgba(59,130,246,0.35)]">M</div>}
+            {client.logoUrl ? <img src={client.logoUrl} alt={`${client.name} logo`} className="h-10 w-36 rounded-xl object-contain object-left" /> : <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-sm font-black text-slate-950 shadow-[0_0_28px_rgba(59,130,246,0.35)]">M</div>}
             <div><p className="text-sm font-semibold tracking-wide text-white">{client.name}</p><p className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Manifestic workspace</p></div>
           </div>
           <nav className="space-y-1 text-sm">
@@ -183,7 +201,7 @@ function ClientCommandCenter() {
         <section className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:px-10 lg:py-8">
           <header className="mx-auto max-w-[1380px]">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3 lg:hidden">{client.logoUrl ? <img src={client.logoUrl} alt={`${client.name} logo`} className="h-9 w-9 rounded-xl object-contain" /> : <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-sm font-black text-slate-950">M</div>}<span className="font-semibold">{client.name}</span></div>
+              <div className="flex items-center gap-3 lg:hidden">{client.logoUrl ? <img src={client.logoUrl} alt={`${client.name} logo`} className="h-10 w-36 rounded-xl object-contain object-left" /> : <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-sm font-black text-slate-950">M</div>}<span className="font-semibold">{client.name}</span></div>
               <div className="flex items-center gap-2 text-xs text-slate-500"><span className={`h-2 w-2 rounded-full ${isLive ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]" : "bg-amber-300"}`} />{isLive ? "Live HighLevel data" : client.locationId ? "HighLevel connection needed" : "Demo workspace · Sample data"}</div>
               <div className="flex items-center gap-2"><button className="inline-flex items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.035] px-3 py-2 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08]" onClick={() => setCustomizeOpen((value) => !value)}><Settings2 className="h-3.5 w-3.5" />Customize <ChevronDown className={`h-3.5 w-3.5 transition ${customizeOpen ? "rotate-180" : ""}`} /></button>{client.locationId && <button aria-label="Refresh live data" className="inline-flex items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.035] px-3 py-2 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08] disabled:opacity-50" onClick={() => void refreshLiveData()} disabled={liveState.status === "loading"}><RefreshCw className={`h-3.5 w-3.5 ${liveState.status === "loading" ? "animate-spin" : ""}`} />Refresh</button>}<div className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-300/30 bg-violet-400/15 text-xs font-semibold text-violet-100">CS</div></div>
             </div>
@@ -210,7 +228,7 @@ function ClientCommandCenter() {
 
 function DashboardBootScreen() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080b13] px-6 text-slate-100">
+    <main className="flex min-h-screen items-center justify-center bg-[#f5f8fb] px-6 text-[#102336]">
       <div className="text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-lg font-black text-slate-950 shadow-[0_0_28px_rgba(59,130,246,0.35)]">M</div>
         <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Client Command Center</p>
