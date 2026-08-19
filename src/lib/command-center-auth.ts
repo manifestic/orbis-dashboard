@@ -47,7 +47,10 @@ function cookies(request: Request) {
 }
 
 function cookie(name: string, value: string, maxAge: number) {
-  return `${name}=${encodeURIComponent(value)}; Max-Age=${Math.max(0, Math.floor(maxAge))}; Path=/; HttpOnly; Secure; SameSite=Lax`;
+  // The Command Center is embedded inside the HighLevel sub-account in a
+  // cross-site iframe, so the authenticated session must be available in that
+  // iframe context. Secure is required when SameSite=None is used.
+  return `${name}=${encodeURIComponent(value)}; Max-Age=${Math.max(0, Math.floor(maxAge))}; Path=/; HttpOnly; Secure; SameSite=None`;
 }
 
 export function clearSessionCookies() {
