@@ -55,6 +55,19 @@ export function clearSessionCookies() {
   return [cookie(ACCESS_COOKIE, "", 0), cookie(REFRESH_COOKIE, "", 0)];
 }
 
+export async function revokeCalvennSession(request: Request) {
+  const accessToken = cookies(request).get(ACCESS_COOKIE);
+  if (!accessToken) return;
+  try {
+    await supabaseRequest("/auth/v1/logout", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch {
+    // Cookie clearing remains the local logout guarantee if the provider is unavailable.
+  }
+}
+
 function userFromSupabase(user: SupabaseUser | undefined): CommandCenterUser | null {
   const id = typeof user?.id === "string" ? user.id : "";
   const email = typeof user?.email === "string" ? user.email : "";

@@ -36,11 +36,13 @@ export const Route = createFileRoute("/api/conversation")({
           return applySessionCookies(json({ error: "authentication_required" }, 401), auth.cookies);
         const conversationId = new URL(request.url).searchParams.get("conversationId")?.trim();
         if (!conversationId) return json({ error: "missing_conversation_id" }, 400);
+        const lastMessageId = new URL(request.url).searchParams.get("lastMessageId")?.trim();
         const token =
           process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ?? process.env.HIGHLEVEL_ACCESS_TOKEN;
         if (!token) return json({ error: "missing_credentials" }, 503);
-        const response = await fetch(
-          `${HIGHLEVEL_API}/conversations/${encodeURIComponent(conversationId)}/messages?limit=50`,
+        const locationId = encodeURIComponent(auth.session.locationId);
+        const ownershipResponse = await fetch(
+          `${HIGHLEVEL_API}/conversations/search?locationId=${locationId}&id=${encodeURIComponent(conversationId)}&status=all&limit=1`,
           {
             headers: {
               Accept: "application/json",
@@ -49,6 +51,32 @@ export const Route = createFileRoute("/api/conversation")({
             },
           },
         );
+        const ownershipBody = (await ownershipResponse.json().catch(() => ({}))) as Record<
+          string,
+          unknown
+        >;
+        if (!ownershipResponse.ok)
+          return json(
+            { error: "highlevel_unavailable", status: ownershipResponse.status },
+            ownershipResponse.status >= 500 ? 502 : ownershipResponse.status,
+          );
+        const ownedConversations = asArray(ownershipBody.conversations);
+        const ownedConversation = ownedConversations.find(
+          (conversation) => text(conversation.id, conversation.conversationId) === conversationId,
+        );
+        if (!ownedConversation) return json({ error: "conversation_not_found" }, 404);
+        const messagesUrl = new URL(
+          `${HIGHLEVEL_API}/conversations/${encodeURIComponent(conversationId)}/messages`,
+        );
+        messagesUrl.searchParams.set("limit", "50");
+        if (lastMessageId) messagesUrl.searchParams.set("lastMessageId", lastMessageId);
+        const response = await fetch(messagesUrl, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+            Version: HIGHLEVEL_VERSION,
+          },
+        });
         const body = (await response.json().catch(() => ({}))) as Record<string, unknown>;
         if (!response.ok)
           return json(

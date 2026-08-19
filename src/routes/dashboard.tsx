@@ -497,7 +497,13 @@ function ClientCommandCenter() {
     );
 
   const clientDataRequested = Boolean(client.locationId);
-  const isLive = Boolean(client.locationId && liveState.status === "ready");
+  const liveSourceStatus = liveState.sources?.status;
+  const isLive = Boolean(
+    client.locationId && liveState.status === "ready" && liveSourceStatus === "live",
+  );
+  const isPartial = Boolean(
+    client.locationId && liveState.status === "ready" && liveSourceStatus === "partial",
+  );
   const visibleConversations = clientDataRequested ? liveState.data.conversations : conversations;
   const visibleAppointments = clientDataRequested ? liveState.data.appointments : appointments;
   const visibleTasks = clientDataRequested ? liveState.data.tasks : tasks;
@@ -643,13 +649,15 @@ function ClientCommandCenter() {
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <span
-                  className={`h-2 w-2 rounded-full ${isLive ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]" : "bg-amber-300"}`}
+                  className={`h-2 w-2 rounded-full ${isLive ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]" : isPartial ? "bg-amber-300" : "bg-red-400"}`}
                 />
                 {isLive
                   ? "Live HighLevel data"
-                  : client.locationId
-                    ? "HighLevel connection needed"
-                    : "Demo workspace · Sample data"}
+                  : isPartial
+                    ? "Partial HighLevel data"
+                    : client.locationId
+                      ? "HighLevel connection unavailable"
+                      : "Demo workspace · Sample data"}
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -709,10 +717,21 @@ function ClientCommandCenter() {
                 Live data is not available yet: {liveState.message}
               </div>
             )}
+            {liveState.status === "loading" && (
+              <div className="mt-6 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.05] px-4 py-3 text-xs text-cyan-800">
+                Loading the live Calvenn workspace…
+              </div>
+            )}
+            {isPartial && (
+              <div className="mt-6 rounded-xl border border-amber-300/25 bg-amber-300/[0.08] px-4 py-3 text-xs text-amber-800">
+                Some HighLevel sources are temporarily unavailable. Conversation data is labeled
+                separately from calendar and task data.
+              </div>
+            )}
             {activeSection === "overview" ? (
               <PortalOverview
                 client={client}
-                isLive={isLive}
+                isLive={isLive || isPartial}
                 unreadCount={unreadCount}
                 firstAppointment={firstAppointment}
                 openTasks={visibleTasks.length}
@@ -729,7 +748,7 @@ function ClientCommandCenter() {
                 conversations={visibleConversations}
                 appointments={visibleAppointments}
                 tasks={visibleTasks}
-                live={isLive}
+                live={isLive || isPartial}
                 unreadCount={unreadCount}
                 onSelectConversation={(name) => {
                   setSelectedConversation(name);
@@ -747,7 +766,7 @@ function ClientCommandCenter() {
               />
             )}
             <div className="border-t border-white/[0.07] py-6 text-xs leading-relaxed text-slate-600">
-              {isLive
+              {isLive || isPartial
                 ? "Live read-only HighLevel data · Actions that send or change records open in native HighLevel."
                 : "Demo preview · Add the scoped HighLevel server credential to replace sample records with live data."}
             </div>
@@ -757,7 +776,7 @@ function ClientCommandCenter() {
       {showAllMessages && (
         <LiveInboxModal
           conversations={visibleConversations}
-          live={isLive}
+          live={isLive || isPartial}
           selectedConversationId={selectedConversationId}
           onClose={() => setShowAllMessages(false)}
           inboxHref={ghl("/conversations/conversations/?category=team-inbox&tab=unread")}
@@ -2451,6 +2470,9 @@ function LiveInboxModal({
 }) {
   const [selectedId, setSelectedId] = useState(selectedConversationId || conversations[0]?.id);
   const [messages, setMessages] = useState<LiveThreadMessage[]>([]);
+  const [nextPage, setNextPage] = useState(false);
+  const [lastMessageId, setLastMessageId] = useState<string | undefined>();
+  const [olderLoading, setOlderLoading] = useState(false);
   const [threadState, setThreadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [threadError, setThreadError] = useState("");
   const selected =
@@ -2460,6 +2482,9 @@ function LiveInboxModal({
     let cancelled = false;
     setThreadState("loading");
     setThreadError("");
+    setMessages([]);
+    setNextPage(false);
+    setLastMessageId(undefined);
     void fetch(`/api/conversation?conversationId=${encodeURIComponent(selected.id)}`, {
       cache: "no-store",
     })
@@ -2467,6 +2492,8 @@ function LiveInboxModal({
         const payload = (await response.json()) as {
           messages?: LiveThreadMessage[];
           error?: string;
+          nextPage?: boolean;
+          lastMessageId?: string;
         };
         if (!response.ok) throw new Error(payload.error ?? "Unable to load this conversation.");
         return payload;
@@ -2474,6 +2501,8 @@ function LiveInboxModal({
       .then((payload) => {
         if (!cancelled) {
           setMessages(payload.messages ?? []);
+          setNextPage(Boolean(payload.nextPage));
+          setLastMessageId(payload.lastMessageId || undefined);
           setThreadState("ready");
         }
       })
@@ -2489,6 +2518,30 @@ function LiveInboxModal({
       cancelled = true;
     };
   }, [live, selected?.id]);
+  const loadOlderMessages = async () => {
+    if (!selected?.id || !lastMessageId || olderLoading) return;
+    setOlderLoading(true);
+    try {
+      const response = await fetch(
+        `/api/conversation?conversationId=${encodeURIComponent(selected.id)}&lastMessageId=${encodeURIComponent(lastMessageId)}`,
+        { cache: "no-store" },
+      );
+      const payload = (await response.json()) as {
+        messages?: LiveThreadMessage[];
+        nextPage?: boolean;
+        lastMessageId?: string;
+        error?: string;
+      };
+      if (!response.ok) throw new Error(payload.error ?? "Unable to load older messages.");
+      setMessages((current) => [...(payload.messages ?? []), ...current]);
+      setNextPage(Boolean(payload.nextPage));
+      setLastMessageId(payload.lastMessageId || undefined);
+    } catch (error) {
+      setThreadError(error instanceof Error ? error.message : "Unable to load older messages.");
+    } finally {
+      setOlderLoading(false);
+    }
+  };
   return (
     <div
       className="fixed inset-0 z-30 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm"
@@ -2571,6 +2624,16 @@ function LiveInboxModal({
                 )}
                 {threadState === "ready" && (
                   <div className="mt-5 space-y-3">
+                    {nextPage && (
+                      <button
+                        type="button"
+                        onClick={() => void loadOlderMessages()}
+                        disabled={olderLoading}
+                        className="w-full rounded-xl border border-cyan-300/20 bg-cyan-300/[0.06] px-3 py-2 text-xs font-semibold text-cyan-700 disabled:opacity-60"
+                      >
+                        {olderLoading ? "Loading older messages…" : "Load older messages"}
+                      </button>
+                    )}
                     {messages.length ? (
                       messages.map((message) => (
                         <article

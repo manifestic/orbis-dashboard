@@ -5,7 +5,38 @@ import {
   clearSessionCookies,
   getCalvennSession,
   loginCalvenn,
+  revokeCalvennSession,
 } from "../../lib/command-center-auth";
+
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const ATTEMPT_WINDOW_MS = 60_000;
+const MAX_ATTEMPTS_PER_WINDOW = 8;
+
+function requestKey(request: Request) {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  ).slice(0, 120);
+}
+
+function loginRateLimit(request: Request) {
+  const now = Date.now();
+  const key = requestKey(request);
+  const current = loginAttempts.get(key);
+  if (!current || current.resetAt <= now) {
+    loginAttempts.set(key, { count: 1, resetAt: now + ATTEMPT_WINDOW_MS });
+    return { allowed: true, retryAfter: 0 };
+  }
+  if (current.count >= MAX_ATTEMPTS_PER_WINDOW)
+    return { allowed: false, retryAfter: Math.ceil((current.resetAt - now) / 1000) };
+  current.count += 1;
+  return { allowed: true, retryAfter: 0 };
+}
+
+function clearLoginRateLimit(request: Request) {
+  loginAttempts.delete(requestKey(request));
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -55,8 +86,10 @@ export const Route = createFileRoute("/api/auth")({
         } catch {
           /* fall through to validation */
         }
-        if (body.action === "logout")
+        if (body.action === "logout") {
+          await revokeCalvennSession(request);
           return applySessionCookies(json({ authenticated: false }), clearSessionCookies());
+        }
         if (
           typeof body.email !== "string" ||
           typeof body.password !== "string" ||
@@ -64,6 +97,19 @@ export const Route = createFileRoute("/api/auth")({
           !body.password
         )
           return json({ error: "email_and_password_required" }, 400);
+        const rateLimit = loginRateLimit(request);
+        if (!rateLimit.allowed)
+          return new Response(
+            JSON.stringify({ authenticated: false, error: "too_many_attempts" }),
+            {
+              status: 429,
+              headers: {
+                "cache-control": "no-store",
+                "content-type": "application/json; charset=utf-8",
+                "retry-after": String(rateLimit.retryAfter),
+              },
+            },
+          );
         try {
           const result = await loginCalvenn(body.email.trim(), body.password);
           if (!result.ok)
@@ -71,6 +117,7 @@ export const Route = createFileRoute("/api/auth")({
               { authenticated: false, error: "invalid_login", message: result.message },
               401,
             );
+          clearLoginRateLimit(request);
           return applySessionCookies(
             json({
               authenticated: true,

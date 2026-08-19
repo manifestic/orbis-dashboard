@@ -70,6 +70,7 @@ function normalizeConversations(body: HighLevelResponse) {
     const contact = (conversation.contact ?? {}) as Record<string, unknown>;
     const lastMessage = (conversation.lastMessage ?? {}) as Record<string, unknown>;
     const name = text(
+      conversation.fullName,
       conversation.contactName,
       contact.name,
       [contact.firstName, contact.lastName].filter(Boolean).join(" "),
@@ -232,6 +233,18 @@ export const Route = createFileRoute("/api/dashboard-data")({
           appointments: appointmentResult.status === "fulfilled" ? appointmentResult.value : [],
           tasks: taskResult.status === "fulfilled" ? normalizeTasks(taskResult.value) : [],
         };
+        const sourceResults = [conversationResult, appointmentResult, taskResult];
+        const availableSourceCount = sourceResults.filter(
+          (result) => result.status === "fulfilled",
+        ).length;
+        const sourceStatus =
+          availableSourceCount === sourceResults.length
+            ? "live"
+            : availableSourceCount > 0
+              ? "partial"
+              : "unavailable";
+        const conversationTotal =
+          conversationResult.status === "fulfilled" ? number(conversationResult.value.total) : 0;
 
         return applySessionCookies(
           json(
@@ -241,13 +254,21 @@ export const Route = createFileRoute("/api/dashboard-data")({
               readOnly: true,
               tenant: { clientName: auth.session.clientName },
               data,
+              pagination: {
+                conversations: {
+                  returned: data.conversations.length,
+                  total: conversationTotal,
+                  hasMore: conversationTotal > data.conversations.length,
+                },
+              },
               sources: {
+                status: sourceStatus,
                 conversations: conversationResult.status === "fulfilled" ? "live" : "unavailable",
                 appointments: appointmentResult.status === "fulfilled" ? "live" : "unavailable",
                 tasks: taskResult.status === "fulfilled" ? "live" : "unavailable",
               },
             },
-            200,
+            sourceStatus === "unavailable" ? 502 : 200,
           ),
           auth.cookies,
         );
