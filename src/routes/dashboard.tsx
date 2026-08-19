@@ -320,6 +320,62 @@ const calvennLogoUrl =
 
 const emptyLiveData: LiveDashboardData = { conversations: [], appointments: [], tasks: [] };
 
+function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
+  const locationId = params.get("locationId")?.trim() ?? "";
+  const requestedName = params.get("clientName")?.trim() ?? "";
+  const isKevin =
+    locationId === "B2WqoVF535ixA9CbywEh" || /station survival|kevin/i.test(requestedName);
+  const isAdaptive = locationId === "mR9xcnpfPlueBXs9yIk9" || /adaptive crm/i.test(requestedName);
+  const isCalvenn = locationId === "QsbCjo5HFBGuRG0AKms0";
+  const name =
+    requestedName ||
+    (isKevin
+      ? "Station Survival Co."
+      : isAdaptive
+        ? "Adaptive CRM Core — Master"
+        : isCalvenn
+          ? "Your Best Health Quote"
+          : "Client");
+  return {
+    locationId,
+    name,
+    logoUrl: params.get("logoUrl")?.trim() || (isCalvenn ? calvennLogoUrl : ""),
+    reviewUrl: params.get("reviewUrl")?.trim() || "",
+    websiteUrl:
+      params.get("websiteUrl")?.trim() ||
+      (isKevin
+        ? "https://stationsurvivalco.com"
+        : isCalvenn
+          ? "https://yourbesthealthquote.vercel.app/"
+          : ""),
+    websiteName:
+      params.get("websiteName")?.trim() ||
+      (isKevin
+        ? "Station Survival Co. website"
+        : isCalvenn
+          ? "Your Best Health Quote"
+          : "Client website"),
+    footerLabel:
+      params.get("footerLabel")?.trim() ||
+      (isKevin
+        ? "Firefighter gear view"
+        : isCalvenn
+          ? "Healthcare sales view"
+          : "Client command center"),
+    footerText:
+      params.get("footerText")?.trim() ||
+      (isKevin
+        ? "A focused workspace configured around Station Survival Co.'s gear, content, and customer conversations."
+        : isCalvenn
+          ? "A focused workspace configured around the work Calvenn actually needs to do."
+          : `A focused workspace configured around the work ${name} actually needs to do.`),
+    primaryColor: params.get("primaryColor")?.trim() || (isKevin ? "#de000d" : "#1377b8"),
+    accentColor: params.get("accentColor")?.trim() || (isKevin ? "#108474" : "#0e9a85"),
+    inkColor: params.get("inkColor")?.trim() || (isKevin ? "#1a1a1a" : "#102336"),
+    mutedColor: params.get("mutedColor")?.trim() || "#466174",
+  };
+}
+
 function formatRelativeTime(value?: string) {
   if (!value) return "recently";
   const timestamp = new Date(value).getTime();
@@ -352,6 +408,7 @@ function formatDueDate(value?: string) {
 function ClientCommandCenter() {
   const [hydrated, setHydrated] = useState(false);
   const [authState, setAuthState] = useState<AuthState>({ status: "loading" });
+  const [embeddedMode, setEmbeddedMode] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [selectedConversation, setSelectedConversation] = useState(conversations[0].name);
@@ -389,7 +446,7 @@ function ClientCommandCenter() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const refreshLiveData = async () => {
-    if (!client.locationId || authState.status !== "authenticated") return;
+    if (embeddedMode || !client.locationId || authState.status !== "authenticated") return;
     setLiveState((current) => ({ ...current, status: "loading", message: undefined }));
     try {
       const response = await fetch(
@@ -424,7 +481,23 @@ function ClientCommandCenter() {
   useEffect(() => {
     setHydrated(true);
     const params = new URLSearchParams(window.location.search);
+    const requestedLocationId = params.get("locationId")?.trim() ?? "";
     void (async () => {
+      if (requestedLocationId) {
+        const requestedClient = clientConfigFromQuery(params);
+        setEmbeddedMode(true);
+        setClient(requestedClient);
+        setAuthState({
+          status: "authenticated",
+          user: {
+            id: `embedded:${requestedClient.locationId}`,
+            email: "",
+            displayName: requestedClient.name,
+            clientName: requestedClient.name,
+          },
+        });
+        return;
+      }
       try {
         const response = await fetch("/api/auth", { cache: "no-store" });
         const payload = (await response.json()) as {
@@ -440,21 +513,14 @@ function ClientCommandCenter() {
           return;
         }
         setAuthState({ status: "authenticated", user: payload.user });
-        setClient({
-          locationId: "QsbCjo5HFBGuRG0AKms0",
-          name: payload.user.clientName || "Your Best Health Quote",
-          logoUrl: calvennLogoUrl,
-          reviewUrl: "",
-          websiteUrl: "https://yourbesthealthquote.vercel.app/",
-          websiteName: "Your Best Health Quote",
-          footerLabel: "Healthcare sales view",
-          footerText:
-            "A focused workspace configured around the work Calvenn actually needs to do.",
-          primaryColor: "#1377b8",
-          accentColor: "#0e9a85",
-          inkColor: "#102336",
-          mutedColor: "#466174",
-        });
+        setClient(
+          clientConfigFromQuery(
+            new URLSearchParams({
+              locationId: "QsbCjo5HFBGuRG0AKms0",
+              clientName: payload.user.clientName || "Your Best Health Quote",
+            }),
+          ),
+        );
       } catch (error) {
         setAuthState({
           status: "error",
@@ -484,7 +550,7 @@ function ClientCommandCenter() {
     void refreshLiveData();
     const interval = window.setInterval(() => void refreshLiveData(), 60_000);
     return () => window.clearInterval(interval);
-  }, [client.locationId, authState.status]);
+  }, [client.locationId, authState.status, embeddedMode]);
 
   if (!hydrated) {
     return <DashboardBootScreen />;
@@ -656,9 +722,11 @@ function ClientCommandCenter() {
                   ? "Live HighLevel data"
                   : isPartial
                     ? "Partial HighLevel data"
-                    : client.locationId
-                      ? "HighLevel connection unavailable"
-                      : "Demo workspace · Sample data"}
+                    : embeddedMode
+                      ? "Client-specific workspace"
+                      : client.locationId
+                        ? "HighLevel connection unavailable"
+                        : "Demo workspace · Sample data"}
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -720,7 +788,7 @@ function ClientCommandCenter() {
             )}
             {liveState.status === "loading" && (
               <div className="mt-6 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.05] px-4 py-3 text-xs text-cyan-800">
-                Loading the live Calvenn workspace…
+                Loading live HighLevel data…
               </div>
             )}
             {isPartial && (
@@ -1445,6 +1513,7 @@ function DashboardSectionView({
         )}
         {section === "content" && (
           <ContentReviewCard
+            clientName={client.name}
             reviewUrl={client.reviewUrl}
             plannerHref={plannerHref}
             socialHref={plannerHref}
@@ -1454,7 +1523,7 @@ function DashboardSectionView({
         {section === "websites" && (
           <WebsitesCard client={client} sitesHref={client.websiteUrl || undefined} />
         )}
-        {section === "reports" && <ReportsCard />}
+        {section === "reports" && <ReportsCard client={client} />}
       </div>
     </section>
   );
@@ -1895,11 +1964,13 @@ function ContentCard({
 type ContentReviewTab = "social" | "blogs" | "ideas" | "library";
 
 function ContentReviewCard({
+  clientName,
   reviewUrl,
   plannerHref,
   socialHref,
   calendarHref,
 }: {
+  clientName: string;
   reviewUrl?: string;
   plannerHref?: string;
   socialHref?: string;
@@ -1936,6 +2007,7 @@ function ContentReviewCard({
   }
   return (
     <ContentReviewPrototype
+      clientName={clientName}
       plannerHref={plannerHref}
       socialHref={socialHref}
       calendarHref={calendarHref}
@@ -1944,41 +2016,43 @@ function ContentReviewCard({
 }
 
 function ContentReviewPrototype({
+  clientName,
   plannerHref,
   socialHref,
   calendarHref,
 }: {
+  clientName: string;
   plannerHref?: string;
   socialHref?: string;
   calendarHref?: string;
 }) {
   const [tab, setTab] = useState<ContentReviewTab>("social");
   const tabs: Array<{ id: ContentReviewTab; label: string; count: string }> = [
-    { id: "social", label: "Social", count: "6" },
-    { id: "blogs", label: "Blogs", count: "22" },
-    { id: "ideas", label: "Video ideas", count: "3" },
-    { id: "library", label: "Library", count: "18" },
+    { id: "social", label: "Social", count: "0" },
+    { id: "blogs", label: "Blogs", count: "0" },
+    { id: "ideas", label: "Video ideas", count: "0" },
+    { id: "library", label: "Library", count: "0" },
   ];
   const socialItems = [
     {
       type: "Still post",
-      title: "Benefits myth vs. fact",
-      status: "Needs review",
-      version: "Copy v2 · Media v1",
+      title: "Client social post",
+      status: "Awaiting batch",
+      version: "Copy · Media pending",
       tone: "border-amber-300/30 bg-amber-300/[0.06]",
     },
     {
       type: "Video post",
-      title: "Meet the team",
-      status: "Approved",
-      version: "Copy v1 · Media v2",
+      title: "Client video draft",
+      status: "Awaiting batch",
+      version: "Storyboard · Media pending",
       tone: "border-emerald-300/25 bg-emerald-300/[0.05]",
     },
     {
       type: "Still post",
-      title: "Open enrollment checklist",
-      status: "Scheduled",
-      version: "Copy v1 · Media v1",
+      title: "Client library item",
+      status: "Awaiting batch",
+      version: "Archived content pending",
       tone: "border-cyan-300/25 bg-cyan-300/[0.05]",
     },
   ];
@@ -1987,12 +2061,14 @@ function ContentReviewPrototype({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-300">
-            Kevin-style approval flow
+            Client approval flow
           </p>
-          <h3 className="mt-1 text-lg font-semibold text-white">Content review workspace</h3>
+          <h3 className="mt-1 text-lg font-semibold text-white">
+            {clientName} content review workspace
+          </h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
-            One active batch, visible status, and separate wording/media versions. This embedded
-            view is read-only until a client-specific review link is provisioned.
+            One active batch, visible status, and separate wording/media versions. This reusable
+            template is waiting for {clientName}'s client-specific review link.
           </p>
         </div>
         <span className="rounded-full border border-amber-300/20 bg-amber-300/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-200">
@@ -2016,13 +2092,13 @@ function ContentReviewPrototype({
         <div className="mt-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-white">Active batch · August 18–24</p>
+              <p className="text-sm font-semibold text-white">Client content batch</p>
               <p className="mt-1 text-xs text-slate-500">
                 Still posts and finished videos stay together for one approval pass.
               </p>
             </div>
             <span className="rounded-full bg-amber-300/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-200">
-              1 needs attention
+              Not provisioned
             </span>
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-3">
@@ -2054,7 +2130,7 @@ function ContentReviewPrototype({
           <p className="text-sm font-semibold text-white">Content architecture review</p>
           <p className="mt-2 text-xs leading-relaxed text-slate-400">
             Core answer pages, supporting questions, and the social layer are reviewed as one
-            cluster. Independent selection stays available in the full client review link.
+            cluster after the client-specific review link is provisioned.
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
             {["Core answer pages", "Supporting questions", "Social layer"].map((label) => (
@@ -2081,7 +2157,7 @@ function ContentReviewPrototype({
             brief remains the source of truth before production.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {["3 concepts", "1 selected direction", "Storyboard pending"].map((label) => (
+            {["Client concepts", "Selected direction", "Storyboard pending"].map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-violet-300/20 px-3 py-1.5 text-[10px] font-semibold text-violet-200"
@@ -2100,7 +2176,7 @@ function ContentReviewPrototype({
             they are resolved or archived.
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
-            {["August 11–17", "August 4–10", "July 28–August 3"].map((label) => (
+            {["Prior batch", "Earlier batch", "Archived content"].map((label) => (
               <div
                 key={label}
                 className="rounded-xl border border-white/[0.07] p-3 text-xs font-semibold text-slate-300"
@@ -2230,7 +2306,24 @@ function LegacyWebsitesCard({ sitesHref }: { sitesHref?: string }) {
   );
 }
 
-function ReportsCard() {
+function ReportsCard({ client }: { client: ClientConfig }) {
+  const clientReports = client.locationId === "QsbCjo5HFBGuRG0AKms0" ? reports : [];
+  if (!clientReports.length) {
+    return (
+      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+          Intelligence reports
+        </p>
+        <h3 className="mt-1 text-lg font-semibold text-white">
+          {client.name} reports are not configured yet
+        </h3>
+        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
+          Client-specific audience, competitive, search, and content reports will appear here when
+          they are added to this sub-account workspace.
+        </p>
+      </section>
+    );
+  }
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
@@ -2247,7 +2340,7 @@ function ReportsCard() {
         <FileText className="h-5 w-5 text-emerald-300" />
       </div>
       <div className="mt-5 space-y-3">
-        {reports.map((report) => {
+        {clientReports.map((report) => {
           const Icon = report.icon;
           return (
             <a
@@ -2456,6 +2549,13 @@ type LiveThreadMessage = {
   status?: string;
 };
 
+type ReplyCapability = {
+  replyable: boolean;
+  channel?: string;
+  contactPhone?: string;
+  reason?: string | null;
+};
+
 function LiveInboxModal({
   conversations,
   live,
@@ -2476,6 +2576,7 @@ function LiveInboxModal({
   const [olderLoading, setOlderLoading] = useState(false);
   const [threadState, setThreadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [threadError, setThreadError] = useState("");
+  const [replyCapability, setReplyCapability] = useState<ReplyCapability | null>(null);
   const selected =
     conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
   useEffect(() => {
@@ -2486,6 +2587,7 @@ function LiveInboxModal({
     setMessages([]);
     setNextPage(false);
     setLastMessageId(undefined);
+    setReplyCapability(null);
     void fetch(`/api/conversation?conversationId=${encodeURIComponent(selected.id)}`, {
       cache: "no-store",
     })
@@ -2514,6 +2616,27 @@ function LiveInboxModal({
             error instanceof Error ? error.message : "Unable to load this conversation.",
           );
         }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [live, selected?.id]);
+  useEffect(() => {
+    if (!live || !selected?.id) return;
+    let cancelled = false;
+    void fetch(`/api/reply-capability?conversationId=${encodeURIComponent(selected.id)}`, {
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        const payload = (await response.json()) as ReplyCapability;
+        if (!response.ok) throw new Error(payload.reason ?? "Reply capability unavailable.");
+        return payload;
+      })
+      .then((payload) => {
+        if (!cancelled) setReplyCapability(payload);
+      })
+      .catch(() => {
+        if (!cancelled) setReplyCapability({ replyable: false, reason: "capability_unavailable" });
       });
     return () => {
       cancelled = true;
@@ -2614,6 +2737,21 @@ function LiveInboxModal({
                   <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.07] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-300">
                     Read only
                   </span>
+                </div>
+                <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.06] px-4 py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-amber-200">
+                      Reply path
+                    </p>
+                    <span className="text-xs font-medium text-amber-100">
+                      {replyCapability?.replyable ? "SMS ready for supervised pilot" : "Read-only"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                    {replyCapability?.replyable
+                      ? `SMS reply target verified${replyCapability.contactPhone ? ` · ${replyCapability.contactPhone}` : ""}. A second confirmation will be required before any send.`
+                      : "The server is checking the SMS path, but outbound writes remain disabled until the sender policy, audit trail, and duplicate-send protection are verified."}
+                  </p>
                 </div>
                 {threadState === "loading" && (
                   <p className="py-12 text-center text-sm text-slate-500">
