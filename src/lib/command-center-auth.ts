@@ -25,6 +25,12 @@ type SupabaseTokenResponse = {
 const CALVENN_USER_ID = process.env.CALVENN_SUPABASE_USER_ID ?? "";
 const CALVENN_LOCATION_ID = process.env.CALVENN_LOCATION_ID ?? "";
 const CALVENN_CLIENT_NAME = process.env.CALVENN_CLIENT_NAME ?? "Your Best Health Quote";
+const ADMIN_EMAILS = new Set(
+  (process.env.CALVENN_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean),
+);
 
 function supabaseConfig() {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -73,7 +79,9 @@ export async function revokeCalvennSession(request: Request) {
 function userFromSupabase(user: SupabaseUser | undefined): CommandCenterUser | null {
   const id = typeof user?.id === "string" ? user.id : "";
   const email = typeof user?.email === "string" ? user.email : "";
-  if (!id || id !== CALVENN_USER_ID || !email) return null;
+  const isCalvenn = Boolean(CALVENN_USER_ID && id === CALVENN_USER_ID);
+  const isAdmin = Boolean(email && ADMIN_EMAILS.has(email.toLowerCase()));
+  if (!id || (!isCalvenn && !isAdmin) || !email) return null;
   const metadata = user?.user_metadata ?? {};
   const displayName =
     typeof metadata.full_name === "string" && metadata.full_name.trim()
@@ -202,6 +210,7 @@ export function authConfigStatus() {
   return {
     configured: Boolean(supabaseConfig()),
     userMappingConfigured: Boolean(CALVENN_USER_ID && CALVENN_LOCATION_ID),
+    adminMappingConfigured: ADMIN_EMAILS.size > 0,
   };
 }
 
