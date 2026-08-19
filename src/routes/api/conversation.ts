@@ -35,11 +35,13 @@ export const Route = createFileRoute("/api/conversation")({
         if (!auth.session)
           return applySessionCookies(json({ error: "authentication_required" }, 401), auth.cookies);
         const conversationId = new URL(request.url).searchParams.get("conversationId")?.trim();
-        if (!conversationId) return json({ error: "missing_conversation_id" }, 400);
+        if (!conversationId)
+          return applySessionCookies(json({ error: "missing_conversation_id" }, 400), auth.cookies);
         const lastMessageId = new URL(request.url).searchParams.get("lastMessageId")?.trim();
         const token =
           process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ?? process.env.HIGHLEVEL_ACCESS_TOKEN;
-        if (!token) return json({ error: "missing_credentials" }, 503);
+        if (!token)
+          return applySessionCookies(json({ error: "missing_credentials" }, 503), auth.cookies);
         const locationId = encodeURIComponent(auth.session.locationId);
         const ownershipResponse = await fetch(
           `${HIGHLEVEL_API}/conversations/search?locationId=${locationId}&id=${encodeURIComponent(conversationId)}&status=all&limit=1`,
@@ -56,15 +58,19 @@ export const Route = createFileRoute("/api/conversation")({
           unknown
         >;
         if (!ownershipResponse.ok)
-          return json(
-            { error: "highlevel_unavailable", status: ownershipResponse.status },
-            ownershipResponse.status >= 500 ? 502 : ownershipResponse.status,
+          return applySessionCookies(
+            json(
+              { error: "highlevel_unavailable", status: ownershipResponse.status },
+              ownershipResponse.status >= 500 ? 502 : ownershipResponse.status,
+            ),
+            auth.cookies,
           );
         const ownedConversations = asArray(ownershipBody.conversations);
         const ownedConversation = ownedConversations.find(
           (conversation) => text(conversation.id, conversation.conversationId) === conversationId,
         );
-        if (!ownedConversation) return json({ error: "conversation_not_found" }, 404);
+        if (!ownedConversation)
+          return applySessionCookies(json({ error: "conversation_not_found" }, 404), auth.cookies);
         const messagesUrl = new URL(
           `${HIGHLEVEL_API}/conversations/${encodeURIComponent(conversationId)}/messages`,
         );
@@ -79,9 +85,12 @@ export const Route = createFileRoute("/api/conversation")({
         });
         const body = (await response.json().catch(() => ({}))) as Record<string, unknown>;
         if (!response.ok)
-          return json(
-            { error: "highlevel_unavailable", status: response.status },
-            response.status >= 500 ? 502 : response.status,
+          return applySessionCookies(
+            json(
+              { error: "highlevel_unavailable", status: response.status },
+              response.status >= 500 ? 502 : response.status,
+            ),
+            auth.cookies,
           );
         const envelope = (body.messages ?? body) as Record<string, unknown>;
         const messages = asArray(envelope.messages ?? body.messages).map((message) => ({

@@ -509,7 +509,8 @@ function ClientCommandCenter() {
   const visibleTasks = clientDataRequested ? liveState.data.tasks : tasks;
   const unreadCount = clientDataRequested
     ? visibleConversations.reduce(
-        (total, item) => total + Math.max(1, (item as LiveConversation).unreadCount ?? 1),
+        (total, item) =>
+          total + Math.max(0, Number((item as LiveConversation).unreadCount ?? 0) || 0),
         0,
       )
     : 2;

@@ -22,9 +22,8 @@ type SupabaseTokenResponse = {
   user?: SupabaseUser;
 };
 
-const CALVENN_USER_ID =
-  process.env.CALVENN_SUPABASE_USER_ID ?? "9737a116-459f-4fdc-9310-4daf8b2c7265";
-const CALVENN_LOCATION_ID = process.env.CALVENN_LOCATION_ID ?? "QsbCjo5HFBGuRG0AKms0";
+const CALVENN_USER_ID = process.env.CALVENN_SUPABASE_USER_ID ?? "";
+const CALVENN_LOCATION_ID = process.env.CALVENN_LOCATION_ID ?? "";
 const CALVENN_CLIENT_NAME = process.env.CALVENN_CLIENT_NAME ?? "Your Best Health Quote";
 
 function supabaseConfig() {
