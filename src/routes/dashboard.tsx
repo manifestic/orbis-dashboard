@@ -318,6 +318,9 @@ type DashboardSection =
 const calvennLogoUrl =
   "https://assets.cdn.filesafe.space/QsbCjo5HFBGuRG0AKms0/media/5e87639f-90b5-4c90-94d9-393a5a224611.png";
 
+const stationSurvivalLogoUrl =
+  "https://stationsurvivalco.com/cdn/shop/files/REAL_REAL_SVG_SSCO_LOGO_DE000D.png?v=1777737510&width=350";
+
 const emptyLiveData: LiveDashboardData = { conversations: [], appointments: [], tasks: [] };
 
 function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
@@ -339,7 +342,9 @@ function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
   return {
     locationId,
     name,
-    logoUrl: params.get("logoUrl")?.trim() || (isCalvenn ? calvennLogoUrl : ""),
+    logoUrl: isKevin
+      ? stationSurvivalLogoUrl
+      : params.get("logoUrl")?.trim() || (isCalvenn ? calvennLogoUrl : ""),
     reviewUrl: params.get("reviewUrl")?.trim() || "",
     websiteUrl:
       params.get("websiteUrl")?.trim() ||
