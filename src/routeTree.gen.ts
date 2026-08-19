@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiDashboardDataRouteImport } from './routes/api/dashboard-data'
+import { Route as ApiConversationRouteImport } from './routes/api/conversation'
+import { Route as ApiAuthRouteImport } from './routes/api/auth'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
@@ -28,34 +30,68 @@ const ApiDashboardDataRoute = ApiDashboardDataRouteImport.update({
   path: '/api/dashboard-data',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConversationRoute = ApiConversationRouteImport.update({
+  id: '/api/conversation',
+  path: '/api/conversation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthRoute = ApiAuthRouteImport.update({
+  id: '/api/auth',
+  path: '/api/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/api/auth': typeof ApiAuthRoute
+  '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/api/auth': typeof ApiAuthRoute
+  '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/api/auth': typeof ApiAuthRoute
+  '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/api/dashboard-data'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/api/auth'
+    | '/api/conversation'
+    | '/api/dashboard-data'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/api/dashboard-data'
-  id: '__root__' | '/' | '/dashboard' | '/api/dashboard-data'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/api/auth'
+    | '/api/conversation'
+    | '/api/dashboard-data'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/api/auth'
+    | '/api/conversation'
+    | '/api/dashboard-data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  ApiAuthRoute: typeof ApiAuthRoute
+  ApiConversationRoute: typeof ApiConversationRoute
   ApiDashboardDataRoute: typeof ApiDashboardDataRoute
 }
 
@@ -82,12 +118,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDashboardDataRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/conversation': {
+      id: '/api/conversation'
+      path: '/api/conversation'
+      fullPath: '/api/conversation'
+      preLoaderRoute: typeof ApiConversationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth': {
+      id: '/api/auth'
+      path: '/api/auth'
+      fullPath: '/api/auth'
+      preLoaderRoute: typeof ApiAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  ApiAuthRoute: ApiAuthRoute,
+  ApiConversationRoute: ApiConversationRoute,
   ApiDashboardDataRoute: ApiDashboardDataRoute,
 }
 export const routeTree = rootRouteImport
