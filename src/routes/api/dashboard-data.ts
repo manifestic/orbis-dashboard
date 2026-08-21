@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { applySessionCookies, getCalvennSession } from "../../lib/command-center-auth";
+import { highLevelTokenForLocation } from "../../lib/highlevel-token";
 
 const HIGHLEVEL_API = "https://services.leadconnectorhq.com";
 const HIGHLEVEL_VERSION = "v3";
@@ -252,8 +253,7 @@ export const Route = createFileRoute("/api/dashboard-data")({
           );
         const locationId = auth.session.locationId;
 
-        const token =
-          process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ?? process.env.HIGHLEVEL_ACCESS_TOKEN;
+        const token = highLevelTokenForLocation(locationId);
         if (!token) {
           return applySessionCookies(
             json(

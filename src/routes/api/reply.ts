@@ -4,6 +4,7 @@ import {
   getCalvennSession,
   hasCommandCenterCapability,
 } from "../../lib/command-center-auth";
+import { highLevelTokenForLocation } from "../../lib/highlevel-token";
 import { normalizeReplyChannel, replyBlockedReason, replyPolicy } from "../../lib/reply-policy";
 import { hasAllowedOrigin, hasValidCsrfToken } from "../../lib/reply-security";
 import {
@@ -89,8 +90,7 @@ export const Route = createFileRoute("/api/reply")({
             auth.cookies,
           );
 
-        const token =
-          process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ?? process.env.HIGHLEVEL_ACCESS_TOKEN;
+        const token = highLevelTokenForLocation(auth.session.locationId);
         if (!token) return applyCookies(json({ error: "missing_credentials" }, 503), auth.cookies);
 
         const ownershipUrl = new URL(`${HIGHLEVEL_API}/conversations/search`);

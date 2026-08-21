@@ -4,6 +4,7 @@ import {
   getCalvennSession,
   hasCommandCenterCapability,
 } from "../../lib/command-center-auth";
+import { highLevelTokenForLocation } from "../../lib/highlevel-token";
 import {
   maskPhone,
   normalizeReplyChannel,
@@ -65,8 +66,7 @@ export const Route = createFileRoute("/api/reply-capability")({
         if (!conversationId)
           return applySessionCookies(json({ error: "missing_conversation_id" }, 400), auth.cookies);
 
-        const token =
-          process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ?? process.env.HIGHLEVEL_ACCESS_TOKEN;
+        const token = highLevelTokenForLocation(auth.session.locationId);
         if (!token)
           return applySessionCookies(json({ error: "missing_credentials" }, 503), auth.cookies);
 
