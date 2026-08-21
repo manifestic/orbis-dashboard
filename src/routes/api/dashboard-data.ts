@@ -47,6 +47,18 @@ function initials(name: string) {
   );
 }
 
+function channelLabel(...values: unknown[]) {
+  const raw = text(...values).toLowerCase();
+  if (raw.includes("whatsapp")) return "WhatsApp";
+  if (raw.includes("instagram") || raw === "ig" || raw.includes("type_ig")) return "Instagram";
+  if (raw.includes("facebook") || raw === "fb" || raw.includes("type_fb")) return "Facebook";
+  if (raw.includes("email")) return "Email";
+  if (raw.includes("sms") || raw.includes("text")) return "SMS";
+  if (raw.includes("phone") || raw.includes("call")) return "Phone";
+  if (raw.includes("chat")) return "Web chat";
+  return text(...values, "Conversation");
+}
+
 async function highLevelFetch(path: string, token: string, init?: RequestInit) {
   const response = await fetch(`${HIGHLEVEL_API}${path}`, {
     ...init,
@@ -92,11 +104,10 @@ function normalizeConversations(body: HighLevelResponse) {
     return {
       id: text(conversation.id, conversation.conversationId),
       name,
-      channel: text(
-        conversation.type,
+      channel: channelLabel(
         conversation.lastMessageType,
         conversation.channel,
-        "Conversation",
+        conversation.type,
       ),
       preview,
       lastMessageDate,
@@ -172,6 +183,56 @@ function normalizeTasks(body: HighLevelResponse) {
   });
 }
 
+function normalizeOpportunities(
+  body: HighLevelResponse,
+  pipelinesBody?: HighLevelResponse,
+) {
+  const pipelines = asArray(pipelinesBody?.pipelines);
+  const stageNames = new Map<string, string>();
+  for (const pipeline of pipelines) {
+    for (const stage of asArray(pipeline.stages)) {
+      const id = text(stage.id, stage.pipelineStageId);
+      const name = text(stage.name, stage.label);
+      if (id && name) stageNames.set(id, name);
+    }
+  }
+
+  const opportunities = asArray(body.opportunities);
+  const counts = { open: 0, won: 0, lost: 0, abandoned: 0 };
+  const stageCounts = new Map<string, number>();
+  for (const opportunity of opportunities) {
+    const status = text(opportunity.status, "open").toLowerCase();
+    if (status in counts) counts[status as keyof typeof counts] += 1;
+    const stage = text(
+      opportunity.pipelineStageName,
+      opportunity.stageName,
+      stageNames.get(text(opportunity.pipelineStageId, opportunity.stageId)),
+    );
+    if (stage) stageCounts.set(stage, (stageCounts.get(stage) ?? 0) + 1);
+  }
+
+  const meta = (body.meta ?? {}) as Record<string, unknown>;
+  return {
+    total: number(meta.total ?? body.total ?? opportunities.length),
+    ...counts,
+    stages: Array.from(stageCounts, ([label, value]) => ({ label, value })).slice(0, 8),
+  };
+}
+
+async function loadOpportunities(locationId: string, token: string) {
+  const encodedLocationId = encodeURIComponent(locationId);
+  const [opportunitiesBody, pipelinesBody] = await Promise.all([
+    highLevelFetch(
+      `/opportunities/search?locationId=${encodedLocationId}&status=all&order=added_desc&limit=100`,
+      token,
+    ),
+    highLevelFetch(`/opportunities/pipelines?locationId=${encodedLocationId}`, token).catch(
+      () => undefined,
+    ),
+  ]);
+  return normalizeOpportunities(opportunitiesBody, pipelinesBody);
+}
+
 export const Route = createFileRoute("/api/dashboard-data")({
   server: {
     handlers: {
@@ -222,9 +283,10 @@ export const Route = createFileRoute("/api/dashboard-data")({
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ completed: false, limit: 10, skip: 0 }),
           }),
+          loadOpportunities(locationId, token),
         ]);
 
-        const [conversationResult, appointmentResult, taskResult] = results;
+        const [conversationResult, appointmentResult, taskResult, opportunityResult] = results;
         const data = {
           conversations:
             conversationResult.status === "fulfilled"
@@ -232,8 +294,17 @@ export const Route = createFileRoute("/api/dashboard-data")({
               : [],
           appointments: appointmentResult.status === "fulfilled" ? appointmentResult.value : [],
           tasks: taskResult.status === "fulfilled" ? normalizeTasks(taskResult.value) : [],
+          opportunities:
+            opportunityResult.status === "fulfilled"
+              ? opportunityResult.value
+              : { total: 0, open: 0, won: 0, lost: 0, abandoned: 0, stages: [] },
         };
-        const sourceResults = [conversationResult, appointmentResult, taskResult];
+        const sourceResults = [
+          conversationResult,
+          appointmentResult,
+          taskResult,
+          opportunityResult,
+        ];
         const availableSourceCount = sourceResults.filter(
           (result) => result.status === "fulfilled",
         ).length;
@@ -266,6 +337,7 @@ export const Route = createFileRoute("/api/dashboard-data")({
                 conversations: conversationResult.status === "fulfilled" ? "live" : "unavailable",
                 appointments: appointmentResult.status === "fulfilled" ? "live" : "unavailable",
                 tasks: taskResult.status === "fulfilled" ? "live" : "unavailable",
+                opportunities: opportunityResult.status === "fulfilled" ? "live" : "unavailable",
               },
             },
             sourceStatus === "unavailable" ? 502 : 200,

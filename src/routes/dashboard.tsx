@@ -22,6 +22,7 @@ import {
   RefreshCw,
   Search,
   Settings2,
+  Smartphone,
   Sparkles,
   Target,
   UsersRound,
@@ -275,10 +276,19 @@ type LiveTask = {
   contactName?: string;
   completed?: boolean;
 };
+type LiveOpportunitySummary = {
+  total: number;
+  open: number;
+  won: number;
+  lost: number;
+  abandoned: number;
+  stages: { label: string; value: number }[];
+};
 type LiveDashboardData = {
   conversations: LiveConversation[];
   appointments: LiveAppointment[];
   tasks: LiveTask[];
+  opportunities: LiveOpportunitySummary;
 };
 type LiveState = {
   status: "idle" | "loading" | "ready" | "error";
@@ -289,7 +299,15 @@ type LiveState = {
 };
 type AuthState = {
   status: "loading" | "authenticated" | "unauthenticated" | "error";
-  user?: { id: string; email: string; displayName: string; clientName: string };
+  user?: {
+    id: string;
+    email: string;
+    displayName: string;
+    clientName: string;
+    locationId: string;
+    role?: "viewer" | "operator";
+    capabilities?: string[];
+  };
   message?: string;
 };
 type ClientConfig = {
@@ -321,7 +339,12 @@ const calvennLogoUrl =
 const stationSurvivalLogoUrl =
   "https://stationsurvivalco.com/cdn/shop/files/REAL_REAL_SVG_SSCO_LOGO_DE000D.png?v=1777737510&width=350";
 
-const emptyLiveData: LiveDashboardData = { conversations: [], appointments: [], tasks: [] };
+const emptyLiveData: LiveDashboardData = {
+  conversations: [],
+  appointments: [],
+  tasks: [],
+  opportunities: { total: 0, open: 0, won: 0, lost: 0, abandoned: 0, stages: [] },
+};
 
 function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
   const locationId = params.get("locationId")?.trim() ?? "";
@@ -410,10 +433,38 @@ function formatDueDate(value?: string) {
   return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
 }
 
+const HIGHLEVEL_PARENT_ORIGINS = new Set([
+  "https://app.gohighlevel.com",
+  "https://app.leadconnectorhq.com",
+  "https://app.msgsndr.com",
+]);
+
+function requestHighLevelSignedContext() {
+  if (typeof window === "undefined" || window.parent === window) return Promise.resolve<string | null>(null);
+  return new Promise<string | null>((resolve) => {
+    let settled = false;
+    const finish = (value: string | null) => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener("message", handleMessage);
+      window.clearTimeout(timeout);
+      resolve(value);
+    };
+    const handleMessage = (event: MessageEvent) => {
+      if (!HIGHLEVEL_PARENT_ORIGINS.has(event.origin)) return;
+      const data = event.data as { message?: unknown; payload?: unknown };
+      if (data?.message !== "REQUEST_USER_DATA_RESPONSE") return;
+      finish(typeof data.payload === "string" ? data.payload : null);
+    };
+    const timeout = window.setTimeout(() => finish(null), 1500);
+    window.addEventListener("message", handleMessage);
+    window.parent.postMessage({ message: "REQUEST_USER_DATA" }, "*");
+  });
+}
+
 function ClientCommandCenter() {
   const [hydrated, setHydrated] = useState(false);
   const [authState, setAuthState] = useState<AuthState>({ status: "loading" });
-  const [embeddedMode, setEmbeddedMode] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [selectedConversation, setSelectedConversation] = useState(conversations[0].name);
@@ -438,6 +489,11 @@ function ClientCommandCenter() {
     client.locationId
       ? `https://app.gohighlevel.com/v2/location/${encodeURIComponent(client.locationId)}${path}`
       : undefined;
+  const contentReviewHref =
+    client.locationId === "QsbCjo5HFBGuRG0AKms0"
+      ? ghl("/custom-menu-link/473f9ef0-f446-4725-8f22-4e0e60af04f3")
+      : client.reviewUrl || undefined;
+  const mobileAppHref = "https://www.gohighlevel.com/post/free-mobile-app";
   const goToSection = (section: DashboardSection) => {
     setActiveSection(section);
     const params = new URLSearchParams(window.location.search);
@@ -451,7 +507,7 @@ function ClientCommandCenter() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const refreshLiveData = async () => {
-    if (embeddedMode || !client.locationId || authState.status !== "authenticated") return;
+    if (!client.locationId || authState.status !== "authenticated") return;
     setLiveState((current) => ({ ...current, status: "loading", message: undefined }));
     try {
       const response = await fetch(
@@ -490,39 +546,53 @@ function ClientCommandCenter() {
     void (async () => {
       if (requestedLocationId) {
         const requestedClient = clientConfigFromQuery(params);
-        setEmbeddedMode(true);
         setClient(requestedClient);
-        setAuthState({
-          status: "authenticated",
-          user: {
-            id: `embedded:${requestedClient.locationId}`,
-            email: "",
-            displayName: requestedClient.name,
-            clientName: requestedClient.name,
-          },
-        });
-        return;
       }
       try {
-        const response = await fetch("/api/auth", { cache: "no-store" });
-        const payload = (await response.json()) as {
+        const embedToken = params.get("embedToken")?.trim() ?? "";
+        let response: Response | null = null;
+        type AuthPayload = {
           authenticated?: boolean;
           user?: AuthState["user"];
           message?: string;
         };
-        if (!response.ok || !payload.authenticated || !payload.user) {
+        let payload: AuthPayload | undefined;
+        const encryptedContext = await requestHighLevelSignedContext();
+        if (encryptedContext) {
+          const handoffResponse = await fetch("/api/auth", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ action: "highlevel_context", encryptedData: encryptedContext }),
+            cache: "no-store",
+          });
+          const handoffPayload = (await handoffResponse.json()) as AuthPayload;
+          if (handoffResponse.ok && handoffPayload.authenticated && handoffPayload.user) {
+            response = handoffResponse;
+            payload = handoffPayload;
+          }
+        }
+        if (!payload) {
+          const authUrl = embedToken
+            ? `/api/auth?embedToken=${encodeURIComponent(embedToken)}`
+            : "/api/auth";
+          response = await fetch(authUrl, { cache: "no-store" });
+          payload = (await response.json()) as AuthPayload;
+        }
+        const authPayload = payload;
+        if (!response || !authPayload) throw new Error("Authentication is unavailable.");
+        if (!response.ok || !authPayload.authenticated || !authPayload.user) {
           setAuthState({
             status: response.status === 503 ? "error" : "unauthenticated",
-            message: payload.message,
+            message: authPayload.message,
           });
           return;
         }
-        setAuthState({ status: "authenticated", user: payload.user });
+        setAuthState({ status: "authenticated", user: authPayload.user });
         setClient(
           clientConfigFromQuery(
             new URLSearchParams({
-              locationId: "QsbCjo5HFBGuRG0AKms0",
-              clientName: payload.user.clientName || "Your Best Health Quote",
+              locationId: authPayload.user.locationId || requestedLocationId,
+              clientName: authPayload.user.clientName || "Client",
             }),
           ),
         );
@@ -555,7 +625,7 @@ function ClientCommandCenter() {
     void refreshLiveData();
     const interval = window.setInterval(() => void refreshLiveData(), 60_000);
     return () => window.clearInterval(interval);
-  }, [client.locationId, authState.status, embeddedMode]);
+  }, [client.locationId, authState.status]);
 
   if (!hydrated) {
     return <DashboardBootScreen />;
@@ -578,6 +648,9 @@ function ClientCommandCenter() {
   const visibleConversations = clientDataRequested ? liveState.data.conversations : conversations;
   const visibleAppointments = clientDataRequested ? liveState.data.appointments : appointments;
   const visibleTasks = clientDataRequested ? liveState.data.tasks : tasks;
+  const visibleOpportunities = clientDataRequested
+    ? liveState.data.opportunities
+    : emptyLiveData.opportunities;
   const unreadCount = clientDataRequested
     ? visibleConversations.reduce(
         (total, item) =>
@@ -588,10 +661,10 @@ function ClientCommandCenter() {
   const firstAppointment = visibleAppointments[0];
   const sectionLabels: Record<DashboardSection, string> = {
     overview: "Dashboard",
-    inbox: "Inbox",
+    inbox: "Inbox & SMS",
     calendar: "Calendar",
     opportunities: "Opportunities",
-    content: "Content & social",
+    content: "Content review",
     websites: "Websites",
     reports: "Reports",
   };
@@ -658,7 +731,7 @@ function ClientCommandCenter() {
             />
             <SideNavItem
               icon={Inbox}
-              label="Inbox"
+              label="Inbox & SMS"
               badge={`${unreadCount}`}
               active={activeSection === "inbox"}
               onClick={() => goToSection("inbox")}
@@ -677,7 +750,7 @@ function ClientCommandCenter() {
             />
             <SideNavItem
               icon={MessageCircle}
-              label="Content & social"
+              label="Content review"
               active={activeSection === "content"}
               onClick={() => goToSection("content")}
             />
@@ -727,11 +800,9 @@ function ClientCommandCenter() {
                   ? "Live HighLevel data"
                   : isPartial
                     ? "Partial HighLevel data"
-                    : embeddedMode
-                      ? "Client-specific workspace"
-                      : client.locationId
-                        ? "HighLevel connection unavailable"
-                        : "Demo workspace · Sample data"}
+                    : client.locationId
+                      ? "HighLevel connection unavailable"
+                      : "Demo workspace · Sample data"}
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -812,8 +883,13 @@ function ClientCommandCenter() {
                 onGoToSection={goToSection}
                 inboxHref={ghl("/conversations/conversations/?category=team-inbox&tab=unread")}
                 calendarHref={ghl("/calendars/view")}
+                calendarSettingsHref={ghl("/settings/calendars")}
                 opportunitiesHref={ghl("/opportunities/list")}
+                emailHref={ghl("/marketing/emails/statistics")}
                 plannerHref={ghl("/marketing/social-planner")}
+                contentReviewHref={contentReviewHref}
+                mobileAppHref={mobileAppHref}
+                socialMessagingHref={ghl("/settings/lc-integrations")}
               />
             ) : (
               <DashboardSectionView
@@ -822,6 +898,7 @@ function ClientCommandCenter() {
                 conversations={visibleConversations}
                 appointments={visibleAppointments}
                 tasks={visibleTasks}
+                opportunities={visibleOpportunities}
                 live={isLive || isPartial}
                 unreadCount={unreadCount}
                 onSelectConversation={(name) => {
@@ -835,6 +912,7 @@ function ClientCommandCenter() {
                 onOpenInbox={() => setShowAllMessages(true)}
                 inboxHref={ghl("/conversations/conversations/?category=team-inbox&tab=unread")}
                 calendarHref={ghl("/calendars/view")}
+                calendarSettingsHref={ghl("/settings/calendars")}
                 opportunitiesHref={ghl("/opportunities/list")}
                 plannerHref={ghl("/marketing/social-planner")}
               />
@@ -999,11 +1077,21 @@ function CardHeading({
   );
 }
 
-function QuickLink({ href, label, icon: Icon }: { href?: string; label: string; icon: IconType }) {
+function QuickLink({
+  href,
+  label,
+  icon: Icon,
+  target = "_top",
+}: {
+  href?: string;
+  label: string;
+  icon: IconType;
+  target?: "_top" | "_blank";
+}) {
   const className =
     "inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.07] px-3 py-2.5 text-[11px] font-semibold text-cyan-300 transition hover:bg-cyan-300/[0.14]";
   return href ? (
-    <a href={href} target="_top" rel="noreferrer" className={className}>
+    <a href={href} target={target} rel="noreferrer" className={className}>
       <Icon className="h-3.5 w-3.5" />
       {label}
     </a>
@@ -1116,8 +1204,13 @@ function PortalOverview({
   onGoToSection,
   inboxHref,
   calendarHref,
+  calendarSettingsHref,
   opportunitiesHref,
+  emailHref,
   plannerHref,
+  contentReviewHref,
+  mobileAppHref,
+  socialMessagingHref,
 }: {
   client: ClientConfig;
   isLive: boolean;
@@ -1127,8 +1220,13 @@ function PortalOverview({
   onGoToSection: (section: DashboardSection) => void;
   inboxHref?: string;
   calendarHref?: string;
+  calendarSettingsHref?: string;
   opportunitiesHref?: string;
+  emailHref?: string;
   plannerHref?: string;
+  contentReviewHref?: string;
+  mobileAppHref?: string;
+  socialMessagingHref?: string;
 }) {
   const statusLabel = isLive ? "Connected" : "Preview mode";
   const statusDetail = isLive
@@ -1152,7 +1250,7 @@ function PortalOverview({
   return (
     <div className="mt-8 space-y-5 pb-10">
       <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
-        <section className="rounded-[26px] border border-[#dbe5ed] bg-white p-6 shadow-[0_20px_55px_-35px_rgba(16,35,54,0.35)] sm:p-7">
+        <section className="rounded-[26px] border border-[#cddfe8] bg-gradient-to-br from-white via-[#fbfdff] to-[#eef8fb] p-6 shadow-[0_24px_65px_-36px_rgba(16,35,54,0.42)] sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#466174]">
               <span
@@ -1169,23 +1267,23 @@ function PortalOverview({
           <div className="mt-7 grid gap-6 lg:grid-cols-[1fr_0.72fr] lg:items-end">
             <div>
               <p className="text-2xl font-semibold tracking-tight text-[#102336] sm:text-3xl">
-                Your workspace, at a glance.
+                Your communication engine, at a glance.
               </p>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#466174]">
-                A focused home base for conversations, appointments, opportunities, content, and the
-                digital assets Manifestic is building with {client.name}.
+                One focused home base for email campaigns, content approvals, and SMS/CRM follow-up
+                with {client.name}.
               </p>
               <p className="mt-5 text-xs font-medium text-[#466174]">{statusDetail}</p>
             </div>
             <div className="rounded-2xl bg-[#eef8f5] p-5">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#087b68]">
-                  Review queue
+                  Messages & approvals
                 </p>
                 <Inbox className="h-4 w-4 text-[#0e9a85]" />
               </div>
               <p className="mt-3 text-3xl font-semibold text-[#102336]">{unreadCount}</p>
-              <p className="mt-1 text-xs text-[#466174]">unread messages ready for attention</p>
+              <p className="mt-1 text-xs text-[#466174]">messages and follow-up ready for attention</p>
               <button
                 type="button"
                 onClick={() => onGoToSection("inbox")}
@@ -1196,78 +1294,86 @@ function PortalOverview({
             </div>
           </div>
         </section>
-        <section className="rounded-[26px] border border-[#cfe5ee] bg-[#eef8fb] p-6 shadow-[0_20px_55px_-35px_rgba(16,35,54,0.25)] sm:p-7">
+        <section className="rounded-[26px] border border-[#b9dce9] bg-gradient-to-br from-[#f5fcff] via-[#eef8fb] to-[#e4f5f0] p-6 shadow-[0_24px_65px_-36px_rgba(14,122,150,0.34)] sm:p-7">
           <div className="flex items-center justify-between gap-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1377b8]">
-              Today’s snapshot
+              Getting started
             </p>
-            <CalendarDays className="h-5 w-5 text-[#1377b8]" />
+            <CheckCircle2 className="h-5 w-5 text-[#1377b8]" />
           </div>
-          <p className="mt-5 text-sm font-semibold text-[#102336]">Next appointment</p>
-          <p className="mt-2 text-xl font-semibold text-[#102336]">
-            {firstAppointment
-              ? formatAppointmentTime(firstAppointment.startTime)
-              : "None scheduled"}
+          <p className="mt-5 text-sm font-semibold text-[#102336]">
+            Connect the essentials that make the workspace work.
           </p>
-          <p className="mt-1 text-xs text-[#466174]">
-            {firstAppointment?.title ?? "Your next 7 days"}
-          </p>
-          <div className="mt-6 border-t border-[#cfe5ee] pt-5">
-            <p className="text-sm font-semibold text-[#102336]">Open tasks</p>
-            <p className="mt-2 text-2xl font-semibold text-[#102336]">{openTasks}</p>
-            <p className="mt-1 text-xs text-[#466174]">Pending items in HighLevel</p>
+          <div className="mt-4 space-y-3 text-xs text-[#466174]">
+            <div className="flex items-start gap-3">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white font-bold text-[#1377b8]">1</span>
+              <span><strong className="text-[#102336]">Calendar</strong> — connect Google or Outlook for booking links and scheduling.</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white font-bold text-[#1377b8]">2</span>
+              <span><strong className="text-[#102336]">Socials</strong> — connect the channels that should receive approved content. Post comments are handled in Social Planner; DMs need the messaging integration.</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white font-bold text-[#1377b8]">3</span>
+              <span><strong className="text-[#102336]">Mobile app</strong> — keep conversations, calendars, and follow-up available from your phone.</span>
+            </div>
           </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <QuickLink href={calendarSettingsHref} label="Connect calendar" icon={CalendarDays} />
+            <QuickLink href={plannerHref} label="Connect socials" icon={Instagram} />
+            <QuickLink href={socialMessagingHref} label="Connect social messages" icon={MessageCircle} />
+            <QuickLink href={mobileAppHref} label="Get mobile app" icon={Smartphone} target="_blank" />
+          </div>
+          <p className="mt-4 text-[11px] text-[#466174]">Use the same HighLevel credentials in the LeadConnector mobile app.</p>
         </section>
       </div>
 
-      <section className="rounded-[26px] border border-[#dbe5ed] bg-white p-6 shadow-[0_20px_55px_-35px_rgba(16,35,54,0.25)] sm:p-7">
+      <section className="rounded-[26px] border border-[#cddfe8] bg-gradient-to-br from-white via-[#fbfdff] to-[#f2f8fb] p-6 shadow-[0_24px_65px_-36px_rgba(16,35,54,0.34)] sm:p-7">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#466174]">
-              Workspace modules
+              Core communication loop
             </p>
-            <h2 className="mt-2 text-xl font-semibold text-[#102336]">Choose where to go next.</h2>
+            <h2 className="mt-2 text-xl font-semibold text-[#102336]">Email → content → SMS/CRM.</h2>
           </div>
-          <p className="text-xs text-[#466174]">Each module opens inside the Command Center.</p>
+          <p className="text-xs text-[#466174]">The dashboard stays the home base; these are the three daily lanes.</p>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           <PortalActionCard
             icon={Inbox}
-            title="Inbox"
-            detail={`${unreadCount} unread messages`}
+            title="Inbox & SMS"
+            detail={`${unreadCount} unread · two-way follow-up`}
             tone="blue"
             onClick={() => onGoToSection("inbox")}
           />
           <PortalActionCard
-            icon={CalendarDays}
-            title="Calendar"
-            detail={
-              firstAppointment
-                ? formatAppointmentTime(firstAppointment.startTime)
-                : "No upcoming appointments"
-            }
+            icon={MessageCircle}
+            title="Content review"
+            detail="Posts + images waiting for approval"
             tone="teal"
-            onClick={() => onGoToSection("calendar")}
+            href={contentReviewHref}
+            onClick={() => onGoToSection("content")}
           />
           <PortalActionCard
-            icon={UsersRound}
-            title="Opportunities"
-            detail="Pipeline and follow-up queue"
+            icon={Mail}
+            title="Email campaigns"
+            detail="Campaigns + review notifications"
             tone="amber"
-            onClick={() => onGoToSection("opportunities")}
+            href={emailHref}
+            onClick={() => onGoToSection("inbox")}
           />
         </div>
       </section>
 
       <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-        <section className="rounded-[26px] border border-[#dbe5ed] bg-white p-6 shadow-[0_20px_55px_-35px_rgba(16,35,54,0.25)] sm:p-7">
+        <section className="rounded-[26px] border border-[#cddfe8] bg-gradient-to-br from-white via-[#fbfdff] to-[#eaf7f3] p-6 shadow-[0_24px_65px_-36px_rgba(16,35,54,0.32)] sm:p-7">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#466174]">
-                Content & social
+                Content approval
               </p>
               <h2 className="mt-2 text-xl font-semibold text-[#102336]">
-                Keep the content engine moving.
+                Make every post ready to approve.
               </h2>
             </div>
             <MessageCircle className="h-5 w-5 text-[#0e9a85]" />
@@ -1286,8 +1392,8 @@ function PortalOverview({
             ))}
           </div>
           <p className="mt-5 text-sm leading-relaxed text-[#466174]">
-            Review content, connect channels, and keep approvals separate from the day-to-day CRM
-            work.
+            Email the review link, approve the copy and canonical image, then schedule to connected
+            social channels. Keep publishing approval-gated.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <QuickLink href={plannerHref} label="Open Social Planner" icon={Instagram} />
@@ -1299,9 +1405,10 @@ function PortalOverview({
               <MessageCircle className="h-3.5 w-3.5" />
               Open content module
             </button>
+            <QuickLink href={emailHref} label="Open email campaigns" icon={Mail} />
           </div>
         </section>
-        <section className="rounded-[26px] border border-[#dbe5ed] bg-white p-6 shadow-[0_20px_55px_-35px_rgba(16,35,54,0.25)] sm:p-7">
+        <section className="rounded-[26px] border border-[#cddfe8] bg-gradient-to-br from-white via-[#fbfdff] to-[#f5f0ff] p-6 shadow-[0_24px_65px_-36px_rgba(16,35,54,0.32)] sm:p-7">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#466174]">
@@ -1366,12 +1473,14 @@ function PortalActionCard({
   title,
   detail,
   tone,
+  href,
   onClick,
 }: {
   icon: IconType;
   title: string;
   detail: string;
   tone: "blue" | "teal" | "amber";
+  href?: string;
   onClick: () => void;
 }) {
   const styles = {
@@ -1379,12 +1488,10 @@ function PortalActionCard({
     teal: "bg-[#eaf7f3] text-[#087b68]",
     amber: "bg-[#fff4e6] text-[#8a5200]",
   }[tone];
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex items-center gap-4 rounded-2xl border border-[#dbe5ed] bg-[#f8fbfd] p-4 text-left transition hover:-translate-y-0.5 hover:border-[#8bc9dc] hover:bg-white"
-    >
+  const className =
+    "group flex items-center gap-4 rounded-2xl border border-[#cddfe8] bg-gradient-to-br from-[#f8fbfd] to-[#edf7fb] p-4 text-left shadow-[0_12px_30px_-22px_rgba(16,35,54,0.65)] transition hover:-translate-y-0.5 hover:border-[#79bfd3] hover:from-white hover:to-[#eef8fb]";
+  const content = (
+    <>
       <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${styles}`}>
         <Icon className="h-5 w-5" />
       </span>
@@ -1393,6 +1500,15 @@ function PortalActionCard({
         <span className="mt-1 block truncate text-xs text-[#466174]">{detail}</span>
       </span>
       <ChevronRight className="h-4 w-4 text-[#9bb0bd] transition group-hover:translate-x-0.5 group-hover:text-[#1377b8]" />
+    </>
+  );
+  return href ? (
+    <a href={href} target="_top" rel="noreferrer" className={className}>
+      {content}
+    </a>
+  ) : (
+    <button type="button" onClick={onClick} className={className}>
+      {content}
     </button>
   );
 }
@@ -1435,12 +1551,14 @@ function DashboardSectionView({
   conversations: visibleConversations,
   appointments: visibleAppointments,
   tasks: visibleTasks,
+  opportunities: visibleOpportunities,
   live,
   unreadCount,
   onSelectConversation,
   onOpenInbox,
   inboxHref,
   calendarHref,
+  calendarSettingsHref,
   opportunitiesHref,
   plannerHref,
 }: {
@@ -1449,21 +1567,23 @@ function DashboardSectionView({
   conversations: LiveConversation[];
   appointments: LiveAppointment[];
   tasks: LiveTask[];
+  opportunities: LiveOpportunitySummary;
   live: boolean;
   unreadCount: number;
   onSelectConversation: (name: string) => void;
   onOpenInbox: () => void;
   inboxHref?: string;
   calendarHref?: string;
+  calendarSettingsHref?: string;
   opportunitiesHref?: string;
   plannerHref?: string;
 }) {
   const labels: Record<DashboardSection, string> = {
     overview: "Dashboard",
-    inbox: "Inbox",
+    inbox: "Inbox & SMS",
     calendar: "Calendar",
     opportunities: "Opportunities",
-    content: "Content & social",
+    content: "Content review",
     websites: "Websites",
     reports: "Reports",
   };
@@ -1513,7 +1633,11 @@ function DashboardSectionView({
         {section === "opportunities" && (
           <div className="grid gap-5 xl:grid-cols-2">
             <TasksCard tasks={visibleTasks} live={live} />
-            <OpportunitiesCard opportunitiesHref={opportunitiesHref} />
+            <OpportunitiesCard
+              opportunities={visibleOpportunities}
+              opportunitiesHref={opportunitiesHref}
+              live={live}
+            />
           </div>
         )}
         {section === "content" && (
@@ -1522,7 +1646,7 @@ function DashboardSectionView({
             reviewUrl={client.reviewUrl}
             plannerHref={plannerHref}
             socialHref={plannerHref}
-            calendarHref={calendarHref}
+            calendarSettingsHref={calendarSettingsHref}
           />
         )}
         {section === "websites" && (
@@ -1812,12 +1936,20 @@ function TasksCard({ tasks: visibleTasks, live }: { tasks: LiveTask[]; live: boo
   );
 }
 
-function OpportunitiesCard({ opportunitiesHref }: { opportunitiesHref?: string }) {
-  const stages = [
-    { label: "New leads", value: "6", color: "bg-cyan-300" },
-    { label: "Contacted", value: "4", color: "bg-blue-400" },
-    { label: "Consultation booked", value: "3", color: "bg-violet-400" },
-    { label: "Follow-up needed", value: "2", color: "bg-amber-300" },
+function OpportunitiesCard({
+  opportunities,
+  opportunitiesHref,
+  live,
+}: {
+  opportunities: LiveOpportunitySummary;
+  opportunitiesHref?: string;
+  live: boolean;
+}) {
+  const statusRows = [
+    { label: "Open", value: opportunities.open, color: "bg-cyan-300" },
+    { label: "Won", value: opportunities.won, color: "bg-emerald-400" },
+    { label: "Lost", value: opportunities.lost, color: "bg-violet-400" },
+    { label: "Abandoned", value: opportunities.abandoned, color: "bg-amber-300" },
   ];
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
@@ -1829,7 +1961,7 @@ function OpportunitiesCard({ opportunitiesHref }: { opportunitiesHref?: string }
         actionHref={opportunitiesHref}
       />
       <div className="mt-5 grid gap-2 sm:grid-cols-2">
-        {stages.map((stage) => (
+        {statusRows.map((stage) => (
           <div
             key={stage.label}
             className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] px-4 py-3"
@@ -1842,10 +1974,12 @@ function OpportunitiesCard({ opportunitiesHref }: { opportunitiesHref?: string }
       </div>
       <div className="mt-4 rounded-xl border border-violet-300/15 bg-violet-300/[0.05] px-4 py-3">
         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-violet-200">
-          Suggested next move
+          {live ? "Live pipeline" : "Pipeline connection"}
         </p>
         <p className="mt-1 text-xs leading-relaxed text-slate-400">
-          Reply to the 2 follow-ups before adding more leads to the queue.
+          {live
+            ? `${opportunities.total} opportunities returned from HighLevel.${opportunities.stages.length ? ` ${opportunities.stages.length} active stages detected.` : ""}`
+            : "Connect the live HighLevel source to show pipeline activity here."}
         </p>
       </div>
     </section>
@@ -1855,11 +1989,11 @@ function OpportunitiesCard({ opportunitiesHref }: { opportunitiesHref?: string }
 function ContentCard({
   plannerHref,
   socialHref,
-  calendarHref,
+  calendarSettingsHref,
 }: {
   plannerHref?: string;
   socialHref?: string;
-  calendarHref?: string;
+  calendarSettingsHref?: string;
 }) {
   return (
     <section className="mt-5 rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
@@ -1957,7 +2091,7 @@ function ContentCard({
           </div>
           <div className="mt-5 grid gap-2 sm:grid-cols-3">
             <QuickLink href={socialHref} label="Connect socials" icon={Instagram} />
-            <QuickLink href={calendarHref} label="Connect calendar" icon={CalendarDays} />
+            <QuickLink href={calendarSettingsHref} label="Connect calendar" icon={CalendarDays} />
             <QuickLink href={plannerHref} label="Review content" icon={MessageCircle} />
           </div>
         </div>
@@ -1973,13 +2107,13 @@ function ContentReviewCard({
   reviewUrl,
   plannerHref,
   socialHref,
-  calendarHref,
+  calendarSettingsHref,
 }: {
   clientName: string;
   reviewUrl?: string;
   plannerHref?: string;
   socialHref?: string;
-  calendarHref?: string;
+  calendarSettingsHref?: string;
 }) {
   if (reviewUrl) {
     return (
@@ -2015,7 +2149,7 @@ function ContentReviewCard({
       clientName={clientName}
       plannerHref={plannerHref}
       socialHref={socialHref}
-      calendarHref={calendarHref}
+      calendarSettingsHref={calendarSettingsHref}
     />
   );
 }
@@ -2024,12 +2158,12 @@ function ContentReviewPrototype({
   clientName,
   plannerHref,
   socialHref,
-  calendarHref,
+  calendarSettingsHref,
 }: {
   clientName: string;
   plannerHref?: string;
   socialHref?: string;
-  calendarHref?: string;
+  calendarSettingsHref?: string;
 }) {
   const [tab, setTab] = useState<ContentReviewTab>("social");
   const tabs: Array<{ id: ContentReviewTab; label: string; count: string }> = [
@@ -2198,7 +2332,7 @@ function ContentReviewPrototype({
       <div className="mt-5 flex flex-wrap gap-2">
         <QuickLink href={plannerHref} label="Open Social Planner" icon={Instagram} />
         <QuickLink href={socialHref} label="Connect socials" icon={MessageCircle} />
-        <QuickLink href={calendarHref} label="Review calendar" icon={CalendarDays} />
+        <QuickLink href={calendarSettingsHref} label="Connect calendar" icon={CalendarDays} />
       </div>
     </section>
   );
@@ -2559,6 +2693,8 @@ type ReplyCapability = {
   channel?: string;
   contactPhone?: string;
   reason?: string | null;
+  mode?: "live" | "synthetic_sink" | "disabled";
+  csrfToken?: string;
 };
 
 function LiveInboxModal({
@@ -2582,6 +2718,9 @@ function LiveInboxModal({
   const [threadState, setThreadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [threadError, setThreadError] = useState("");
   const [replyCapability, setReplyCapability] = useState<ReplyCapability | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [replyState, setReplyState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [replyError, setReplyError] = useState("");
   const selected =
     conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
   useEffect(() => {
@@ -2593,6 +2732,9 @@ function LiveInboxModal({
     setNextPage(false);
     setLastMessageId(undefined);
     setReplyCapability(null);
+    setReplyText("");
+    setReplyState("idle");
+    setReplyError("");
     void fetch(`/api/conversation?conversationId=${encodeURIComponent(selected.id)}`, {
       cache: "no-store",
     })
@@ -2647,6 +2789,42 @@ function LiveInboxModal({
       cancelled = true;
     };
   }, [live, selected?.id]);
+  const sendReply = async () => {
+    if (
+      !selected?.id ||
+      !replyCapability?.replyable ||
+      !replyCapability.csrfToken ||
+      !replyText.trim()
+    )
+      return;
+    setReplyState("sending");
+    setReplyError("");
+    try {
+      const response = await fetch("/api/reply", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-command-center-csrf": replyCapability.csrfToken,
+        },
+        body: JSON.stringify({
+          conversationId: selected.id,
+          message: replyText.trim(),
+          idempotencyKey: crypto.randomUUID(),
+        }),
+      });
+      const payload = (await response.json()) as {
+        error?: string;
+        reason?: string;
+        status?: string;
+      };
+      if (!response.ok) throw new Error(payload.reason ?? payload.error ?? "Reply was blocked.");
+      setReplyState("sent");
+      setReplyText("");
+    } catch (error) {
+      setReplyState("error");
+      setReplyError(error instanceof Error ? error.message : "Reply was blocked.");
+    }
+  };
   const loadOlderMessages = async () => {
     if (!selected?.id || !lastMessageId || olderLoading) return;
     setOlderLoading(true);
@@ -2740,7 +2918,9 @@ function LiveInboxModal({
                     </p>
                   </div>
                   <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.07] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-300">
-                    Read only
+                    {replyCapability?.replyable && replyCapability.mode === "live"
+                      ? "Live inbox"
+                      : "Read only"}
                   </span>
                 </div>
                 <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.06] px-4 py-3">
@@ -2749,15 +2929,76 @@ function LiveInboxModal({
                       Reply path
                     </p>
                     <span className="text-xs font-medium text-amber-100">
-                      {replyCapability?.replyable ? "SMS ready for supervised pilot" : "Read-only"}
+                      {replyCapability?.replyable
+                        ? replyCapability.mode === "live"
+                          ? "Live SMS ready"
+                          : replyCapability.mode === "synthetic_sink"
+                            ? "Synthetic sink ready"
+                            : "Supervised reply ready"
+                        : "Read-only"}
                     </span>
                   </div>
                   <p className="mt-1 text-xs leading-relaxed text-slate-400">
                     {replyCapability?.replyable
-                      ? `SMS reply target verified${replyCapability.contactPhone ? ` · ${replyCapability.contactPhone}` : ""}. A second confirmation will be required before any send.`
+                      ? replyCapability.mode === "live"
+                        ? `SMS reply target verified${replyCapability.contactPhone ? ` · ${replyCapability.contactPhone}` : ""}. Sending here creates a real HighLevel message.`
+                        : replyCapability.mode === "synthetic_sink"
+                          ? "This approved Phase 3A path records the reply attempt and audit events without sending an external message."
+                          : `SMS reply target verified${replyCapability.contactPhone ? ` · ${replyCapability.contactPhone}` : ""}. A second confirmation will be required before any send.`
                       : "The server is checking the SMS path, but outbound writes remain disabled until the sender policy, audit trail, and duplicate-send protection are verified."}
                   </p>
                 </div>
+                {replyCapability?.replyable && (
+                  <div className="mt-4 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.04] p-4">
+                    <label
+                      className="text-xs font-semibold uppercase tracking-[0.12em] text-cyan-200"
+                      htmlFor="command-center-reply"
+                    >
+                      Protected reply composer
+                    </label>
+                    <textarea
+                      id="command-center-reply"
+                      value={replyText}
+                      onChange={(event) => {
+                        setReplyText(event.target.value);
+                        if (replyState !== "idle") setReplyState("idle");
+                      }}
+                      maxLength={2000}
+                      rows={4}
+                      placeholder={
+                        replyCapability.mode === "live"
+                          ? "Write a reply to send through HighLevel…"
+                          : "Write a synthetic test reply…"
+                      }
+                      className="mt-3 w-full resize-y rounded-xl border border-white/[0.1] bg-slate-950/60 px-3 py-3 text-sm text-slate-100 outline-none ring-cyan-300/30 placeholder:text-slate-600 focus:ring-2"
+                    />
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-xs text-slate-500">
+                        {replyState === "sent"
+                          ? replyCapability.mode === "live"
+                            ? "Queued through HighLevel."
+                            : "Recorded in the synthetic sink; no external message was sent."
+                          : replyState === "error"
+                            ? replyError
+                            : `${replyText.length}/2000 characters`}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => void sendReply()}
+                        disabled={replyState === "sending" || !replyText.trim()}
+                        className="rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {replyState === "sending"
+                          ? replyCapability.mode === "live"
+                            ? "Sending…"
+                            : "Recording…"
+                          : replyCapability.mode === "live"
+                            ? "Send SMS"
+                            : "Record synthetic reply"}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {threadState === "loading" && (
                   <p className="py-12 text-center text-sm text-slate-500">
                     Loading message history…

@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiReplyCapabilityRouteImport } from './routes/api/reply-capability'
+import { Route as ApiReplyRouteImport } from './routes/api/reply'
 import { Route as ApiDashboardDataRouteImport } from './routes/api/dashboard-data'
 import { Route as ApiConversationRouteImport } from './routes/api/conversation'
 import { Route as ApiAuthRouteImport } from './routes/api/auth'
@@ -23,6 +25,16 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReplyCapabilityRoute = ApiReplyCapabilityRouteImport.update({
+  id: '/api/reply-capability',
+  path: '/api/reply-capability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReplyRoute = ApiReplyRouteImport.update({
+  id: '/api/reply',
+  path: '/api/reply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiDashboardDataRoute = ApiDashboardDataRouteImport.update({
@@ -47,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/api/auth': typeof ApiAuthRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
+  '/api/reply': typeof ApiReplyRoute
+  '/api/reply-capability': typeof ApiReplyCapabilityRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +68,8 @@ export interface FileRoutesByTo {
   '/api/auth': typeof ApiAuthRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
+  '/api/reply': typeof ApiReplyRoute
+  '/api/reply-capability': typeof ApiReplyCapabilityRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +78,8 @@ export interface FileRoutesById {
   '/api/auth': typeof ApiAuthRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
+  '/api/reply': typeof ApiReplyRoute
+  '/api/reply-capability': typeof ApiReplyCapabilityRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,6 +89,8 @@ export interface FileRouteTypes {
     | '/api/auth'
     | '/api/conversation'
     | '/api/dashboard-data'
+    | '/api/reply'
+    | '/api/reply-capability'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -78,6 +98,8 @@ export interface FileRouteTypes {
     | '/api/auth'
     | '/api/conversation'
     | '/api/dashboard-data'
+    | '/api/reply'
+    | '/api/reply-capability'
   id:
     | '__root__'
     | '/'
@@ -85,6 +107,8 @@ export interface FileRouteTypes {
     | '/api/auth'
     | '/api/conversation'
     | '/api/dashboard-data'
+    | '/api/reply'
+    | '/api/reply-capability'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,6 +117,8 @@ export interface RootRouteChildren {
   ApiAuthRoute: typeof ApiAuthRoute
   ApiConversationRoute: typeof ApiConversationRoute
   ApiDashboardDataRoute: typeof ApiDashboardDataRoute
+  ApiReplyRoute: typeof ApiReplyRoute
+  ApiReplyCapabilityRoute: typeof ApiReplyCapabilityRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,6 +135,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reply-capability': {
+      id: '/api/reply-capability'
+      path: '/api/reply-capability'
+      fullPath: '/api/reply-capability'
+      preLoaderRoute: typeof ApiReplyCapabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reply': {
+      id: '/api/reply'
+      path: '/api/reply'
+      fullPath: '/api/reply'
+      preLoaderRoute: typeof ApiReplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/dashboard-data': {
@@ -141,6 +181,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthRoute: ApiAuthRoute,
   ApiConversationRoute: ApiConversationRoute,
   ApiDashboardDataRoute: ApiDashboardDataRoute,
+  ApiReplyRoute: ApiReplyRoute,
+  ApiReplyCapabilityRoute: ApiReplyCapabilityRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
