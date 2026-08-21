@@ -588,14 +588,10 @@ function ClientCommandCenter() {
           return;
         }
         setAuthState({ status: "authenticated", user: authPayload.user });
-        setClient(
-          clientConfigFromQuery(
-            new URLSearchParams({
-              locationId: authPayload.user.locationId || requestedLocationId,
-              clientName: authPayload.user.clientName || "Client",
-            }),
-          ),
-        );
+        const hydratedParams = new URLSearchParams(window.location.search);
+        hydratedParams.set("locationId", authPayload.user.locationId || requestedLocationId);
+        hydratedParams.set("clientName", authPayload.user.clientName || "Client");
+        setClient(clientConfigFromQuery(hydratedParams));
       } catch (error) {
         setAuthState({
           status: "error",
