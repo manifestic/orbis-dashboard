@@ -371,6 +371,7 @@ type ClientConfig = {
   accentColor: string;
   inkColor: string;
   mutedColor: string;
+  paymentAccessEnabled: boolean;
 };
 type DashboardSection =
   | "getting-started"
@@ -380,6 +381,7 @@ type DashboardSection =
   | "opportunities"
   | "content"
   | "websites"
+  | "documents"
   | "reports";
 type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence";
 
@@ -561,6 +563,8 @@ function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
     accentColor: branding.accentColor,
     inkColor: branding.inkColor,
     mutedColor: branding.mutedColor,
+    // Capability is intentionally opt-in per client. Calvenn remains Documents-only.
+    paymentAccessEnabled: params.get("paymentAccess") === "1" && !isCalvenn,
   };
 }
 
@@ -661,6 +665,7 @@ function ClientCommandCenter() {
     accentColor: "#0e9a85",
     inkColor: "#102336",
     mutedColor: "#466174",
+    paymentAccessEnabled: false,
   });
   const ghl = (path: string) =>
     client.locationId
@@ -670,6 +675,8 @@ function ClientCommandCenter() {
     client.locationId === "QsbCjo5HFBGuRG0AKms0"
       ? ghl("/custom-menu-link/473f9ef0-f446-4725-8f22-4e0e60af04f3")
       : client.reviewUrl || undefined;
+  const documentsHref = ghl("/payments/proposals-estimates");
+  const templatesHref = ghl("/payments/invoice-templates");
   const goToSection = (section: DashboardSection) => {
     setActiveSection(section);
     const params = new URLSearchParams(window.location.search);
@@ -837,7 +844,7 @@ function ClientCommandCenter() {
     const requestedSection = params.get("section") as DashboardSection | null;
     if (
       requestedSection &&
-        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "reports"].includes(
+        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "reports"].includes(
         requestedSection,
       )
     )
@@ -914,6 +921,7 @@ function ClientCommandCenter() {
     opportunities: "Opportunities",
     content: "Content Review",
     websites: "Web & Insights",
+    documents: "Documents",
     reports: "Reports",
   };
   const activeLabel = sectionLabels[activeSection];
@@ -967,6 +975,7 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
                 <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                <SideNavItem top icon={FileText} label="Documents" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
               </div>
             </nav>
 
@@ -1142,6 +1151,8 @@ function ClientCommandCenter() {
                 opportunitiesHref={ghl("/opportunities/list")}
                 plannerHref={ghl("/marketing/social-planner")}
                 contentReviewHref={contentReviewHref}
+                documentsHref={documentsHref}
+                templatesHref={templatesHref}
                 approvedBrandInterview={approvedBrandInterview}
               />
             )}
@@ -2307,6 +2318,8 @@ function DashboardSectionView({
   opportunitiesHref,
   plannerHref,
   contentReviewHref,
+  documentsHref,
+  templatesHref,
   approvedBrandInterview,
 }: {
   client: ClientConfig;
@@ -2327,6 +2340,8 @@ function DashboardSectionView({
   opportunitiesHref?: string;
   plannerHref?: string;
   contentReviewHref?: string;
+  documentsHref?: string;
+  templatesHref?: string;
   approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   const labels: Record<DashboardSection, string> = {
@@ -2337,6 +2352,7 @@ function DashboardSectionView({
     opportunities: "Opportunities",
     content: "Content Review",
     websites: "Web & Insights",
+    documents: "Documents",
     reports: "Reports",
   };
   const detail: Record<DashboardSection, string> = {
@@ -2348,6 +2364,7 @@ function DashboardSectionView({
     opportunities: "Move prospects through the pipeline without mixing them into the overview.",
     content: "Keep approvals, Social Planner, and connection actions together.",
     websites: "Open the client’s public sites and landing pages.",
+    documents: "Open Documents & Contracts and reusable Templates in native HighLevel.",
     reports: "Open intelligence and reporting in one place.",
   };
   return (
@@ -2410,6 +2427,13 @@ function DashboardSectionView({
             websiteTab={websiteTab}
             onWebsiteTabChange={onWebsiteTabChange}
             approvedBrandInterview={approvedBrandInterview}
+          />
+        )}
+        {section === "documents" && (
+          <DocumentsCard
+            documentsHref={documentsHref}
+            templatesHref={templatesHref}
+            paymentAccessEnabled={client.paymentAccessEnabled}
           />
         )}
         {section === "reports" && <ReportsCard client={client} />}
@@ -3492,6 +3516,93 @@ function LegacyWebsitesCard({ sitesHref }: { sitesHref?: string }) {
           Open primary site <ArrowUpRight className="h-3.5 w-3.5" />
         </span>
       )}
+    </section>
+  );
+}
+
+function DocumentsCard({
+  documentsHref,
+  templatesHref,
+  paymentAccessEnabled,
+}: {
+  documentsHref?: string;
+  templatesHref?: string;
+  paymentAccessEnabled: boolean;
+}) {
+  const links = [
+    {
+      label: "All Documents & Contracts",
+      detail: "Open proposals, estimates, and contracts in native HighLevel.",
+      href: documentsHref,
+    },
+    {
+      label: "Templates",
+      detail: "Open reusable document templates in native HighLevel.",
+      href: templatesHref,
+    },
+  ];
+
+  return (
+    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+            Documents workspace
+          </p>
+          <h3 className="mt-1 text-lg font-semibold text-white">
+            Contracts and templates in one place
+          </h3>
+          <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
+            Use these focused links to open the native HighLevel document workspaces. This client
+            view exposes Documents only; broader Payments access stays separate and is not enabled
+            for Calvenn.
+          </p>
+        </div>
+        <FileText className="h-5 w-5 text-cyan-300" />
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        {links.map((link) =>
+          link.href ? (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_top"
+              rel="noreferrer"
+              className="group flex items-center gap-3 rounded-xl border border-white/[0.08] bg-[#0b0f1a] p-4 text-left transition hover:border-cyan-300/35 hover:bg-white/[0.06]"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-cyan-300/15 bg-cyan-300/[0.07] text-cyan-200">
+                <ArrowUpRight className="h-4 w-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-slate-200">{link.label}</span>
+                <span className="mt-1 block text-xs leading-relaxed text-slate-500">{link.detail}</span>
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-cyan-300" />
+            </a>
+          ) : (
+            <div
+              key={link.label}
+              className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 opacity-70"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] text-slate-500">
+                <FileText className="h-4 w-4" />
+              </span>
+              <span>
+                <span className="block text-sm font-medium text-slate-400">{link.label}</span>
+                <span className="mt-1 block text-xs text-slate-600">Destination not configured</span>
+              </span>
+            </div>
+          ),
+        )}
+      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
+        <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-2.5 py-1 text-cyan-200">
+          Documents enabled
+        </span>
+        <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2.5 py-1 text-slate-500">
+          {paymentAccessEnabled ? "Payment capability enabled for this client" : "Payments not enabled for this client"}
+        </span>
+      </div>
     </section>
   );
 }
