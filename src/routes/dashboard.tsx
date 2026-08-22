@@ -376,7 +376,7 @@ type DashboardSection =
   | "content"
   | "websites"
   | "reports";
-type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence" | "partnership";
+type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence";
 
 const calvennIntelligence = {
   scope: "Calvenn Starre · Your Best Health Quote",
@@ -827,7 +827,7 @@ function ClientCommandCenter() {
     )
       setActiveSection(requestedSection);
     const requestedWebsiteTab = params.get("websiteTab") as WebsiteTab | null;
-    if (requestedWebsiteTab && ["pages", "funnels", "reports", "intelligence", "partnership"].includes(requestedWebsiteTab))
+    if (requestedWebsiteTab && ["pages", "funnels", "reports", "intelligence"].includes(requestedWebsiteTab))
       setWebsiteTab(requestedWebsiteTab);
     const onPopState = () =>
       (() => {
@@ -836,7 +836,7 @@ function ClientCommandCenter() {
           (nextParams.get("section") as DashboardSection | null) || "overview",
         );
         const nextWebsiteTab = nextParams.get("websiteTab") as WebsiteTab | null;
-        if (nextWebsiteTab && ["pages", "funnels", "reports", "intelligence", "partnership"].includes(nextWebsiteTab))
+        if (nextWebsiteTab && ["pages", "funnels", "reports", "intelligence"].includes(nextWebsiteTab))
           setWebsiteTab(nextWebsiteTab);
         else setWebsiteTab("pages");
       })();
@@ -3064,7 +3064,6 @@ function ClientWebsitesCard({
     { id: "funnels", label: "Funnels", description: "Quote, matching, and conversion flows" },
     { id: "reports", label: "Reports", description: "Agent OS intelligence and research" },
     { id: "intelligence", label: "Intelligence", description: "Editable business context · setup gated" },
-    { id: "partnership", label: "Partnership", description: "Co-op context · terms review" },
   ];
   const visibleLinks = workspaceLinks.filter((link) => link.kind === websiteTab.slice(0, -1));
   return (
@@ -3106,8 +3105,6 @@ function ClientWebsitesCard({
         </p>
         {websiteTab === "intelligence" ? (
           <IntelligencePreview />
-        ) : websiteTab === "partnership" ? (
-          <PartnershipPreview />
         ) : websiteTab === "reports" ? (
           <div className="mt-3 grid gap-2 md:grid-cols-2">
             {reports.map((report) => {
@@ -3259,6 +3256,7 @@ function IntelligencePreview() {
           ))}
         </div>
       </section>
+      <PartnershipPreview />
     </div>
   );
 }
