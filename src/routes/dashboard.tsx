@@ -2114,22 +2114,14 @@ function ContentReviewCard({
   if (reviewUrl) {
     return (
       <section className="mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-white p-2 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-3 pb-3 pt-2">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-300">
-              Client content review
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Social, Blogs, Video Ideas, and Library — approve without logging into GHL.
-            </p>
-          </div>
+        <div className="flex justify-end px-3 pb-2 pt-1">
           <a
             href={reviewUrl}
             target="_blank"
             rel="noreferrer"
             className="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-semibold text-slate-600 hover:bg-slate-50"
           >
-            Open full review
+            Open Full Review
           </a>
         </div>
         <iframe
