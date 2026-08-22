@@ -30,6 +30,11 @@ import {
   Youtube,
 } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
+import { BusinessBrandInterview } from "../components/business-brand-interview";
+import type {
+  BusinessBrandInterviewDraft,
+  BusinessBrandInterviewInput,
+} from "../lib/business-brand-interview";
 import { brandingForLocation } from "../lib/client-branding";
 import { MOBILE_APP_LINKS } from "../lib/mobile-app-links";
 
@@ -638,6 +643,7 @@ function ClientCommandCenter() {
   const [demoMode, setDemoMode] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [websiteTab, setWebsiteTab] = useState<WebsiteTab>("pages");
+  const [approvedBrandInterview, setApprovedBrandInterview] = useState<BusinessBrandInterviewDraft>();
   const [selectedConversation, setSelectedConversation] = useState(conversations[0].name);
   const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>();
   const [showAllMessages, setShowAllMessages] = useState(false);
@@ -691,6 +697,16 @@ function ClientCommandCenter() {
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  const businessBrandInterviewStartingPoint =
+    client.locationId === "QsbCjo5HFBGuRG0AKms0"
+      ? {
+          businessName: client.name,
+          businessDescription: calvennIntelligence.context.find((item) => item.label === "Description")?.value ?? "",
+          audience: calvennIntelligence.context.find((item) => item.label === "Audience")?.value ?? "",
+          offers: calvennIntelligence.context.find((item) => item.label === "What they sell")?.value ?? "",
+          goals: calvennIntelligence.relationship.find((item) => item.label === "Wants")?.value ?? "",
+        }
+      : undefined;
   const setDemoModeFromUser = (next: boolean) => {
     const params = new URLSearchParams(window.location.search);
     if (next) params.set("demo", "1");
@@ -1077,6 +1093,10 @@ function ClientCommandCenter() {
                 calendarSettingsHref={ghl("/settings/calendars")}
                 plannerHref={ghl("/marketing/social-planner")}
                 socialMessagingHref={ghl("/settings/lc-integrations")}
+                brandInterviewDraft={approvedBrandInterview}
+                brandInterviewStartingPoint={businessBrandInterviewStartingPoint}
+                onBrandInterviewApproved={setApprovedBrandInterview}
+                onOpenIntelligence={() => goToWebsiteTab("intelligence")}
               />
             ) : activeSection === "overview" ? (
               <PortalOverview
@@ -1122,6 +1142,7 @@ function ClientCommandCenter() {
                 opportunitiesHref={ghl("/opportunities/list")}
                 plannerHref={ghl("/marketing/social-planner")}
                 contentReviewHref={contentReviewHref}
+                approvedBrandInterview={approvedBrandInterview}
               />
             )}
             <div className="border-t border-white/[0.07] py-6 text-xs leading-relaxed text-slate-600">
@@ -1665,6 +1686,10 @@ function GettingStartedView({
   calendarSettingsHref,
   plannerHref,
   socialMessagingHref,
+  brandInterviewDraft,
+  brandInterviewStartingPoint,
+  onBrandInterviewApproved,
+  onOpenIntelligence,
 }: {
   client: ClientConfig;
   isLive: boolean;
@@ -1672,6 +1697,10 @@ function GettingStartedView({
   calendarSettingsHref?: string;
   plannerHref?: string;
   socialMessagingHref?: string;
+  brandInterviewDraft?: BusinessBrandInterviewDraft;
+  brandInterviewStartingPoint?: Partial<BusinessBrandInterviewInput>;
+  onBrandInterviewApproved: (draft: BusinessBrandInterviewDraft) => void;
+  onOpenIntelligence: () => void;
 }) {
   return (
     <div className="mt-8 space-y-5 pb-10">
@@ -1701,6 +1730,14 @@ function GettingStartedView({
             socialMessagingHref={socialMessagingHref}
           />
         </div>
+        <BusinessBrandInterview
+          clientName={client.name}
+          locationId={client.locationId}
+          startingPoint={brandInterviewStartingPoint}
+          approvedDraft={brandInterviewDraft}
+          onApproved={onBrandInterviewApproved}
+          onOpenIntelligence={onOpenIntelligence}
+        />
       </section>
     </div>
   );
@@ -2270,6 +2307,7 @@ function DashboardSectionView({
   opportunitiesHref,
   plannerHref,
   contentReviewHref,
+  approvedBrandInterview,
 }: {
   client: ClientConfig;
   section: DashboardSection;
@@ -2289,6 +2327,7 @@ function DashboardSectionView({
   opportunitiesHref?: string;
   plannerHref?: string;
   contentReviewHref?: string;
+  approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   const labels: Record<DashboardSection, string> = {
     "getting-started": "Getting Started",
@@ -2370,6 +2409,7 @@ function DashboardSectionView({
             sitesHref={client.websiteUrl || undefined}
             websiteTab={websiteTab}
             onWebsiteTabChange={onWebsiteTabChange}
+            approvedBrandInterview={approvedBrandInterview}
           />
         )}
         {section === "reports" && <ReportsCard client={client} />}
@@ -2988,11 +3028,13 @@ function WebsitesCard({
   sitesHref,
   websiteTab,
   onWebsiteTabChange,
+  approvedBrandInterview,
 }: {
   client: ClientConfig;
   sitesHref?: string;
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
+  approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   if (client.locationId !== "QsbCjo5HFBGuRG0AKms0") {
     const href = sitesHref || client.websiteUrl;
@@ -3046,6 +3088,7 @@ function WebsitesCard({
       sitesHref={sitesHref}
       websiteTab={websiteTab}
       onWebsiteTabChange={onWebsiteTabChange}
+      approvedBrandInterview={approvedBrandInterview}
     />
   );
 }
@@ -3054,10 +3097,12 @@ function ClientWebsitesCard({
   sitesHref,
   websiteTab,
   onWebsiteTabChange,
+  approvedBrandInterview,
 }: {
   sitesHref?: string;
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
+  approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   const tabs: Array<{ id: WebsiteTab; label: string; description: string }> = [
     { id: "pages", label: "Pages", description: "Public sites, pillar pages, and briefs" },
@@ -3104,7 +3149,7 @@ function ClientWebsitesCard({
           {tabs.find((tab) => tab.id === websiteTab)?.description}
         </p>
         {websiteTab === "intelligence" ? (
-          <IntelligencePreview />
+          <IntelligencePreview approvedDraft={approvedBrandInterview} />
         ) : websiteTab === "reports" ? (
           <div className="mt-3 grid gap-2 md:grid-cols-2">
             {reports.map((report) => {
@@ -3162,12 +3207,24 @@ function ClientWebsitesCard({
   );
 }
 
-function IntelligencePreview() {
+function IntelligencePreview({ approvedDraft }: { approvedDraft?: BusinessBrandInterviewDraft }) {
   const fieldGroups = [
     { title: "Business identity", items: calvennIntelligence.identity },
     { title: "Description, niche, and audience", items: calvennIntelligence.context },
     { title: "Gives, wants, and network", items: calvennIntelligence.relationship },
   ];
+  const approvedInterviewItems = approvedDraft
+    ? [
+        { label: "Business name", value: approvedDraft.fields.businessName, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "Business description", value: approvedDraft.fields.businessDescription, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "Audience", value: approvedDraft.fields.audience, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "Offers", value: approvedDraft.fields.offers, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "Differentiators", value: approvedDraft.fields.differentiators, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "Tone", value: approvedDraft.fields.tone, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "Goals", value: approvedDraft.fields.goals, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+        { label: "AI / receptionist context", value: approvedDraft.fields.receptionistRole || approvedDraft.fields.aiContext, status: "approved", source: "Approved Business & Brand Interview · session-only" },
+      ]
+    : [];
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-4 rounded-2xl border border-amber-300/45 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start sm:justify-between">
@@ -3193,6 +3250,25 @@ function IntelligencePreview() {
           Edit context · setup required
         </button>
       </div>
+
+      {approvedDraft && (
+        <section className="rounded-2xl border border-[#9dd9c6] bg-[#eefaf5] p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#087b68]">Approved interview context</p>
+              <h4 className="mt-1 text-base font-semibold text-[#102336]">Ready for owner-confirmed use in this tenant preview</h4>
+            </div>
+            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#087b68]">Session-only</span>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-[#466174]">
+            Approved for {approvedDraft.tenant.clientName} at location {approvedDraft.tenant.locationId}. This pass does not persist the context or change HighLevel Brand Voice / Brand Board settings.
+          </p>
+          <div className="mt-4 grid gap-4 xl:grid-cols-2">
+            <IntelligenceFieldGroup title="Business & brand interview" items={approvedInterviewItems.slice(0, 6)} />
+            <IntelligenceFieldGroup title="Goals & AI context" items={approvedInterviewItems.slice(6)} />
+          </div>
+        </section>
+      )}
 
       <div className="grid gap-4 xl:grid-cols-3">
         {fieldGroups.map((group) => (
@@ -3281,8 +3357,8 @@ function IntelligenceFieldGroup({
           <div key={item.label} className="border-b border-[#edf2f5] pb-3 last:border-0 last:pb-0">
             <div className="flex items-start justify-between gap-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#466174]">{item.label}</p>
-              <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] ${item.status === "needs-setup" ? "bg-[#fff0d5] text-[#8a5200]" : item.status === "review" ? "bg-[#e8f5f4] text-[#087b68]" : "bg-[#e8f4fa] text-[#1377b8]"}`}>
-                {item.status === "needs-setup" ? "Needs setup" : item.status === "review" ? "Review" : "Mapped"}
+              <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] ${item.status === "needs-setup" ? "bg-[#fff0d5] text-[#8a5200]" : item.status === "review" ? "bg-[#e8f5f4] text-[#087b68]" : item.status === "approved" ? "bg-[#e7f6f1] text-[#087b68]" : "bg-[#e8f4fa] text-[#1377b8]"}`}>
+                {item.status === "needs-setup" ? "Needs setup" : item.status === "review" ? "Review" : item.status === "approved" ? "Approved" : "Mapped"}
               </span>
             </div>
             <p className="mt-1 text-sm leading-relaxed text-[#102336]">{item.value}</p>
