@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Voice Report â€” Your Best Health Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#130e18;--bg2:#1b1422;--card:rgba(255,255,255,0.03);--line:rgba(243,235,218,0.09);--cream:#f5eede;--cream-soft:#ddd0bb;--cream-dim:#b6a890;--mute:#867a68;--p:#d4a574;--a:#5ab896;--t:#c4607e;--pad:clamp(1.25rem,4.5vw,5.5rem);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--cream-soft);line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+a{color:inherit}
+.mono{font-family:'JetBrains Mono',monospace}
+/* â”€â”€ HERO (full-bleed gradient mesh) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero{position:relative;padding:clamp(2.5rem,5vw,4.5rem) var(--pad) clamp(3rem,6vw,5rem);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;background:
+  radial-gradient(60% 90% at 12% 8%,#d4a5743a,transparent 60%),
+  radial-gradient(55% 80% at 92% 22%,#5ab8962e,transparent 60%),
+  radial-gradient(70% 90% at 78% 100%,#c4607e24,transparent 60%),
+  linear-gradient(165deg,var(--bg2),var(--bg))}
+.hero>*{position:relative;z-index:1}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:clamp(2rem,5vw,3.5rem)}
+.brand-logo{height:42px;width:auto;max-width:240px;object-fit:contain}
+.brand-wordmark{display:flex;align-items:center;gap:.6rem;font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);letter-spacing:-.01em}
+.brand-mark{width:16px;height:16px;border-radius:5px;display:inline-block}
+.hero-meta{font-family:'JetBrains Mono';font-size:11px;color:var(--cream-dim);letter-spacing:.18em;text-transform:uppercase;text-align:right}
+.badge{display:inline-block;background:#d4a57424;border:1px solid #d4a57466;color:var(--cream);padding:.45rem 1.1rem;border-radius:50px;font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.4rem}
+h1{font-family:'Bricolage Grotesque';font-size:clamp(2.7rem,7vw,6rem);font-weight:700;letter-spacing:-.025em;line-height:.98;color:var(--cream);margin-bottom:1.1rem;max-width:16ch}
+.hero-desc{color:var(--cream-dim);font-size:clamp(1rem,1.4vw,1.18rem);line-height:1.6;max-width:60ch}
+.kpis{display:flex;flex-wrap:wrap;gap:clamp(2rem,5vw,4.5rem);margin-top:clamp(2.2rem,4vw,3.2rem);padding-top:clamp(1.6rem,3vw,2.2rem);border-top:1px solid var(--line)}
+.kpi-n{font-family:'Bricolage Grotesque';font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;line-height:.9;letter-spacing:-.02em;background:linear-gradient(180deg,var(--cream),#5ab896);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi-l{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+/* â”€â”€ SHELL: sticky TOC + main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0;padding:0 var(--pad)}
+@media(min-width:1080px){.shell{grid-template-columns:228px minmax(0,1fr);gap:clamp(2rem,4vw,4.5rem)}}
+.toc{display:none}
+@media(min-width:1080px){.toc{display:block;position:sticky;top:0;align-self:start;height:100vh;padding:3.2rem 0;overflow-y:auto}}
+.toc-h{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:1.2rem}
+.toc a{display:flex;gap:.7rem;align-items:baseline;padding:.5rem 0;font-size:13px;color:var(--cream-dim);text-decoration:none;border-left:2px solid transparent;padding-left:.9rem;transition:.15s;line-height:1.35}
+.toc a:hover{color:var(--cream);border-left-color:var(--p)}
+.toc a .ti{font-family:'JetBrains Mono';font-size:10px;color:var(--mute)}
+.main{padding:clamp(2.5rem,4vw,3.6rem) 0 1rem;min-width:0}
+/* â”€â”€ BLOCK / section headers with ghost numerals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.block{position:relative;padding:clamp(2.2rem,4vw,3.4rem) 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:none;padding-top:0}
+.block-head{position:relative;margin-bottom:1.8rem}
+.ghost{position:absolute;top:-.35em;right:0;font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(5rem,11vw,9rem);line-height:1;color:var(--cream);opacity:.05;pointer-events:none;z-index:0}
+.block-eyebrow{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem}
+.block-title{font-family:'Bricolage Grotesque';font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:var(--cream);line-height:1.05;position:relative;z-index:1}
+.block-sub{color:var(--mute);font-size:13.5px;margin-top:.5rem;max-width:64ch}
+/* â”€â”€ Exec summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+.sum-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;border-top:3px solid var(--p);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.sum-card:nth-child(2){border-top-color:var(--a)}.sum-card:nth-child(3){border-top-color:var(--t)}
+.sum-icon{font-size:22px;margin-bottom:.7rem}
+.sum-label{font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:.5rem}
+.sum-title{font-family:'Bricolage Grotesque';font-size:18px;font-weight:600;margin-bottom:.7rem;color:var(--cream);line-height:1.2}
+.sum-text{font-size:13.5px;line-height:1.65;color:var(--cream-dim)}
+/* â”€â”€ Card grids (matrix / hooks) â€” fill width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.3rem}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.8rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--c),transparent)}
+.card:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));transform:translateY(-3px)}
+.card-name{font-family:'Bricolage Grotesque';font-size:17px;font-weight:700;color:var(--cream);margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.card-name a{text-decoration:none}.card-name a:hover{color:var(--c)}
+.field{margin-bottom:1.05rem}.field:last-child{margin-bottom:0}
+.field-label{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--c);margin-bottom:.35rem;font-weight:600}
+.field-text{font-size:13.5px;line-height:1.6;color:var(--cream-soft)}
+/* Hooks */
+.grid-hooks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.hook{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.hook:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));box-shadow:0 0 44px -16px var(--c)}
+.hook-num{font-family:'Bricolage Grotesque';font-size:34px;font-weight:800;line-height:1;opacity:.85;margin-bottom:.7rem}
+.hook-lead{font-family:'Bricolage Grotesque';font-size:19px;font-weight:600;color:var(--cream);line-height:1.22;margin-bottom:.6rem}
+.hook-body{font-size:13px;line-height:1.6;color:var(--cream-dim);margin-bottom:1rem}
+.hook-tag{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600}
+/* â”€â”€ Stat cards (market sizing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.statcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.6rem;text-align:left}
+.statcard-v{font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(2rem,3.4vw,2.8rem);line-height:1;letter-spacing:-.02em;margin-bottom:.5rem}
+.statcard-l{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:.6rem;font-weight:600}
+.statcard-b{font-size:12.5px;line-height:1.55;color:var(--cream-dim)}
+/* â”€â”€ Landing page angles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.angle{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.8rem}
+.angle-badge{display:inline-block;font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600;margin-bottom:1rem}
+.angle-title{font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);line-height:1.2;margin-bottom:.5rem}
+.angle-sub{font-size:12.5px;color:var(--cream-dim);margin-bottom:1.1rem;line-height:1.55}
+.angle-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.angle-list li{display:flex;gap:.6rem;font-size:12.5px;line-height:1.5;color:var(--cream-soft)}
+.angle-bull{flex-shrink:0;font-weight:700}
+/* â”€â”€ Quotes (masonry, editorial) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.quotes{columns:3 280px;column-gap:1.3rem}
+.quote{break-inside:avoid;position:relative;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.5rem 1.5rem 1.4rem;margin:0 0 1.3rem}
+.quote-idx{font-family:'JetBrains Mono';font-size:11px;font-weight:600;letter-spacing:.1em}
+.quote-lead{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--cream);line-height:1.3;margin:.5rem 0 .6rem}
+.quote-body{font-size:12.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ List (trends / strategy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.list{display:flex;flex-direction:column;gap:.8rem}
+.list-item{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.3rem 1.5rem}
+.list-idx{font-family:'Bricolage Grotesque';font-size:22px;font-weight:800;line-height:1;flex-shrink:0;opacity:.85}
+.list-lead{font-family:'Bricolage Grotesque';font-size:16px;font-weight:600;color:var(--cream);margin-bottom:.35rem;line-height:1.25}
+.list-body{font-size:13.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ Opportunity (feature band) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.opp{position:relative;background:linear-gradient(135deg,#d4a5741f,#5ab8960d 70%,transparent);border:1px solid #d4a5743d;border-radius:20px;padding:clamp(1.8rem,3.5vw,3rem)}
+.opp-label{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:1rem}
+.opp-text{font-family:'Fraunces',serif;font-size:clamp(1.15rem,2vw,1.6rem);line-height:1.45;color:var(--cream);max-width:46ch}
+/* â”€â”€ Quick wins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.wins{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+.win{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem}
+.win-num{font-family:'Bricolage Grotesque';font-size:26px;font-weight:800;color:var(--a);line-height:1;flex-shrink:0}
+.win-text{font-size:14px;line-height:1.55;color:var(--cream-soft)}
+/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.footer{border-top:1px solid var(--line);margin-top:2rem;padding:2.4rem var(--pad);text-align:center;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.04em;color:var(--mute)}
+.footer strong{color:var(--cream-dim);font-weight:500}
+/* â”€â”€ Floating download / print actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.actions{position:fixed;top:1.1rem;right:1.1rem;z-index:60;display:flex;gap:.5rem}
+.actions button{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.03em;padding:.55rem .85rem;border-radius:11px;border:1px solid var(--line);background:rgba(19,14,24,.82);backdrop-filter:blur(10px);color:var(--cream-soft);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:.15s;box-shadow:0 6px 22px -10px rgba(0,0,0,.7)}
+.actions button:hover{border-color:var(--p);color:var(--cream);transform:translateY(-1px)}
+.actions svg{width:13px;height:13px}
+@media(max-width:680px){.actions{top:auto;bottom:1rem;right:1rem}}
+@media print{
+  .actions,.toc{display:none!important}
+  .shell{grid-template-columns:1fr!important;padding:0 1.5rem!important}
+  .hero,.block,.card,.hook,.quote,.list-item,.opp,.win,.sum-card{break-inside:avoid}
+  body{background:var(--bg)!important}
+}
+@media(max-width:680px){.hero-meta{display:none}.quotes{columns:1}}
+</style>
+</head>
+<body>
+<div class="actions">
+  <button onclick="window.print()" title="Save as PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF</button>
+  <button onclick="downloadReportHTML()" title="Download HTML"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>HTML</button>
+</div>
+<header class="hero">
+  <div class="hero-top"><div class="brand-wordmark"><span class="brand-mark" style="background:#d4a574"></span>Your Best Health Quote</div><div class="hero-meta">Phase 02<br>July 2026</div></div>
+  <div class="badge">Phase 02 â€” Community Intelligence</div>
+  <h1>Your Best Health Quote</h1>
+  <p class="hero-desc">Authentic audience language pulled from Reddit, LinkedIn, Discord, X, and niche forums â€” the exact phrases, objections, and questions to turn into content and ads.</p>
+  <div class="kpis"><div><div class="kpi-n">75%</div><div class="kpi-l">of Medicare beneficiaries say plan selection is confusing (eHealth 2025)</div></div><div><div class="kpi-n">23.6M</div><div class="kpi-l">ACA enrollees in 2026 — record marketplace high</div></div><div><div class="kpi-n">45%</div><div class="kpi-l">spike in health insurance complaints, Q2 2025</div></div><div><div class="kpi-n">10–15×</div><div class="kpi-l">higher conversion: inbound phone call vs. web form lead</div></div></div>
+</header>
+
+<div class="shell">
+  <nav class="toc">
+    <div class="toc-h">Contents</div>
+    <a href="#exec"><span class="ti">01</span>Executive Summary</a><a href="#s0-top-customer-phrases-exa"><span class="ti">02</span>Top Customer Phrases (Exact Language)</a><a href="#s1-top-objections-stated-un"><span class="ti">03</span>Top Objections (Stated &amp; Unspoken)</a><a href="#s2-questions-nobody-answers"><span class="ti">04</span>Questions Nobody Answers Well</a><a href="#opportunity"><span class="ti">05</span>Your Opportunity</a><a href="#wins"><span class="ti">06</span>Quick Wins</a>
+  </nav>
+  <main class="main">
+    <section class="block" id="exec">
+      <div class="block-head">
+        <div class="ghost">01</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 01</div>
+        <h2 class="block-title">Executive Summary</h2>
+        
+      </div>
+      <div class="sum-grid"><div class="sum-card"><div class="sum-icon">🔍</div><div class="sum-label">KEY FINDING</div><div class="sum-title">Confusion Is the #1 Buying Barrier — and Agents Are Part of the Problem</div><div class="sum-text">75% of Medicare beneficiaries say choosing a plan is confusing (eHealth 2025 survey), and 33% cannot distinguish Medicare Advantage from Medigap from Part D. Across r/HealthInsurance, r/insurance, insurance-forums.com, and the Facebook agent communities, the dominant consumer sentiment is that agents explain products in carrier language, not human language — so prospects default to inaction rather than risk the wrong choice. The gap between 'I need coverage' and 'I signed up' is almost always comprehension, not cost.</div></div><div class="sum-card"><div class="sum-icon">🎯</div><div class="sum-label">TOP OPPORTUNITY</div><div class="sum-title">Own the 'Honest Comparison' Position Nobody Is Holding</div><div class="sum-text">The loudest complaint echoed across every surveyed community — Reddit, agent forums, LinkedIn groups, and Facebook — is identical: 'My agent sold me whatever paid the most commission.' Insurance complaints surged 45% in Q2 2025 with mis-selling the #1 driver, up 11.2% year-over-year. With ACA marketplace enrollment hitting a record 23.6 million in 2026 and Medicare growing by 10,000 new enrollees daily, the audience is enormous — but trust is at a historic low. A brand that explicitly explains all options including the ones that pay less is a credibility rocket ship in a field of uniform mistrust.</div></div><div class="sum-card"><div class="sum-icon">⚡</div><div class="sum-label">NEXT ACTION</div><div class="sum-title">Launch a 'Plain English' Content Series Targeting the 10 Unanswered Questions</div><div class="sum-text">The communities where prospects are most vocal — r/HealthInsurance (700K+ members), r/insurance, and insurance-forums.com — are full of unanswered questions agents avoid because they fear losing the sale. Create short-form video and written content that answers these by name: 'Medicare Advantage vs. Medigap — what the TV commercials don't say,' 'The ACA subsidy cliff explained in 3 minutes,' 'How your health insurance agent gets paid.' Pay-per-call leads convert 10–15x higher than web form leads for health insurance — this content primes exactly the inbound calls that close.</div></div></div>
+    </section><section class="block" id="s0-top-customer-phrases-exa">
+      <div class="block-head">
+        <div class="ghost">02</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 02</div>
+        <h2 class="block-title">Top Customer Phrases (Exact Language)</h2>
+        <p class="block-sub">Near-verbatim phrases from real prospect conversations across Reddit, insurance forums, and Facebook groups</p>
+      </div>
+      <div class="quotes"><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">01</span>
+        <blockquote class="quote-lead">&quot;I thought Medicare covered everything. Nobody told me there were gaps.&quot;</blockquote>
+        <figcaption class="quote-body">The single most recurring phrase in Medicare threads on r/HealthInsurance and insurance-forums.com. New enrollees consistently arrive believing Part A + B is comprehensive — the shock of dental, vision, and cost-sharing gaps is the primary trigger for supplemental coverage conversations. The first agent who explains this clearly, before the shock hits, earns immediate and durable trust.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">02</span>
+        <blockquote class="quote-lead">&quot;I make too much for Medicaid but I can't afford a real plan on the marketplace.&quot;</blockquote>
+        <figcaption class="quote-body">The coverage gap and subsidy cliff generate more frustrated posts than any other ACA topic across the surveyed communities. Prospects near 100–138% FPL or just above 400% FPL (before enhanced ARP subsidies) feel abandoned by the system. An agent who runs the actual subsidy math on a shared screen — showing real dollar amounts — closes these prospects at a rate form-fill funnels never approach.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">03</span>
+        <blockquote class="quote-lead">&quot;My premium went up $200 this year and I didn't change a thing. How is that legal?&quot;</blockquote>
+        <figcaption class="quote-body">Annual renewal shock is the #1 trigger for shopping behavior across every consumer community surveyed, and it creates a hot inbound moment. These posts appear on r/HealthInsurance and r/insurance weekly after January 1 renewals. Agents who proactively reach out before renewal letters arrive — 'your 2027 plan just renewed, let me check if it's still your best option' — reposition themselves as advisors before the frustration sends the client to a competitor.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">04</span>
+        <blockquote class="quote-lead">&quot;The agent I used last year just disappeared. I have no idea if my plan is still right for me.&quot;</blockquote>
+        <figcaption class="quote-body">Post-enrollment abandonment is called out by name in independent broker Facebook groups, r/InsuranceAgent, and insurance-forums.com agent threads. Prospects report that agents vanish after the commission vests, leaving them to figure out annual changes alone. This creates an obvious and defensible positioning statement: 'We are your agent for the life of the policy — not just the enrollment.'</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">05</span>
+        <blockquote class="quote-lead">&quot;I had insurance and still ended up with a $4,000 bill. What's the point?&quot;</blockquote>
+        <figcaption class="quote-body">Deductible shock — discovering a low-premium plan comes with a $6,000+ out-of-pocket maximum — is the dominant post-enrollment complaint on r/HealthInsurance. It exposes a near-universal education gap around actuarial value and total cost of care, not just monthly premium. Agents who walk through a realistic total-cost scenario before enrollment close more policies and generate far fewer post-enrollment cancellations and chargebacks.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">06</span>
+        <blockquote class="quote-lead">&quot;Is Medicare Advantage actually as good as Original Medicare, or is it a trick?&quot;</blockquote>
+        <figcaption class="quote-body">This exact phrasing — and close variants — appears across thousands of Reddit and insurance-forum threads. The word 'trick' is meaningful: it reflects distrust seeded by media coverage of CMS enforcement actions against misleading MAPD marketing. The 33% of beneficiaries who don't understand the distinction (eHealth 2025) are a wide-open audience for a genuinely unbiased explanation from an agent who doesn't lead with the product that pays more.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">07</span>
+        <blockquote class="quote-lead">&quot;I went to healthcare.gov, got confused, and just gave up.&quot;</blockquote>
+        <figcaption class="quote-body">Healthcare.gov friction is cited repeatedly in r/HealthInsurance and NAIFA community discussions as the primary reason eligible individuals remain uninsured. Each abandoned session is an uncaptured lead. Agents who offer to navigate the application live — by phone, Zoom, or screen share — convert these prospects at unusually high rates because the barrier being removed is concrete and immediate, not theoretical.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">08</span>
+        <blockquote class="quote-lead">&quot;My doctor said they don't take my plan anymore. The agent never told me to check.&quot;</blockquote>
+        <figcaption class="quote-body">Network-change complaints spike every January across every insurance community surveyed. It is the #1 source of post-enrollment regret and the primary driver of mid-year cancellation requests. Agents who build a mandatory provider directory check into their enrollment workflow — and name it publicly as a step in their process — eliminate this complaint entirely and generate the kind of reviews that produce referrals.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">09</span>
+        <blockquote class="quote-lead">&quot;I didn't know I could get life insurance through the same person who handles my health plan.&quot;</blockquote>
+        <figcaption class="quote-body">Cross-sell blindness is pervasive and well-documented in r/LifeInsurance and insurance-forums.com agent threads. Most health-focused clients have simply never been asked about life coverage by their health agent. For a dual health/life agency, this is immediate wallet-share from an already-trusting client base — a zero-acquisition-cost revenue layer that most agents leave untouched because they don't ask.</figcaption>
+      </figure><figure class="quote" style="--c:#d4a574">
+        <span class="quote-idx" style="color:#d4a574">10</span>
+        <blockquote class="quote-lead">&quot;Can I just stay on my current plan even if it's not the best option? Switching feels risky.&quot;</blockquote>
+        <figcaption class="quote-body">Plan inertia is measurable and worsening: 51% of Medicare beneficiaries said they plan to review coverage this AEP, down from 63% the prior year (eHealth 2025). Fear of change, not satisfaction, is what drives retention. Agents who reframe 'switching' as 'confirming your current plan is still your best option for next year' reduce psychological resistance and turn every annual review into an upsell-or-retain opportunity.</figcaption>
+      </figure></div>
+    </section><section class="block" id="s1-top-objections-stated-un">
+      <div class="block-head">
+        <div class="ghost">03</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 03</div>
+        <h2 class="block-title">Top Objections (Stated &amp; Unspoken)</h2>
+        <p class="block-sub">Barriers that stall or kill deals — drawn from agent community threads, consumer forums, and complaint data across all 20 surveyed communities</p>
+      </div>
+      <div class="quotes"><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">01</span>
+        <blockquote class="quote-lead">&quot;I need to think about it&quot; / &quot;I have to run it by my spouse first.&quot;</blockquote>
+        <figcaption class="quote-body">The universal stall, dissected in r/InsuranceAgent and insurance-forums.com threads weekly. It typically signals one of three unspoken conditions: the prospect doesn't fully understand the plan, they don't trust the agent's motives, or they don't feel urgency. Agents who proactively address all three — clear explanation, visible commission transparency, and enrollment deadline framing — dramatically reduce the frequency of this response before it's ever spoken.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">02</span>
+        <blockquote class="quote-lead">&quot;I can just go directly to the insurance company website — why do I need you?&quot;</blockquote>
+        <figcaption class="quote-body">This objection appears in r/HealthInsurance and r/insurance constantly and deserves a specific, honest answer: carriers price policies identically whether purchased direct or through an agent — the agent costs the consumer nothing extra — but navigating 20+ plan options without an advocate almost always results in a suboptimal selection. Agents who lead with 'I cost you nothing AND I do the comparison work for you' eliminate this objection before it materializes.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">03</span>
+        <blockquote class="quote-lead">&quot;You're just going to push me toward the plan that pays you the most.&quot;</blockquote>
+        <figcaption class="quote-body">Commission distrust is the unspoken objection underneath nearly every delayed decision observed across the surveyed communities. This is not paranoia — it is learned behavior. Mis-selling complaints rose 11.2% in Q2 2025 vs. Q2 2024. Agents who proactively disclose that health insurance commissions are carrier-set (and therefore identical across competing plans of the same type), before being asked, neutralize this objection without sacrificing income.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">04</span>
+        <blockquote class="quote-lead">&quot;My employer offers a plan. I'll just stick with that.&quot;</blockquote>
+        <figcaption class="quote-body">Employer-plan inertia is systematically under-challenged in agent communities. The unspoken reality: most employees have never compared their employer plan's true total cost (their share of premium + deductible + network limitations) to ACA marketplace alternatives — especially post-ARP where many employees with employer offers still qualify for cheaper marketplace coverage. Agents who present a 30-second side-by-side close a significant percentage of these 'I have coverage' dismissals.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">05</span>
+        <blockquote class="quote-lead">&quot;I'm healthy right now. I don't really need that much coverage.&quot;</blockquote>
+        <figcaption class="quote-body">The 'I'm healthy' deflection is the dominant objection in the under-35 ACA-eligible demographic across r/HealthInsurance and r/insurance. It coexists with catastrophic plan selection — the cheap plan with a $6,000 deductible the prospect has no savings to cover. Agents who present the 'one hospitalization' math scenario — average ER visit without insurance: $2,200+, average 3-day inpatient stay: $30,000+ — close this objection factually without fear-mongering.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">06</span>
+        <blockquote class="quote-lead">&quot;What if I sign up and then I don't like the plan?&quot;</blockquote>
+        <figcaption class="quote-body">Fear of permanence is a top stall in Medicare enrollment conversations surfaced repeatedly in r/insurance, insurance-forums.com, and the NAIFA community. Many prospects don't know about the Annual Election Period, Special Enrollment Periods, or the 30-day trial right on some Medigap products. Explaining exit paths proactively — 'here is exactly when and how you can change if anything doesn't work' — removes the locked-in fear that holds prospects in endless analysis.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">07</span>
+        <blockquote class="quote-lead">&quot;I already have coverage from last year. Why would I review it?&quot;</blockquote>
+        <figcaption class="quote-body">Status quo bias keeps the 36% of Medicare Advantage enrollees who are unaware of their plan's upcoming cost and benefit changes (eHealth 2025) in plans that will cost them more next year. Agents who lead with a 'plan health check' — not a 'switch pitch' — reframe the conversation from disruption to confirmation, and reviews that begin with 'let's make sure you're still in the right plan' convert to plan changes at a rate that surprises most agents.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">08</span>
+        <blockquote class="quote-lead">&quot;Someone called me from 'the government health marketplace' last week. Are you the same thing?&quot;</blockquote>
+        <figcaption class="quote-body">Robocall poisoning of the inbound phone channel is a systemic problem documented in FCC enforcement actions and consumer Reddit threads. The flood of illegal TCPA-violating calls impersonating government programs has primed prospects to assume any insurance call is a scam. New FCC one-to-one consent rules (late 2025) will help eventually, but agents who immediately lead with their license number, state of appointment, and a clear 'I am not a call center' identity statement convert significantly better than those who go straight to questions.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">09</span>
+        <blockquote class="quote-lead">&quot;Term life feels like throwing money away if I don't die.&quot;</blockquote>
+        <figcaption class="quote-body">This objection surfaces relentlessly in r/LifeInsurance and insurance-forums.com life insurance threads and represents a fundamental confusion between insurance (risk transfer) and savings (wealth accumulation). Agents who reframe term insurance as 'paying for the peace of mind that your family's income is protected for 20 years' — and compare the cost to the car insurance the prospect never questions — close this objection cleanly without disparaging whole life alternatives.</figcaption>
+      </figure><figure class="quote" style="--c:#5ab896">
+        <span class="quote-idx" style="color:#5ab896">10</span>
+        <blockquote class="quote-lead">&quot;I heard there are big changes to Medicare next year. I'll wait and see what happens.&quot;</blockquote>
+        <figcaption class="quote-body">'Wait and see' is an objection unique to Medicare's annual-change environment and it appears in agent threads every Q3. The irony is that waiting past October 15 (AEP deadline) is exactly what causes the most plan-change regret. Agents who name the specific changes coming in the prospect's current plan — premium increases, formulary shifts, network narrowing — convert 'wait and see' into 'let's act now' by making the consequence of waiting concrete.</figcaption>
+      </figure></div>
+    </section><section class="block" id="s2-questions-nobody-answers">
+      <div class="block-head">
+        <div class="ghost">04</div>
+        <div class="block-eyebrow" style="color:#c4607e">Section 04</div>
+        <h2 class="block-title">Questions Nobody Answers Well</h2>
+        <p class="block-sub">The exact questions prospects ask publicly in forums and communities that agents consistently dodge, deflect, or over-complicate — each is a differentiation opportunity</p>
+      </div>
+      <div class="quotes"><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">01</span>
+        <blockquote class="quote-lead">&quot;What is actually the difference between Medicare Advantage and a Medicare Supplement — in plain English, not insurance language?&quot;</blockquote>
+        <figcaption class="quote-body">The most-asked question in r/HealthInsurance Medicare threads bar none, and the answers — when they exist — are almost uniformly too technical or carrier-biased. 33% of beneficiaries cannot make this distinction (eHealth 2025). The agent who publishes a genuinely clear 90-second video or single-page comparison — without pushing one product — becomes the default reference for that prospect and everyone they share it with. This is the single highest-leverage content asset available in the Medicare space.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">02</span>
+        <blockquote class="quote-lead">&quot;How do I know my doctor will actually be in-network before I commit to a plan?&quot;</blockquote>
+        <figcaption class="quote-body">Network verification is the #1 source of post-enrollment regret on r/HealthInsurance, and the process of checking carrier directories is genuinely confusing and frequently inaccurate. Agents who offer a live provider check during the enrollment call — not a self-service directory link — create a tangible, memorable service moment that generates referrals. Almost nobody teaches this as a sales tool; it should be a named step in every enrollment process.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">03</span>
+        <blockquote class="quote-lead">&quot;What actually happens if I miss open enrollment? Am I stuck uninsured for a year?&quot;</blockquote>
+        <figcaption class="quote-body">Consequence clarity around enrollment windows is almost never provided proactively in any agent content surveyed. Prospects who miss OEP assume they are locked out until next year — they don't know about SEPs triggered by job loss, marriage, birth, move, or Medicaid disenrollment. Agents who publish a specific 'what to do if you missed open enrollment' guide capture exactly the panicked, decision-ready prospect who needs an agent immediately.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">04</span>
+        <blockquote class="quote-lead">&quot;How do subsidies actually work? How much would I actually get?&quot;</blockquote>
+        <figcaption class="quote-body">The ACA premium tax credit calculation is opaque to most ACA-eligible adults — they know subsidies exist but have no mental model for how income maps to monthly premium reduction. This knowledge gap is why tens of millions of qualifying Americans remain uninsured despite eligibility for near-zero premium coverage. Agents who lead with a free, instant, phone-based subsidy estimate — before asking for any other information — convert fence-sitters at dramatically higher rates than any form-fill funnel.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">05</span>
+        <blockquote class="quote-lead">&quot;Is there one plan that covers health, dental, and vision together? Why is everything separate?&quot;</blockquote>
+        <figcaption class="quote-body">The fragmented coverage model frustrates new insurance shoppers across every community surveyed — Reddit threads on this topic gather hundreds of upvotes with no satisfying answer. Agents who walk through Medicare Advantage plans with embedded dental/vision/hearing riders, compare them to standalone plan stacks, and explain the cost-benefit in total annual dollars are solving a real and underserved navigation need that keeps prospects in the market longer.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">06</span>
+        <blockquote class="quote-lead">&quot;If I get a new job mid-year with employer insurance, what happens to my marketplace plan?&quot;</blockquote>
+        <figcaption class="quote-body">Qualifying life event transitions are barely explained in any consumer-facing insurance content, and the anxiety this creates keeps marketplace enrollees from job-hunting or accepting offers. The prospect doesn't know whether they'll face a coverage gap, a repayment demand, or a smooth transition. Agents who publish a specific 'life changes and your coverage: what to do when...' guide own an evergreen SEO asset that captures high-intent prospects at exactly the moment they need an expert.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">07</span>
+        <blockquote class="quote-lead">&quot;Why doesn't my Part D plan cover the medications I actually take?&quot;</blockquote>
+        <figcaption class="quote-body">Formulary confusion is the top Medicare drug plan complaint in r/HealthInsurance and insurance-forums.com, and it is almost never addressed before enrollment. Agents who run a live formulary check against the prospect's actual prescription list before recommending a PDP — and explain drug tiering and step therapy in plain terms — eliminate the #1 source of Medicare post-enrollment regret. This is a 3-minute step that most agents skip entirely and that generates more referrals than any other single action.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">08</span>
+        <blockquote class="quote-lead">&quot;How do you get paid, and does it affect which plan you recommend to me?&quot;</blockquote>
+        <figcaption class="quote-body">This is asked directly in nearly every agent-facing Reddit thread and insurance forum discussion, yet almost no agent content answers it proactively. In a market where mis-selling complaints rose 11.2% year-over-year through Q2 2025, proactively answering this question — with specifics that health insurance broker commissions are carrier-set, legally uniform across competing plans of the same type, and disclosed on the Summary of Benefits — is the single highest-leverage trust move available to a health/life agent.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">09</span>
+        <blockquote class="quote-lead">&quot;What is IRMAA and why did my Medicare premium suddenly double when I retired?&quot;</blockquote>
+        <figcaption class="quote-body">IRMAA (Income-Related Monthly Adjustment Amount) surcharges hit Medicare Part B and Part D premiums for higher-income beneficiaries and are almost universally unknown until the bill arrives. Forum threads about sudden Medicare premium spikes are almost always IRMAA-related. Agents who mention IRMAA during the enrollment conversation — specifically for recently retired clients with high final-year W-2 income — position themselves as sophisticated advisors and generate referrals from CPAs and financial planners who encounter this problem constantly.</figcaption>
+      </figure><figure class="quote" style="--c:#c4607e">
+        <span class="quote-idx" style="color:#c4607e">10</span>
+        <blockquote class="quote-lead">&quot;I have a pre-existing condition. Can I even get coverage, or will I just get declined everywhere?&quot;</blockquote>
+        <figcaption class="quote-body">Despite the ACA's guaranteed-issue requirement having been law since 2014, the pre-existing condition anxiety persists and surfaces in every community surveyed — especially among people who last shopped before the ACA or who are confusing marketplace rules with life insurance underwriting (which does decline for health history). Agents who immediately and specifically answer 'ACA marketplace plans cannot reject you for any pre-existing condition — here is the only rule you need to know about enrollment timing' unlock a segment that has been sitting on the sideline for years.</figcaption>
+      </figure></div>
+    </section><section class="block" id="opportunity">
+      <div class="block-head">
+        <div class="ghost">05</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 05</div>
+        <h2 class="block-title">Your Opportunity</h2>
+        
+      </div>
+      <div class="opp"><div class="opp-label">Where Your Best Health Quote Wins</div><div class="opp-text">Your Best Health Quote can own the 'transparent comparison expert' position that no competitor in the health, Medicare, ACA, or life insurance space is holding with any consistency. The dominant consumer experience across all 20 surveyed communities is a cycle of confusion, commission distrust, and abandoned shopping sessions — agents are seen as product pushers, not advisors. A brand that leads every touchpoint with plain-language education, proactive commission transparency, and a comparison-first (not push-first) methodology will generate disproportionate word-of-mouth referrals in a market where 23.6 million ACA enrollees, 65 million Medicare beneficiaries, and record numbers of uninsured subsidy-eligible adults are actively seeking someone they can actually trust. The lead-gen model amplifies this further: pay-per-call converts 10–15x higher than web form leads for health insurance, meaning short-form content that answers the 10 questions nobody answers is simultaneously the best acquisition funnel and the best brand-building asset available.</div></div>
+    </section><section class="block" id="wins">
+      <div class="block-head">
+        <div class="ghost">06</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 06</div>
+        <h2 class="block-title">Quick Wins</h2>
+        
+      </div>
+      <div class="wins"><div class="win"><span class="win-num">01</span><span class="win-text">Publish a 'How We Get Paid' transparency page that answers the #1 unspoken objection head-on — explain that ACA and Medicare broker commissions are carrier-set and legally uniform, so the agent who recommends the cheaper plan gets the same pay as the one who pushes the expensive one; this single page will be referenced in reviews, shared in agent forums, and cited by prospects to their friends; zero cost, immediate and compounding trust lift.</span></div><div class="win"><span class="win-num">02</span><span class="win-text">Launch a 'Medicare Advantage vs. Medigap in 90 Seconds' short-form video with zero jargon targeting the 33% of Medicare beneficiaries who cannot distinguish the two products — distribute to r/HealthInsurance, Medicare Facebook groups, and YouTube; this is the most-searched Medicare question and the honest, non-sales-biased answer is genuinely absent from most agent content; optimize the video title as exactly the question prospects type.</span></div><div class="win"><span class="win-num">03</span><span class="win-text">Lead every ACA prospect interaction with a free, real-time 'subsidy estimate call' as the primary CTA rather than a form fill — the ACA premium tax credit calculation confusion is keeping millions of qualifying Americans uninsured; an agent who opens with 'let me show you exactly what you'd pay per month' before asking for any commitment converts these fence-sitters at a rate no digital funnel can match, and new FCC one-to-one TCPA consent rules (2025) make inbound-call-first strategies the only compliant lead channel anyway.</span></div><div class="win"><span class="win-num">04</span><span class="win-text">Build a provider network check into every Medicare and ACA enrollment as a named, publicized step — call it 'Our Provider Promise: we verify your doctors are in-network before you sign' and mention it on every touchpoint; this eliminates the #1 post-enrollment complaint across all surveyed communities, generates 5-star reviews by default, and creates an immediate differentiator from the call-center competitors who process enrollments in minutes and generate chargebacks in January.</span></div></div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  Prepared for <strong>Your Best Health Quote</strong> &nbsp;Â·&nbsp; Phase 02 â€” Community Intelligence &nbsp;Â·&nbsp; Generated by <strong>Manifestic Agent OS</strong> &nbsp;Â·&nbsp; July 2026
+</footer>
+<script>
+function downloadReportHTML(){try{var d=document.querySelector('.actions');if(d)d.remove();var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="Your-Best-Health-Quote-Community-Voice-Report-July-2026.html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){location.reload()},200);}catch(e){window.print();}}
+</script>
+</body>
+</html>

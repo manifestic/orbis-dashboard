@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Hook Mining â€” Calvenn Starre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#130e18;--bg2:#1b1422;--card:rgba(255,255,255,0.03);--line:rgba(243,235,218,0.09);--cream:#f5eede;--cream-soft:#ddd0bb;--cream-dim:#b6a890;--mute:#867a68;--p:#d4a574;--a:#5ab896;--t:#c4607e;--pad:clamp(1.25rem,4.5vw,5.5rem);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--cream-soft);line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+a{color:inherit}
+.mono{font-family:'JetBrains Mono',monospace}
+/* â”€â”€ HERO (full-bleed gradient mesh) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero{position:relative;padding:clamp(2.5rem,5vw,4.5rem) var(--pad) clamp(3rem,6vw,5rem);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;background:
+  radial-gradient(60% 90% at 12% 8%,#d4a5743a,transparent 60%),
+  radial-gradient(55% 80% at 92% 22%,#5ab8962e,transparent 60%),
+  radial-gradient(70% 90% at 78% 100%,#c4607e24,transparent 60%),
+  linear-gradient(165deg,var(--bg2),var(--bg))}
+.hero>*{position:relative;z-index:1}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:clamp(2rem,5vw,3.5rem)}
+.brand-logo{height:42px;width:auto;max-width:240px;object-fit:contain}
+.brand-wordmark{display:flex;align-items:center;gap:.6rem;font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);letter-spacing:-.01em}
+.brand-mark{width:16px;height:16px;border-radius:5px;display:inline-block}
+.hero-meta{font-family:'JetBrains Mono';font-size:11px;color:var(--cream-dim);letter-spacing:.18em;text-transform:uppercase;text-align:right}
+.badge{display:inline-block;background:#d4a57424;border:1px solid #d4a57466;color:var(--cream);padding:.45rem 1.1rem;border-radius:50px;font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.4rem}
+h1{font-family:'Bricolage Grotesque';font-size:clamp(2.7rem,7vw,6rem);font-weight:700;letter-spacing:-.025em;line-height:.98;color:var(--cream);margin-bottom:1.1rem;max-width:16ch}
+.hero-desc{color:var(--cream-dim);font-size:clamp(1rem,1.4vw,1.18rem);line-height:1.6;max-width:60ch}
+.kpis{display:flex;flex-wrap:wrap;gap:clamp(2rem,5vw,4.5rem);margin-top:clamp(2.2rem,4vw,3.2rem);padding-top:clamp(1.6rem,3vw,2.2rem);border-top:1px solid var(--line)}
+.kpi-n{font-family:'Bricolage Grotesque';font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;line-height:.9;letter-spacing:-.02em;background:linear-gradient(180deg,var(--cream),#5ab896);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi-l{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+/* â”€â”€ SHELL: sticky TOC + main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0;padding:0 var(--pad)}
+@media(min-width:1080px){.shell{grid-template-columns:228px minmax(0,1fr);gap:clamp(2rem,4vw,4.5rem)}}
+.toc{display:none}
+@media(min-width:1080px){.toc{display:block;position:sticky;top:0;align-self:start;height:100vh;padding:3.2rem 0;overflow-y:auto}}
+.toc-h{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:1.2rem}
+.toc a{display:flex;gap:.7rem;align-items:baseline;padding:.5rem 0;font-size:13px;color:var(--cream-dim);text-decoration:none;border-left:2px solid transparent;padding-left:.9rem;transition:.15s;line-height:1.35}
+.toc a:hover{color:var(--cream);border-left-color:var(--p)}
+.toc a .ti{font-family:'JetBrains Mono';font-size:10px;color:var(--mute)}
+.main{padding:clamp(2.5rem,4vw,3.6rem) 0 1rem;min-width:0}
+/* â”€â”€ BLOCK / section headers with ghost numerals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.block{position:relative;padding:clamp(2.2rem,4vw,3.4rem) 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:none;padding-top:0}
+.block-head{position:relative;margin-bottom:1.8rem}
+.ghost{position:absolute;top:-.35em;right:0;font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(5rem,11vw,9rem);line-height:1;color:var(--cream);opacity:.05;pointer-events:none;z-index:0}
+.block-eyebrow{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem}
+.block-title{font-family:'Bricolage Grotesque';font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:var(--cream);line-height:1.05;position:relative;z-index:1}
+.block-sub{color:var(--mute);font-size:13.5px;margin-top:.5rem;max-width:64ch}
+/* â”€â”€ Exec summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+.sum-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;border-top:3px solid var(--p);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.sum-card:nth-child(2){border-top-color:var(--a)}.sum-card:nth-child(3){border-top-color:var(--t)}
+.sum-icon{font-size:22px;margin-bottom:.7rem}
+.sum-label{font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:.5rem}
+.sum-title{font-family:'Bricolage Grotesque';font-size:18px;font-weight:600;margin-bottom:.7rem;color:var(--cream);line-height:1.2}
+.sum-text{font-size:13.5px;line-height:1.65;color:var(--cream-dim)}
+/* â”€â”€ Card grids (matrix / hooks) â€” fill width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.3rem}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.8rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--c),transparent)}
+.card:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));transform:translateY(-3px)}
+.card-name{font-family:'Bricolage Grotesque';font-size:17px;font-weight:700;color:var(--cream);margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.card-name a{text-decoration:none}.card-name a:hover{color:var(--c)}
+.field{margin-bottom:1.05rem}.field:last-child{margin-bottom:0}
+.field-label{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--c);margin-bottom:.35rem;font-weight:600}
+.field-text{font-size:13.5px;line-height:1.6;color:var(--cream-soft)}
+/* Hooks */
+.grid-hooks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.hook{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.hook:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));box-shadow:0 0 44px -16px var(--c)}
+.hook-num{font-family:'Bricolage Grotesque';font-size:34px;font-weight:800;line-height:1;opacity:.85;margin-bottom:.7rem}
+.hook-lead{font-family:'Bricolage Grotesque';font-size:19px;font-weight:600;color:var(--cream);line-height:1.22;margin-bottom:.6rem}
+.hook-body{font-size:13px;line-height:1.6;color:var(--cream-dim);margin-bottom:1rem}
+.hook-tag{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600}
+/* â”€â”€ Stat cards (market sizing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.statcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.6rem;text-align:left}
+.statcard-v{font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(2rem,3.4vw,2.8rem);line-height:1;letter-spacing:-.02em;margin-bottom:.5rem}
+.statcard-l{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:.6rem;font-weight:600}
+.statcard-b{font-size:12.5px;line-height:1.55;color:var(--cream-dim)}
+/* â”€â”€ Landing page angles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.angle{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.8rem}
+.angle-badge{display:inline-block;font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600;margin-bottom:1rem}
+.angle-title{font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);line-height:1.2;margin-bottom:.5rem}
+.angle-sub{font-size:12.5px;color:var(--cream-dim);margin-bottom:1.1rem;line-height:1.55}
+.angle-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.angle-list li{display:flex;gap:.6rem;font-size:12.5px;line-height:1.5;color:var(--cream-soft)}
+.angle-bull{flex-shrink:0;font-weight:700}
+/* â”€â”€ Quotes (masonry, editorial) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.quotes{columns:3 280px;column-gap:1.3rem}
+.quote{break-inside:avoid;position:relative;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.5rem 1.5rem 1.4rem;margin:0 0 1.3rem}
+.quote-idx{font-family:'JetBrains Mono';font-size:11px;font-weight:600;letter-spacing:.1em}
+.quote-lead{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--cream);line-height:1.3;margin:.5rem 0 .6rem}
+.quote-body{font-size:12.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ List (trends / strategy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.list{display:flex;flex-direction:column;gap:.8rem}
+.list-item{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.3rem 1.5rem}
+.list-idx{font-family:'Bricolage Grotesque';font-size:22px;font-weight:800;line-height:1;flex-shrink:0;opacity:.85}
+.list-lead{font-family:'Bricolage Grotesque';font-size:16px;font-weight:600;color:var(--cream);margin-bottom:.35rem;line-height:1.25}
+.list-body{font-size:13.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ Opportunity (feature band) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.opp{position:relative;background:linear-gradient(135deg,#d4a5741f,#5ab8960d 70%,transparent);border:1px solid #d4a5743d;border-radius:20px;padding:clamp(1.8rem,3.5vw,3rem)}
+.opp-label{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:1rem}
+.opp-text{font-family:'Fraunces',serif;font-size:clamp(1.15rem,2vw,1.6rem);line-height:1.45;color:var(--cream);max-width:46ch}
+/* â”€â”€ Quick wins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.wins{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+.win{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem}
+.win-num{font-family:'Bricolage Grotesque';font-size:26px;font-weight:800;color:var(--a);line-height:1;flex-shrink:0}
+.win-text{font-size:14px;line-height:1.55;color:var(--cream-soft)}
+/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.footer{border-top:1px solid var(--line);margin-top:2rem;padding:2.4rem var(--pad);text-align:center;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.04em;color:var(--mute)}
+.footer strong{color:var(--cream-dim);font-weight:500}
+/* â”€â”€ Floating download / print actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.actions{position:fixed;top:1.1rem;right:1.1rem;z-index:60;display:flex;gap:.5rem}
+.actions button{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.03em;padding:.55rem .85rem;border-radius:11px;border:1px solid var(--line);background:rgba(19,14,24,.82);backdrop-filter:blur(10px);color:var(--cream-soft);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:.15s;box-shadow:0 6px 22px -10px rgba(0,0,0,.7)}
+.actions button:hover{border-color:var(--p);color:var(--cream);transform:translateY(-1px)}
+.actions svg{width:13px;height:13px}
+@media(max-width:680px){.actions{top:auto;bottom:1rem;right:1rem}}
+@media print{
+  .actions,.toc{display:none!important}
+  .shell{grid-template-columns:1fr!important;padding:0 1.5rem!important}
+  .hero,.block,.card,.hook,.quote,.list-item,.opp,.win,.sum-card{break-inside:avoid}
+  body{background:var(--bg)!important}
+}
+@media(max-width:680px){.hero-meta{display:none}.quotes{columns:1}}
+</style>
+</head>
+<body>
+<div class="actions">
+  <button onclick="window.print()" title="Save as PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF</button>
+  <button onclick="downloadReportHTML()" title="Download HTML"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>HTML</button>
+</div>
+<header class="hero">
+  <div class="hero-top"><div class="brand-wordmark"><span class="brand-mark" style="background:#d4a574"></span>Calvenn Starre</div><div class="hero-meta">Phase 07<br>July 2026</div></div>
+  <div class="badge">Phase 07 â€” YouTube Intelligence</div>
+  <h1>Calvenn Starre</h1>
+  <p class="hero-desc">Mines the top creators in the niche for the nuggets, aha-moments, and contrarian takes their audiences love â€” turned into fresh, viral-tested hooks.</p>
+  <div class="kpis"><div><div class="kpi-n">8</div><div class="kpi-l">Videos Mined</div></div><div><div class="kpi-n">1</div><div class="kpi-l">Top Creators</div></div><div><div class="kpi-n">10</div><div class="kpi-l">Hooks Mined</div></div><div><div class="kpi-n">18</div><div class="kpi-l">Insights</div></div></div>
+</header>
+
+<div class="shell">
+  <nav class="toc">
+    <div class="toc-h">Contents</div>
+    <a href="#exec"><span class="ti">01</span>Executive Summary</a><a href="#s0-top-creators-mined"><span class="ti">02</span>Top Creators Mined</a><a href="#s1-knowledge-nuggets"><span class="ti">03</span>Knowledge Nuggets</a><a href="#s2-aha-moments"><span class="ti">04</span>Aha Moments</a><a href="#s3-contrarian-takes"><span class="ti">05</span>Contrarian Takes</a><a href="#s4-audience-questions"><span class="ti">06</span>Audience Questions</a><a href="#s5-mined-hooks"><span class="ti">07</span>Mined Hooks</a><a href="#opportunity"><span class="ti">08</span>Your Opportunity</a><a href="#wins"><span class="ti">09</span>Quick Wins</a>
+  </nav>
+  <main class="main">
+    <section class="block" id="exec">
+      <div class="block-head">
+        <div class="ghost">01</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 01</div>
+        <h2 class="block-title">Executive Summary</h2>
+        
+      </div>
+      <div class="sum-grid"><div class="sum-card"><div class="sum-icon">ðŸ”</div><div class="sum-label">WHAT CREATORS EMPHASIZE</div><div class="sum-title">The recurring high-value themes</div><div class="sum-text">Success is framed as a 52-week process, making weekly repetition more important than sudden breakthroughs. Committing to one position in one company for a full year creates leverage that multi-company dabbling destroys.</div></div><div class="sum-card"><div class="sum-icon">ðŸŽ¯</div><div class="sum-label">CONTRARIAN ANGLE TO OWN</div><div class="sum-title">Where to break from the pack</div><div class="sum-text">Running multiple MLM companies at once is framed as a liability rather than diversification.</div></div><div class="sum-card"><div class="sum-icon">âš¡</div><div class="sum-label">LEAD WITH THIS</div><div class="sum-title">Strongest mined hook</div><div class="sum-text">If you keep chasing five opportunities, you may be guaranteeing that none of them works.</div></div></div>
+    </section><section class="block" id="s0-top-creators-mined">
+      <div class="block-head">
+        <div class="ghost">02</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 02</div>
+        <h2 class="block-title">Top Creators Mined</h2>
+        
+      </div>
+      <div class="grid"><div class="card" style="--c:#d4a574">
+        <div class="card-name">Calvenn Starre</div>
+        <div class="field"><div class="field-label">Why It Matters</div><div class="field-text">Turns manifestation, entrepreneurship, and network marketing into practical systems built on focus, identity, repetition, and behavioral awareness.</div></div>
+      </div></div>
+    </section><section class="block" id="s1-knowledge-nuggets">
+      <div class="block-head">
+        <div class="ghost">03</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 03</div>
+        <h2 class="block-title">Knowledge Nuggets</h2>
+        <p class="block-sub">Non-obvious, high-value insights creators teach</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">01</span>
+      <div><div class="list-lead">Success is framed as a 52-week process, making weekly repetition more important than sudden breakthroughs.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">02</span>
+      <div><div class="list-lead">Committing to one position in one company for a full year creates leverage that multi-company dabbling destroys.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">03</span>
+      <div><div class="list-lead">Compensation plans are behavioral engineering: their real purpose is to shape representative actions.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">04</span>
+      <div><div class="list-lead">Manifestation becomes operational through receiving, having, and acknowledging rather than merely wanting.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">05</span>
+      <div><div class="list-lead">Recurring thoughts are diagnostic signals pointing toward unresolved problems or necessary action.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">06</span>
+      <div><div class="list-lead">People often miss opportunities because they reject them before recognizing how they fit their deeper goals.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">07</span>
+      <div><div class="list-lead">Receiving is treated as a skill and prerequisite for fulfillment, not a passive result of giving.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">08</span>
+      <div><div class="list-lead">Public speaking, entrepreneurship, wealth creation, and network marketing are presented as learnable skills rather than innate abilities.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">09</span>
+      <div><div class="list-lead">Specific financial targets create measurable progress, while vague desires protect people from accountability.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">10</span>
+      <div><div class="list-lead">Awareness can weaken an automatic thought pattern before any external circumstance changes.</div></div>
+    </div></div>
+    </section><section class="block" id="s2-aha-moments">
+      <div class="block-head">
+        <div class="ghost">04</div>
+        <div class="block-eyebrow" style="color:#c4607e">Section 04</div>
+        <h2 class="block-title">Aha Moments</h2>
+        <p class="block-sub">Reframes that make audiences stop scrolling</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">01</span>
+      <div><div class="list-lead">“I want more money” is not a goal; it is a vague statement that permits vague action.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">02</span>
+      <div><div class="list-lead">Purpose built entirely around helping others can become resentment when appreciation fails to arrive.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">03</span>
+      <div><div class="list-lead">A bad event may become a gift when its lesson is consciously received and applied.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">04</span>
+      <div><div class="list-lead">Self-image is not just how you see yourself; it is a behavioral identity that directs what you repeatedly do.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">05</span>
+      <div><div class="list-lead">Receiving opportunities requires recognizing them, not demanding that they arrive in a preferred form.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">06</span>
+      <div><div class="list-lead">Visualization matters because it makes a desired identity psychologically available before results appear.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">07</span>
+      <div><div class="list-lead">The thoughts that repeat most often may reveal the next business or personal issue demanding attention.</div></div>
+    </div><div class="list-item" style="--c:#c4607e">
+      <span class="list-idx" style="color:#c4607e">08</span>
+      <div><div class="list-lead">Awareness is an intervention: naming a pattern can reduce its control over your behavior.</div></div>
+    </div></div>
+    </section><section class="block" id="s3-contrarian-takes">
+      <div class="block-head">
+        <div class="ghost">05</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 05</div>
+        <h2 class="block-title">Contrarian Takes</h2>
+        <p class="block-sub">Where creators contradict conventional wisdom</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">01</span>
+      <div><div class="list-lead">Running multiple MLM companies at once is framed as a liability rather than diversification.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">02</span>
+      <div><div class="list-lead">Personal fulfillment is considered a more durable purpose than sacrificing solely for family.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">03</span>
+      <div><div class="list-lead">Giving is not automatically virtuous if refusing to receive keeps someone unfulfilled.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">04</span>
+      <div><div class="list-lead">Negative experiences are not inherently negative; their value depends on interpretation and response.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">05</span>
+      <div><div class="list-lead">Manifestation is useful only when it supports difficult action rather than replacing it.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">06</span>
+      <div><div class="list-lead">A compensation plan should be judged by the behavior it creates, not simply by its payout size.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">07</span>
+      <div><div class="list-lead">Over-identifying with a professional role can damage relationships and distort self-worth.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">08</span>
+      <div><div class="list-lead">Focus is not restrictive; sustained focus is the mechanism that converts effort into leverage.</div></div>
+    </div></div>
+    </section><section class="block" id="s4-audience-questions">
+      <div class="block-head">
+        <div class="ghost">06</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 06</div>
+        <h2 class="block-title">Audience Questions</h2>
+        <p class="block-sub">What viewers clearly care about</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">01</span>
+      <div><div class="list-lead">Which recurring thought or phrase is consuming my attention, and what action could it be pointing toward?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">02</span>
+      <div><div class="list-lead">Am I committed to one company and one position, or using multiple opportunities to avoid sustained focus?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">03</span>
+      <div><div class="list-lead">What exact income, expense, or lifestyle outcome would replace my vague goal of making more money?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">04</span>
+      <div><div class="list-lead">What opportunity have I dismissed because it did not look like the thing I asked for?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">05</span>
+      <div><div class="list-lead">How do I know whether a compensation plan is designed to help me or merely motivate me?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">06</span>
+      <div><div class="list-lead">What would a full 52-week commitment look like in my business?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">07</span>
+      <div><div class="list-lead">Am I pursuing success for my own fulfillment or only to earn appreciation from others?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">08</span>
+      <div><div class="list-lead">What negative experience might contain a useful lesson or hidden opportunity?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">09</span>
+      <div><div class="list-lead">Where am I over-identifying with a professional role and harming my relationships or self-image?</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">10</span>
+      <div><div class="list-lead">What would it mean for me to genuinely receive money, support, recognition, or opportunity?</div></div>
+    </div></div>
+    </section><section class="block" id="s5-mined-hooks">
+      <div class="block-head">
+        <div class="ghost">07</div>
+        <div class="block-eyebrow" style="color:#c4607e">Section 07</div>
+        <h2 class="block-title">Mined Hooks</h2>
+        <p class="block-sub">Distilled into ready-to-use hooks</p>
+      </div>
+      <div class="grid grid-hooks"><div class="hook" style="--c:#e06a6a">
+        <div class="hook-num" style="color:#e06a6a">01</div>
+        <div class="hook-lead">If you keep chasing five opportunities, you may be guaranteeing that none of them works.</div>
+        <div class="hook-body">Multi-company activity can create dabbling instead of leverage; one focused commitment may have a higher probability of success.</div>
+        <span class="hook-tag" style="color:#e06a6a;border-color:#e06a6a55;background:#e06a6a1a">fear</span>
+      </div><div class="hook" style="--c:#c4607e">
+        <div class="hook-num" style="color:#c4607e">02</div>
+        <div class="hook-lead">“I want more money” might be the reason your income goal never moves.</div>
+        <div class="hook-body">Vague desires produce vague action, while specific financial or lifestyle outcomes create measurable progress.</div>
+        <span class="hook-tag" style="color:#c4607e;border-color:#c4607e55;background:#c4607e1a">curiosity</span>
+      </div><div class="hook" style="--c:#d4a574">
+        <div class="hook-num" style="color:#d4a574">03</div>
+        <div class="hook-lead">Your compensation plan may be training you more than your mentor is.</div>
+        <div class="hook-body">Compensation plans function as behavioral engineering by shaping what representatives repeatedly do.</div>
+        <span class="hook-tag" style="color:#d4a574;border-color:#d4a57455;background:#d4a5741a">authority</span>
+      </div><div class="hook" style="--c:#d4a574">
+        <div class="hook-num" style="color:#d4a574">04</div>
+        <div class="hook-lead">The opportunity you rejected may be the one you asked for in disguise.</div>
+        <div class="hook-body">People can miss opportunities by dismissing them before recognizing their relevance.</div>
+        <span class="hook-tag" style="color:#d4a574;border-color:#d4a57455;background:#d4a5741a">aha</span>
+      </div><div class="hook" style="--c:#c4607e">
+        <div class="hook-num" style="color:#c4607e">05</div>
+        <div class="hook-lead">The thought you wake up with could be your next business strategy.</div>
+        <div class="hook-body">Recurring thoughts may act as diagnostic signals pointing toward unresolved issues or necessary action.</div>
+        <span class="hook-tag" style="color:#c4607e;border-color:#c4607e55;background:#c4607e1a">curiosity</span>
+      </div><div class="hook" style="--c:#d4a574">
+        <div class="hook-num" style="color:#d4a574">06</div>
+        <div class="hook-lead">Trying to succeed only for your family can quietly make you resent them.</div>
+        <div class="hook-body">Purpose centered entirely on others can become unstable when appreciation or recognition does not arrive.</div>
+        <span class="hook-tag" style="color:#d4a574;border-color:#d4a57455;background:#d4a5741a">transform</span>
+      </div><div class="hook" style="--c:#5ab896">
+        <div class="hook-num" style="color:#5ab896">07</div>
+        <div class="hook-lead">You do not need to be born entrepreneurial to become wealthy.</div>
+        <div class="hook-body">Public speaking, entrepreneurship, network marketing, and wealth creation are presented as learnable skills.</div>
+        <span class="hook-tag" style="color:#5ab896;border-color:#5ab89655;background:#5ab8961a">proof</span>
+      </div><div class="hook" style="--c:#d4a574">
+        <div class="hook-num" style="color:#d4a574">08</div>
+        <div class="hook-lead">Manifestation fails when it makes you feel inspired but not more capable of acting.</div>
+        <div class="hook-body">Visualization matters when it builds a mental identity that makes difficult action feel possible.</div>
+        <span class="hook-tag" style="color:#d4a574;border-color:#d4a57455;background:#d4a5741a">contrarian</span>
+      </div><div class="hook" style="--c:#d4a574">
+        <div class="hook-num" style="color:#d4a574">09</div>
+        <div class="hook-lead">Receiving may be the missing skill behind your lack of fulfillment.</div>
+        <div class="hook-body">Inability to receive can cause people to reject opportunities or seek substitute forms of validation.</div>
+        <span class="hook-tag" style="color:#d4a574;border-color:#d4a57455;background:#d4a5741a">transform</span>
+      </div><div class="hook" style="--c:#d4a574">
+        <div class="hook-num" style="color:#d4a574">10</div>
+        <div class="hook-lead">Give yourself 52 weeks before deciding whether your strategy works.</div>
+        <div class="hook-body">Weekly repetition and sustained focus are positioned as stronger drivers of success than overnight breakthroughs.</div>
+        <span class="hook-tag" style="color:#d4a574;border-color:#d4a57455;background:#d4a5741a">authority</span>
+      </div></div>
+    </section><section class="block" id="opportunity">
+      <div class="block-head">
+        <div class="ghost">08</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 08</div>
+        <h2 class="block-title">Your Opportunity</h2>
+        
+      </div>
+      <div class="opp"><div class="opp-label">Where Calvenn Starre Wins</div><div class="opp-text">Running multiple MLM companies at once is framed as a liability rather than diversification. â€” no competitor is owning this angle. Calvenn Starre can own it with sourced, creator-grade content.</div></div>
+    </section><section class="block" id="wins">
+      <div class="block-head">
+        <div class="ghost">09</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 09</div>
+        <h2 class="block-title">Quick Wins</h2>
+        
+      </div>
+      <div class="wins"><div class="win"><span class="win-num">01</span><span class="win-text">If you keep chasing five opportunities, you may be guaranteeing that none of them works.</span></div><div class="win"><span class="win-num">02</span><span class="win-text">“I want more money” might be the reason your income goal never moves.</span></div><div class="win"><span class="win-num">03</span><span class="win-text">Your compensation plan may be training you more than your mentor is.</span></div></div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  Prepared for <strong>Calvenn Starre</strong> &nbsp;Â·&nbsp; Phase 07 â€” YouTube Intelligence &nbsp;Â·&nbsp; Generated by <strong>Manifestic Agent OS</strong> &nbsp;Â·&nbsp; July 2026
+</footer>
+<script>
+function downloadReportHTML(){try{var d=document.querySelector('.actions');if(d)d.remove();var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="Calvenn-Starre-YouTube-Hook-Mining-July-2026.html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){location.reload()},200);}catch(e){window.print();}}
+</script>
+</body>
+</html>

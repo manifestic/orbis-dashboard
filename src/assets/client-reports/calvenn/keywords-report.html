@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyword Opportunity Report â€” Your Best Health Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#130e18;--bg2:#1b1422;--card:rgba(255,255,255,0.03);--line:rgba(243,235,218,0.09);--cream:#f5eede;--cream-soft:#ddd0bb;--cream-dim:#b6a890;--mute:#867a68;--p:#d4a574;--a:#5ab896;--t:#c4607e;--pad:clamp(1.25rem,4.5vw,5.5rem);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--cream-soft);line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+a{color:inherit}
+.mono{font-family:'JetBrains Mono',monospace}
+/* â”€â”€ HERO (full-bleed gradient mesh) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero{position:relative;padding:clamp(2.5rem,5vw,4.5rem) var(--pad) clamp(3rem,6vw,5rem);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;background:
+  radial-gradient(60% 90% at 12% 8%,#d4a5743a,transparent 60%),
+  radial-gradient(55% 80% at 92% 22%,#5ab8962e,transparent 60%),
+  radial-gradient(70% 90% at 78% 100%,#c4607e24,transparent 60%),
+  linear-gradient(165deg,var(--bg2),var(--bg))}
+.hero>*{position:relative;z-index:1}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:clamp(2rem,5vw,3.5rem)}
+.brand-logo{height:42px;width:auto;max-width:240px;object-fit:contain}
+.brand-wordmark{display:flex;align-items:center;gap:.6rem;font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);letter-spacing:-.01em}
+.brand-mark{width:16px;height:16px;border-radius:5px;display:inline-block}
+.hero-meta{font-family:'JetBrains Mono';font-size:11px;color:var(--cream-dim);letter-spacing:.18em;text-transform:uppercase;text-align:right}
+.badge{display:inline-block;background:#d4a57424;border:1px solid #d4a57466;color:var(--cream);padding:.45rem 1.1rem;border-radius:50px;font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.4rem}
+h1{font-family:'Bricolage Grotesque';font-size:clamp(2.7rem,7vw,6rem);font-weight:700;letter-spacing:-.025em;line-height:.98;color:var(--cream);margin-bottom:1.1rem;max-width:16ch}
+.hero-desc{color:var(--cream-dim);font-size:clamp(1rem,1.4vw,1.18rem);line-height:1.6;max-width:60ch}
+.kpis{display:flex;flex-wrap:wrap;gap:clamp(2rem,5vw,4.5rem);margin-top:clamp(2.2rem,4vw,3.2rem);padding-top:clamp(1.6rem,3vw,2.2rem);border-top:1px solid var(--line)}
+.kpi-n{font-family:'Bricolage Grotesque';font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;line-height:.9;letter-spacing:-.02em;background:linear-gradient(180deg,var(--cream),#5ab896);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi-l{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+/* â”€â”€ SHELL: sticky TOC + main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0;padding:0 var(--pad)}
+@media(min-width:1080px){.shell{grid-template-columns:228px minmax(0,1fr);gap:clamp(2rem,4vw,4.5rem)}}
+.toc{display:none}
+@media(min-width:1080px){.toc{display:block;position:sticky;top:0;align-self:start;height:100vh;padding:3.2rem 0;overflow-y:auto}}
+.toc-h{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:1.2rem}
+.toc a{display:flex;gap:.7rem;align-items:baseline;padding:.5rem 0;font-size:13px;color:var(--cream-dim);text-decoration:none;border-left:2px solid transparent;padding-left:.9rem;transition:.15s;line-height:1.35}
+.toc a:hover{color:var(--cream);border-left-color:var(--p)}
+.toc a .ti{font-family:'JetBrains Mono';font-size:10px;color:var(--mute)}
+.main{padding:clamp(2.5rem,4vw,3.6rem) 0 1rem;min-width:0}
+/* â”€â”€ BLOCK / section headers with ghost numerals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.block{position:relative;padding:clamp(2.2rem,4vw,3.4rem) 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:none;padding-top:0}
+.block-head{position:relative;margin-bottom:1.8rem}
+.ghost{position:absolute;top:-.35em;right:0;font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(5rem,11vw,9rem);line-height:1;color:var(--cream);opacity:.05;pointer-events:none;z-index:0}
+.block-eyebrow{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem}
+.block-title{font-family:'Bricolage Grotesque';font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:var(--cream);line-height:1.05;position:relative;z-index:1}
+.block-sub{color:var(--mute);font-size:13.5px;margin-top:.5rem;max-width:64ch}
+/* â”€â”€ Exec summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+.sum-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;border-top:3px solid var(--p);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.sum-card:nth-child(2){border-top-color:var(--a)}.sum-card:nth-child(3){border-top-color:var(--t)}
+.sum-icon{font-size:22px;margin-bottom:.7rem}
+.sum-label{font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:.5rem}
+.sum-title{font-family:'Bricolage Grotesque';font-size:18px;font-weight:600;margin-bottom:.7rem;color:var(--cream);line-height:1.2}
+.sum-text{font-size:13.5px;line-height:1.65;color:var(--cream-dim)}
+/* â”€â”€ Card grids (matrix / hooks) â€” fill width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.3rem}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.8rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--c),transparent)}
+.card:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));transform:translateY(-3px)}
+.card-name{font-family:'Bricolage Grotesque';font-size:17px;font-weight:700;color:var(--cream);margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.card-name a{text-decoration:none}.card-name a:hover{color:var(--c)}
+.field{margin-bottom:1.05rem}.field:last-child{margin-bottom:0}
+.field-label{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--c);margin-bottom:.35rem;font-weight:600}
+.field-text{font-size:13.5px;line-height:1.6;color:var(--cream-soft)}
+/* Hooks */
+.grid-hooks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.hook{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.hook:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));box-shadow:0 0 44px -16px var(--c)}
+.hook-num{font-family:'Bricolage Grotesque';font-size:34px;font-weight:800;line-height:1;opacity:.85;margin-bottom:.7rem}
+.hook-lead{font-family:'Bricolage Grotesque';font-size:19px;font-weight:600;color:var(--cream);line-height:1.22;margin-bottom:.6rem}
+.hook-body{font-size:13px;line-height:1.6;color:var(--cream-dim);margin-bottom:1rem}
+.hook-tag{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600}
+/* â”€â”€ Stat cards (market sizing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.statcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.6rem;text-align:left}
+.statcard-v{font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(2rem,3.4vw,2.8rem);line-height:1;letter-spacing:-.02em;margin-bottom:.5rem}
+.statcard-l{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:.6rem;font-weight:600}
+.statcard-b{font-size:12.5px;line-height:1.55;color:var(--cream-dim)}
+/* â”€â”€ Landing page angles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.angle{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.8rem}
+.angle-badge{display:inline-block;font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600;margin-bottom:1rem}
+.angle-title{font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);line-height:1.2;margin-bottom:.5rem}
+.angle-sub{font-size:12.5px;color:var(--cream-dim);margin-bottom:1.1rem;line-height:1.55}
+.angle-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.angle-list li{display:flex;gap:.6rem;font-size:12.5px;line-height:1.5;color:var(--cream-soft)}
+.angle-bull{flex-shrink:0;font-weight:700}
+/* â”€â”€ Quotes (masonry, editorial) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.quotes{columns:3 280px;column-gap:1.3rem}
+.quote{break-inside:avoid;position:relative;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.5rem 1.5rem 1.4rem;margin:0 0 1.3rem}
+.quote-idx{font-family:'JetBrains Mono';font-size:11px;font-weight:600;letter-spacing:.1em}
+.quote-lead{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--cream);line-height:1.3;margin:.5rem 0 .6rem}
+.quote-body{font-size:12.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ List (trends / strategy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.list{display:flex;flex-direction:column;gap:.8rem}
+.list-item{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.3rem 1.5rem}
+.list-idx{font-family:'Bricolage Grotesque';font-size:22px;font-weight:800;line-height:1;flex-shrink:0;opacity:.85}
+.list-lead{font-family:'Bricolage Grotesque';font-size:16px;font-weight:600;color:var(--cream);margin-bottom:.35rem;line-height:1.25}
+.list-body{font-size:13.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ Opportunity (feature band) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.opp{position:relative;background:linear-gradient(135deg,#d4a5741f,#5ab8960d 70%,transparent);border:1px solid #d4a5743d;border-radius:20px;padding:clamp(1.8rem,3.5vw,3rem)}
+.opp-label{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:1rem}
+.opp-text{font-family:'Fraunces',serif;font-size:clamp(1.15rem,2vw,1.6rem);line-height:1.45;color:var(--cream);max-width:46ch}
+/* â”€â”€ Quick wins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.wins{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+.win{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem}
+.win-num{font-family:'Bricolage Grotesque';font-size:26px;font-weight:800;color:var(--a);line-height:1;flex-shrink:0}
+.win-text{font-size:14px;line-height:1.55;color:var(--cream-soft)}
+/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.footer{border-top:1px solid var(--line);margin-top:2rem;padding:2.4rem var(--pad);text-align:center;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.04em;color:var(--mute)}
+.footer strong{color:var(--cream-dim);font-weight:500}
+/* â”€â”€ Floating download / print actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.actions{position:fixed;top:1.1rem;right:1.1rem;z-index:60;display:flex;gap:.5rem}
+.actions button{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.03em;padding:.55rem .85rem;border-radius:11px;border:1px solid var(--line);background:rgba(19,14,24,.82);backdrop-filter:blur(10px);color:var(--cream-soft);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:.15s;box-shadow:0 6px 22px -10px rgba(0,0,0,.7)}
+.actions button:hover{border-color:var(--p);color:var(--cream);transform:translateY(-1px)}
+.actions svg{width:13px;height:13px}
+@media(max-width:680px){.actions{top:auto;bottom:1rem;right:1rem}}
+@media print{
+  .actions,.toc{display:none!important}
+  .shell{grid-template-columns:1fr!important;padding:0 1.5rem!important}
+  .hero,.block,.card,.hook,.quote,.list-item,.opp,.win,.sum-card{break-inside:avoid}
+  body{background:var(--bg)!important}
+}
+@media(max-width:680px){.hero-meta{display:none}.quotes{columns:1}}
+</style>
+</head>
+<body>
+<div class="actions">
+  <button onclick="window.print()" title="Save as PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF</button>
+  <button onclick="downloadReportHTML()" title="Download HTML"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>HTML</button>
+</div>
+<header class="hero">
+  <div class="hero-top"><div class="brand-wordmark"><span class="brand-mark" style="background:#d4a574"></span>Your Best Health Quote</div><div class="hero-meta">Keyword Opportunity Report<br>July 2026</div></div>
+  <div class="badge">Keyword Opportunity Report</div>
+  <h1>Your Best Health Quote</h1>
+  <p class="hero-desc">Real search demand for the niche â€” the highest-opportunity keywords (high volume, low competition) grouped into content pillars to build topical authority.</p>
+  <div class="kpis"><div><div class="kpi-n">250</div><div class="kpi-l">Keywords Analyzed</div></div><div><div class="kpi-n">74K/mo</div><div class="kpi-l">Top Demand</div></div><div><div class="kpi-n">5</div><div class="kpi-l">Content Pillars</div></div><div><div class="kpi-n">250</div><div class="kpi-l">High-Opportunity KWs</div></div></div>
+</header>
+
+<div class="shell">
+  <nav class="toc">
+    <div class="toc-h">Contents</div>
+    <a href="#exec"><span class="ti">01</span>Executive Summary</a><a href="#s0-top-keyword-opportunitie"><span class="ti">02</span>Top Keyword Opportunities</a><a href="#s1-content-pillars-to-build"><span class="ti">03</span>Content Pillars to Build</a><a href="#opportunity"><span class="ti">04</span>Your Opportunity</a><a href="#wins"><span class="ti">05</span>Quick Wins</a>
+  </nav>
+  <main class="main">
+    <section class="block" id="exec">
+      <div class="block-head">
+        <div class="ghost">01</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 01</div>
+        <h2 class="block-title">Executive Summary</h2>
+        
+      </div>
+      <div class="sum-grid"><div class="sum-card"><div class="sum-icon">ðŸ”</div><div class="sum-label">KEY FINDING</div><div class="sum-title">The demand landscape</div><div class="sum-text">The dataset shows the strongest relevant demand concentrated in Medicare, life insurance, individual health coverage, and disability protection. Medicare and life insurance terms combine large search volumes with meaningful CPCs, indicating strong commercial potential.</div></div><div class="sum-card"><div class="sum-icon">ðŸŽ¯</div><div class="sum-label">TOP OPPORTUNITY</div><div class="sum-title">Biggest opening</div><div class="sum-text">The biggest opening is a Medicare-centered content hub built around 2026 premiums, Medicare Advantage, Medicare Supplement plans, and Medicare-versus-Medicaid education. These topics offer clearer lead intent and tighter topical alignment than the many unrelated provider-login, auto, renters, and property-insurance keywords in the dataset.</div></div><div class="sum-card"><div class="sum-icon">âš¡</div><div class="sum-label">NEXT ACTION</div><div class="sum-title">Start here</div><div class="sum-text">Launch the five quick-win pages first, then connect them with pillar pages and internal links to quote, eligibility, and agent-consultation forms. Exclude unrelated auto, renters, homeowners, provider-login, and employment keywords unless the business intentionally expands beyond its stated health, Medicare, ACA, and life focus.</div></div></div>
+    </section><section class="block" id="s0-top-keyword-opportunitie">
+      <div class="block-head">
+        <div class="ghost">02</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 02</div>
+        <h2 class="block-title">Top Keyword Opportunities</h2>
+        <p class="block-sub">Ranked by opportunity â€” real volume vs. competition &amp; difficulty</p>
+      </div>
+      <div class="grid"><div class="card" style="--c:#d4a574">
+        <div class="card-name">allegheny health mychart</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">74,000</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">0/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">100/100</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name">atrius health login</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">27,100</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">0/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">100/100</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name">ameritan insurance</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">90,500</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">0/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">99/100</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name">the zebra car insurance quotes</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">40,500</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">7/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">98/100</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name">mychart mercy health</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">27,100</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">10/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">98/100</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name">military car insurance</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">49,500</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">3/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">97/100</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name">ice agent salary</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">33,100</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">9/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">97/100</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name">short term disability insurance</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">90,500</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">16/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">96/100</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name">erie insurance login</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">74,000</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">14/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">96/100</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name">sutter health login</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">60,500</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">20/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">96/100</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name">difference between medicare and medicaid</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">33,100</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">12/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">96/100</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name">what is gap insurance</div>
+        <div class="field"><div class="field-label">Monthly Searches</div><div class="field-text">27,100</div></div><div class="field"><div class="field-label">Competition</div><div class="field-text">LOW</div></div><div class="field"><div class="field-label">Difficulty</div><div class="field-text">11/100</div></div><div class="field"><div class="field-label">Opportunity</div><div class="field-text">96/100</div></div>
+      </div></div>
+    </section><section class="block" id="s1-content-pillars-to-build">
+      <div class="block-head">
+        <div class="ghost">03</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 03</div>
+        <h2 class="block-title">Content Pillars to Build</h2>
+        <p class="block-sub">Cluster these keywords into authority-building pillar pages</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">01</span>
+      <div><div class="list-lead">Medicare Plans, Enrollment &amp; Costs</div><div class="list-body">Medicare keywords show substantial demand and strong commercial intent, especially around login, plan types, supplements, and 2026 pricing. This pillar can support lead-generation pages, comparison guides, and agent-assisted enrollment content.  Â·  Cluster: medicare login, difference between medicare and medicaid, medicare supplement insurance, medicare advantage part c plans, medicare 2026 premiums, medicare part b premium 2026</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">02</span>
+      <div><div class="list-lead">ACA &amp; Individual Health Insurance</div><div class="list-body">Consumers actively search for individual coverage, marketplace access, employer alternatives, and major insurer options. Educational content can move readers from eligibility questions to quote requests.  Â·  Cluster: individual health insurance plans, employer sponsored health insurance, cobra health insurance, access health ct, anthem insurance, oscar health insurance, high deductible health plan</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">03</span>
+      <div><div class="list-lead">Life Insurance Planning &amp; Quotes</div><div class="list-body">Life insurance terms combine very high search volume with high CPCs, signaling valuable lead potential. Build clear decision-stage content around term, whole, affordability, and age-based needs.  Â·  Cluster: term life insurance, term life insurance quotes, whole life insurance, affordable life insurance, midlife insurance, long term care insurance quote</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">04</span>
+      <div><div class="list-lead">Disability &amp; Supplemental Health Coverage</div><div class="list-body">Disability and supplemental products address financially urgent protection gaps and have strong commercial value. These topics are well suited to benefit explainers, needs assessments, and agent consultation funnels.  Â·  Cluster: short term disability insurance, disability insurance, hospital indemnity insurance, vsp vision care insurance, vsp insurance, umr insurance</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">05</span>
+      <div><div class="list-lead">Insurance Comparison &amp; Consumer Education</div><div class="list-body">Comparison-oriented searches reveal users who are actively evaluating coverage, costs, and providers. A neutral education hub can capture earlier research intent and route qualified visitors to health, Medicare, or life insurance specialists.  Â·  Cluster: difference between medicare and medicaid, high deductible health plan, cobra health insurance, individual health insurance plans, affordable life insurance, term life insurance quotes</div></div>
+    </div></div>
+    </section><section class="block" id="opportunity">
+      <div class="block-head">
+        <div class="ghost">04</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 04</div>
+        <h2 class="block-title">Your Opportunity</h2>
+        
+      </div>
+      <div class="opp"><div class="opp-label">Where Your Best Health Quote Wins</div><div class="opp-text">The biggest opening is a Medicare-centered content hub built around 2026 premiums, Medicare Advantage, Medicare Supplement plans, and Medicare-versus-Medicaid education. These topics offer clearer lead intent and tighter topical alignment than the many unrelated provider-login, auto, renters, and property-insurance keywords in the dataset.</div></div>
+    </section><section class="block" id="wins">
+      <div class="block-head">
+        <div class="ghost">05</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 05</div>
+        <h2 class="block-title">Quick Wins</h2>
+        
+      </div>
+      <div class="wins"><div class="win"><span class="win-num">01</span><span class="win-text">Publish a Medicare 2026 premiums and Part B costs guide targeting &quot;medicare 2026 premiums&quot; and &quot;medicare part b premium 2026&quot;.</span></div><div class="win"><span class="win-num">02</span><span class="win-text">Create a comparison page for &quot;difference between medicare and medicaid&quot; with an eligibility and coverage decision chart.</span></div><div class="win"><span class="win-num">03</span><span class="win-text">Publish &quot;short term disability insurance: what it covers, costs, and who needs it&quot; targeting the high-volume, low-competition keyword.</span></div><div class="win"><span class="win-num">04</span><span class="win-text">Create an ACA guide targeting &quot;individual health insurance plans&quot; with marketplace eligibility, subsidy, and quote-request CTAs.</span></div><div class="win"><span class="win-num">05</span><span class="win-text">Publish a buyer guide for &quot;hospital indemnity insurance&quot; explaining benefits, exclusions, and how it complements major medical coverage.</span></div></div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  Prepared for <strong>Your Best Health Quote</strong> &nbsp;Â·&nbsp; Keyword Opportunity Report &nbsp;Â·&nbsp; Generated by <strong>Manifestic Agent OS</strong> &nbsp;Â·&nbsp; July 2026
+</footer>
+<script>
+function downloadReportHTML(){try{var d=document.querySelector('.actions');if(d)d.remove();var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="Your-Best-Health-Quote-Keyword-Opportunity-Report-July-2026.html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){location.reload()},200);}catch(e){window.print();}}
+</script>
+</body>
+</html>

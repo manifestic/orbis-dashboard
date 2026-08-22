@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitor Intelligence â€” Your Best Health Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#130e18;--bg2:#1b1422;--card:rgba(255,255,255,0.03);--line:rgba(243,235,218,0.09);--cream:#f5eede;--cream-soft:#ddd0bb;--cream-dim:#b6a890;--mute:#867a68;--p:#d4a574;--a:#5ab896;--t:#c4607e;--pad:clamp(1.25rem,4.5vw,5.5rem);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--cream-soft);line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+a{color:inherit}
+.mono{font-family:'JetBrains Mono',monospace}
+/* â”€â”€ HERO (full-bleed gradient mesh) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero{position:relative;padding:clamp(2.5rem,5vw,4.5rem) var(--pad) clamp(3rem,6vw,5rem);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;background:
+  radial-gradient(60% 90% at 12% 8%,#d4a5743a,transparent 60%),
+  radial-gradient(55% 80% at 92% 22%,#5ab8962e,transparent 60%),
+  radial-gradient(70% 90% at 78% 100%,#c4607e24,transparent 60%),
+  linear-gradient(165deg,var(--bg2),var(--bg))}
+.hero>*{position:relative;z-index:1}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:clamp(2rem,5vw,3.5rem)}
+.brand-logo{height:42px;width:auto;max-width:240px;object-fit:contain}
+.brand-wordmark{display:flex;align-items:center;gap:.6rem;font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);letter-spacing:-.01em}
+.brand-mark{width:16px;height:16px;border-radius:5px;display:inline-block}
+.hero-meta{font-family:'JetBrains Mono';font-size:11px;color:var(--cream-dim);letter-spacing:.18em;text-transform:uppercase;text-align:right}
+.badge{display:inline-block;background:#d4a57424;border:1px solid #d4a57466;color:var(--cream);padding:.45rem 1.1rem;border-radius:50px;font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.4rem}
+h1{font-family:'Bricolage Grotesque';font-size:clamp(2.7rem,7vw,6rem);font-weight:700;letter-spacing:-.025em;line-height:.98;color:var(--cream);margin-bottom:1.1rem;max-width:16ch}
+.hero-desc{color:var(--cream-dim);font-size:clamp(1rem,1.4vw,1.18rem);line-height:1.6;max-width:60ch}
+.kpis{display:flex;flex-wrap:wrap;gap:clamp(2rem,5vw,4.5rem);margin-top:clamp(2.2rem,4vw,3.2rem);padding-top:clamp(1.6rem,3vw,2.2rem);border-top:1px solid var(--line)}
+.kpi-n{font-family:'Bricolage Grotesque';font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;line-height:.9;letter-spacing:-.02em;background:linear-gradient(180deg,var(--cream),#5ab896);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi-l{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+/* â”€â”€ SHELL: sticky TOC + main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0;padding:0 var(--pad)}
+@media(min-width:1080px){.shell{grid-template-columns:228px minmax(0,1fr);gap:clamp(2rem,4vw,4.5rem)}}
+.toc{display:none}
+@media(min-width:1080px){.toc{display:block;position:sticky;top:0;align-self:start;height:100vh;padding:3.2rem 0;overflow-y:auto}}
+.toc-h{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:1.2rem}
+.toc a{display:flex;gap:.7rem;align-items:baseline;padding:.5rem 0;font-size:13px;color:var(--cream-dim);text-decoration:none;border-left:2px solid transparent;padding-left:.9rem;transition:.15s;line-height:1.35}
+.toc a:hover{color:var(--cream);border-left-color:var(--p)}
+.toc a .ti{font-family:'JetBrains Mono';font-size:10px;color:var(--mute)}
+.main{padding:clamp(2.5rem,4vw,3.6rem) 0 1rem;min-width:0}
+/* â”€â”€ BLOCK / section headers with ghost numerals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.block{position:relative;padding:clamp(2.2rem,4vw,3.4rem) 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:none;padding-top:0}
+.block-head{position:relative;margin-bottom:1.8rem}
+.ghost{position:absolute;top:-.35em;right:0;font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(5rem,11vw,9rem);line-height:1;color:var(--cream);opacity:.05;pointer-events:none;z-index:0}
+.block-eyebrow{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem}
+.block-title{font-family:'Bricolage Grotesque';font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:var(--cream);line-height:1.05;position:relative;z-index:1}
+.block-sub{color:var(--mute);font-size:13.5px;margin-top:.5rem;max-width:64ch}
+/* â”€â”€ Exec summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+.sum-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;border-top:3px solid var(--p);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.sum-card:nth-child(2){border-top-color:var(--a)}.sum-card:nth-child(3){border-top-color:var(--t)}
+.sum-icon{font-size:22px;margin-bottom:.7rem}
+.sum-label{font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:.5rem}
+.sum-title{font-family:'Bricolage Grotesque';font-size:18px;font-weight:600;margin-bottom:.7rem;color:var(--cream);line-height:1.2}
+.sum-text{font-size:13.5px;line-height:1.65;color:var(--cream-dim)}
+/* â”€â”€ Card grids (matrix / hooks) â€” fill width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.3rem}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.8rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--c),transparent)}
+.card:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));transform:translateY(-3px)}
+.card-name{font-family:'Bricolage Grotesque';font-size:17px;font-weight:700;color:var(--cream);margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.card-name a{text-decoration:none}.card-name a:hover{color:var(--c)}
+.field{margin-bottom:1.05rem}.field:last-child{margin-bottom:0}
+.field-label{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--c);margin-bottom:.35rem;font-weight:600}
+.field-text{font-size:13.5px;line-height:1.6;color:var(--cream-soft)}
+/* Hooks */
+.grid-hooks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.hook{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.hook:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));box-shadow:0 0 44px -16px var(--c)}
+.hook-num{font-family:'Bricolage Grotesque';font-size:34px;font-weight:800;line-height:1;opacity:.85;margin-bottom:.7rem}
+.hook-lead{font-family:'Bricolage Grotesque';font-size:19px;font-weight:600;color:var(--cream);line-height:1.22;margin-bottom:.6rem}
+.hook-body{font-size:13px;line-height:1.6;color:var(--cream-dim);margin-bottom:1rem}
+.hook-tag{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600}
+/* â”€â”€ Stat cards (market sizing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.statcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.6rem;text-align:left}
+.statcard-v{font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(2rem,3.4vw,2.8rem);line-height:1;letter-spacing:-.02em;margin-bottom:.5rem}
+.statcard-l{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:.6rem;font-weight:600}
+.statcard-b{font-size:12.5px;line-height:1.55;color:var(--cream-dim)}
+/* â”€â”€ Landing page angles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.angle{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.8rem}
+.angle-badge{display:inline-block;font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600;margin-bottom:1rem}
+.angle-title{font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);line-height:1.2;margin-bottom:.5rem}
+.angle-sub{font-size:12.5px;color:var(--cream-dim);margin-bottom:1.1rem;line-height:1.55}
+.angle-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.angle-list li{display:flex;gap:.6rem;font-size:12.5px;line-height:1.5;color:var(--cream-soft)}
+.angle-bull{flex-shrink:0;font-weight:700}
+/* â”€â”€ Quotes (masonry, editorial) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.quotes{columns:3 280px;column-gap:1.3rem}
+.quote{break-inside:avoid;position:relative;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.5rem 1.5rem 1.4rem;margin:0 0 1.3rem}
+.quote-idx{font-family:'JetBrains Mono';font-size:11px;font-weight:600;letter-spacing:.1em}
+.quote-lead{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--cream);line-height:1.3;margin:.5rem 0 .6rem}
+.quote-body{font-size:12.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ List (trends / strategy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.list{display:flex;flex-direction:column;gap:.8rem}
+.list-item{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.3rem 1.5rem}
+.list-idx{font-family:'Bricolage Grotesque';font-size:22px;font-weight:800;line-height:1;flex-shrink:0;opacity:.85}
+.list-lead{font-family:'Bricolage Grotesque';font-size:16px;font-weight:600;color:var(--cream);margin-bottom:.35rem;line-height:1.25}
+.list-body{font-size:13.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ Opportunity (feature band) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.opp{position:relative;background:linear-gradient(135deg,#d4a5741f,#5ab8960d 70%,transparent);border:1px solid #d4a5743d;border-radius:20px;padding:clamp(1.8rem,3.5vw,3rem)}
+.opp-label{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:1rem}
+.opp-text{font-family:'Fraunces',serif;font-size:clamp(1.15rem,2vw,1.6rem);line-height:1.45;color:var(--cream);max-width:46ch}
+/* â”€â”€ Quick wins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.wins{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+.win{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem}
+.win-num{font-family:'Bricolage Grotesque';font-size:26px;font-weight:800;color:var(--a);line-height:1;flex-shrink:0}
+.win-text{font-size:14px;line-height:1.55;color:var(--cream-soft)}
+/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.footer{border-top:1px solid var(--line);margin-top:2rem;padding:2.4rem var(--pad);text-align:center;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.04em;color:var(--mute)}
+.footer strong{color:var(--cream-dim);font-weight:500}
+/* â”€â”€ Floating download / print actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.actions{position:fixed;top:1.1rem;right:1.1rem;z-index:60;display:flex;gap:.5rem}
+.actions button{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.03em;padding:.55rem .85rem;border-radius:11px;border:1px solid var(--line);background:rgba(19,14,24,.82);backdrop-filter:blur(10px);color:var(--cream-soft);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:.15s;box-shadow:0 6px 22px -10px rgba(0,0,0,.7)}
+.actions button:hover{border-color:var(--p);color:var(--cream);transform:translateY(-1px)}
+.actions svg{width:13px;height:13px}
+@media(max-width:680px){.actions{top:auto;bottom:1rem;right:1rem}}
+@media print{
+  .actions,.toc{display:none!important}
+  .shell{grid-template-columns:1fr!important;padding:0 1.5rem!important}
+  .hero,.block,.card,.hook,.quote,.list-item,.opp,.win,.sum-card{break-inside:avoid}
+  body{background:var(--bg)!important}
+}
+@media(max-width:680px){.hero-meta{display:none}.quotes{columns:1}}
+</style>
+</head>
+<body>
+<div class="actions">
+  <button onclick="window.print()" title="Save as PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF</button>
+  <button onclick="downloadReportHTML()" title="Download HTML"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>HTML</button>
+</div>
+<header class="hero">
+  <div class="hero-top"><div class="brand-wordmark"><span class="brand-mark" style="background:#d4a574"></span>Your Best Health Quote</div><div class="hero-meta">Phase 01<br>July 2026</div></div>
+  <div class="badge">Phase 01 â€” Competitor Intelligence</div>
+  <h1>Your Best Health Quote</h1>
+  <p class="hero-desc">Deep-dive analysis of the competitive landscape, content strategy gaps, and market positioning opportunities.</p>
+  <div class="kpis"><div><div class="kpi-n">$59.4B</div><div class="kpi-l">Healthcare Broker Market Size (2025)</div></div><div><div class="kpi-n">35.2M</div><div class="kpi-l">Medicare Advantage Enrollees in 2026</div></div><div><div class="kpi-n">20–35%</div><div class="kpi-l">Live Transfer Lead Conversion Rate</div></div><div><div class="kpi-n">0 of 15</div><div class="kpi-l">Competitors Owning Honest Comparison Angle</div></div></div>
+</header>
+
+<div class="shell">
+  <nav class="toc">
+    <div class="toc-h">Contents</div>
+    <a href="#exec"><span class="ti">01</span>Executive Summary</a><a href="#s0-competitor-matrix"><span class="ti">02</span>Competitor Matrix</a><a href="#s1-market-gaps-trends"><span class="ti">03</span>Market Gaps &amp; Trends</a><a href="#opportunity"><span class="ti">04</span>Your Opportunity</a><a href="#wins"><span class="ti">05</span>Quick Wins</a>
+  </nav>
+  <main class="main">
+    <section class="block" id="exec">
+      <div class="block-head">
+        <div class="ghost">01</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 01</div>
+        <h2 class="block-title">Executive Summary</h2>
+        
+      </div>
+      <div class="sum-grid"><div class="sum-card"><div class="sum-icon">🔍</div><div class="sum-label">KEY FINDING</div><div class="sum-title">A $59.4B Market With No Honest Broker Brand</div><div class="sum-text">The healthcare insurance broker market reached $59.4B in 2025 and is growing at 9.6% CAGR — yet every major player is either a captive carrier locked to one product lineup, a digital platform accruing BBB complaints for bait-and-switch quoting (Policygenius, eHealth), or a B2B agent network invisible to consumers (Smart Choice, HealthMarkets). Not one of the 15 competitors in this field occupies the position of 'the advisor who shops every carrier for you and will tell you the truth about it.' That position sits unclaimed.</div></div><div class="sum-card"><div class="sum-icon">🎯</div><div class="sum-label">TOP OPPORTUNITY</div><div class="sum-title">Medicare Advantage Carrier Retrenchment + SNP Surge</div><div class="sum-text">UnitedHealthcare dropped from 29% to 26% Medicare Advantage market share in 2026 per KFF data and cut broker commissions on 15-20% of plans; Aetna similarly retrenched. Independent agents who pivot to the surging Chronic Condition SNP segment — C-SNP enrollment grew 49% year-over-year — can capture clients the incumbents are actively shedding. Your Best Health Quote is positioned to absorb this displaced demand as a carrier-agnostic advisor that no captive or direct-carrier competitor can replicate.</div></div><div class="sum-card"><div class="sum-icon">⚡</div><div class="sum-label">NEXT ACTION</div><div class="sum-title">Own the Local Georgia Medicare Comparison Gap Now</div><div class="sum-text">Georgia Health Insurance Inc. — your most direct local competitor — has virtually no SEO content and zero structured Medicare plan-comparison pages. Publishing a county-by-county Georgia Medicare Advantage comparison (UHC vs. Humana vs. Devoted vs. Aetna by zip code) will rank with minimal backlinks and positions the brand as the definitive local authority. Pair it with a 5-minute callback pledge: live transfer leads convert at 20-35% versus under 2% for the web form model Policygenius and eHealth are built around.</div></div></div>
+    </section><section class="block" id="s0-competitor-matrix">
+      <div class="block-head">
+        <div class="ghost">02</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 02</div>
+        <h2 class="block-title">Competitor Matrix</h2>
+        
+      </div>
+      <div class="grid"><div class="card" style="--c:#d4a574">
+        <div class="card-name"><a href="https://www.massmutual.com" target="_blank" rel="noreferrer">MassMutual</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Premium whole-life-as-wealth-building carrier managing $300B+ in assets; captive agents pitch dividend-paying permanent life as a tax-advantaged savings vehicle, not just coverage. Advisor force targets high-income families and business owners with estate planning angles.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Captive model means agents can ONLY sell MassMutual products — no ACA marketplace plans, no Medicare Advantage, no multi-carrier comparison. A prospect needing a $60/mo term policy or Medicare Supplement gets redirected or lost entirely.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Zero consumer-facing content on ACA Special Enrollment Periods, Medicare Part D drug plan comparisons, or IUL-vs-whole-life explainers written for buyers rather than advisors. Health insurance as a category is a complete blind spot.</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name"><a href="https://www.newyorklife.com" target="_blank" rel="noreferrer">New York Life</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">175-year heritage brand running the 'Be Good At Life' campaign; leans on longevity, mutual ownership structure, and AARP partnership to justify premium whole-life pricing to the 55+ family and senior market. Largest mutual life insurer in the U.S. by assets.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Fully captive distribution — NYL agents cannot cross-sell Medicare Advantage or ACA plans. The senior market they target most aggressively is the same audience actively shopping Medicare Advantage, and NYL has no answer for that conversation.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">No Medicare Advantage comparison content, no ACA subsidy calculator, no Annual Enrollment Period (AEP) educational material — massive silence in the exact health-decision moments that affect their own existing whole-life policyholders.</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name"><a href="https://www.northwesternmutual.com" target="_blank" rel="noreferrer">Northwestern Mutual</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">'Comprehensive financial planning' hybrid model — NM agents blend life insurance, disability income, and investments through the Northwestern Mutual Financial Network. Built through financial planning discovery conversations, not insurance-first pitches. Heavy college campus recruitment.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Agent churn is estimated at 30%+ in the first two years, leaving clients without relationship continuity. No ACA or Medicare Advantage product capability. Premium minimums effectively exclude the middle-income health insurance shopper who represents the bulk of the addressable market.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">No senior health content whatsoever — the brand is conspicuously silent on Medicare enrollment windows, Medigap plan comparisons, and ACA marketplace guidance, the two biggest health-decision moments for their own aging policyholders.</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name"><a href="https://www.bankerslife.com" target="_blank" rel="noreferrer">Bankers Life</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">One of the few captive carriers explicitly targeting the 50+ senior market with Medicare Supplement, long-term care insurance, and annuities through 300+ branch offices and door-to-door prospecting teams. Senior specialist positioning is the entire brand.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Bankers Life carries a documented history of BBB complaints and state insurance department consent orders for aggressive sales tactics and claims-handling disputes. Their 'senior-specialist' positioning is undercut by publicized consumer trust problems that make comparison-shopping seniors skittish.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">No transparent Medicare Advantage vs. Medicare Supplement comparison tool, no digital enrollment path, no online quote — all lead capture forces a branch visit or cold-call appointment, alienating the digitally engaged 65-74 senior cohort.</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name"><a href="https://www.statefarm.com" target="_blank" rel="noreferrer">State Farm</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">'Like a Good Neighbor' brand equity leverages existing auto and home bundle relationships to cross-sell life and limited health products. Captive agent network of 19,000+ agents drives enormous trust from P&amp;C clients who already have a relationship with their local agent.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">State Farm does not sell ACA marketplace plans or Medicare Advantage. Clients who trust their State Farm agent for life insurance are told 'we can't help you' on health — and directed to a competitor. This is a $0 revenue moment that repeats millions of times per year.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">No ACA marketplace education, no Medicare Advantage enrollment guides, no IUL vs. whole life consumer comparisons — massive content silence in the exact categories where an independent advisor builds trust and captures life-stage cross-sell.</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name"><a href="https://www.healthmarkets.com" target="_blank" rel="noreferrer">HealthMarkets</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">3,000+ independent-contractor agents offering multi-carrier health and life plans under the HealthMarkets umbrella brand; significant TV and radio advertising budget targeting ACA and Medicare shoppers who want a human but are comparison-shopping.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">High agent turnover and inconsistent service quality across the contractor network; consumer complaints center on post-enrollment service drops — the agent who sold the plan is unreachable at renewal time. Independent-contractor model creates zero service accountability after commission is earned.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Transparent 'here is exactly which carriers we represent, what commissions we earn, and how we make recommendations' content — the show-your-work transparency that would differentiate a trustworthy advisor and that HealthMarkets' network incentive structure makes nearly impossible to publish.</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name"><a href="https://www.policygenius.com" target="_blank" rel="noreferrer">Policygenius</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Leading online insurance marketplace with deep SEO presence — top-3 Google rankings for hundreds of insurance comparison keywords. Positioned as 'unbiased insurance shopping without talking to an agent' with a licensed advisor available by phone if needed.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">2025 BBB complaints document bait-and-switch quoting (price rises multiple times through underwriting after initial quote agreement), inability to compare plans side-by-side online as advertised, and processing delays stretching nearly 3 months. The 'no agent needed' brand promise breaks down under post-enrollment scrutiny.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Local and regional market-specific content — no Georgia-specific Medicare plan breakdowns by county, no local ACA subsidy guides, no community trust signals like local agent reviews or in-person consultation options that convert hesitant buyers.</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name"><a href="https://www.ehealthinsurance.com" target="_blank" rel="noreferrer">eHealth</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Self-described 'Medicare's largest private online enrollment platform' with 200,000+ plan options across health and Medicare; targets prospects via Google ads, Medicare.gov referral traffic, and a call-center model that funnels high-intent searchers directly into enrollment.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Post-2023 CMS Third Party Marketing Organization (TPMO) compliance rule changes restricted eHealth's aggressive telemarketing and enrollment tactics; the company reported significant enrollment and revenue decline following the new rules, validating that its model depended on tactics now restricted.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">ACA Special Enrollment Period education and life insurance cross-sell — eHealth is Medicare-heavy and largely ignores the 30-65 age bracket managing ACA plans through qualifying life events, leaving an entire age cohort underserved.</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name"><a href="https://www.uhc.com" target="_blank" rel="noreferrer">UnitedHealthcare</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">AARP co-branded Medicare Advantage plans give UHC unrivaled brand trust with 65+ consumers; 7M+ Medicare Advantage members and a direct-to-consumer enrollment engine backed by UnitedHealth Group's $370B enterprise. Dominant name recognition in Medicare.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">UnitedHealth Group dropped from 29% to 26% Medicare Advantage market share in 2026 per KFF data, actively cutting benefits and pulling back from unprofitable markets — creating beneficiary confusion and active dissatisfaction that independent advisors can channel into re-enrollment conversations.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Honest 'how does UHC compare to Humana in your zip code' comparison content — no carrier publishes this, but the independent broker who does creates a permanent trust asset with consumers who Google that exact query every AEP.</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name"><a href="https://www.humana.com" target="_blank" rel="noreferrer">Humana</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Dominant Southeast Medicare Advantage carrier capturing 20% national MA market share in 2026 per KFF — up from 17% the prior year. Go365 wellness loyalty program and strong supplemental dental/vision benefits differentiate at the plan benefit level.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">As a direct-sell carrier, Humana's financial incentive is to enroll into Humana plans only. Their direct sales team cannot say 'Aetna might be better for your drug formulary' — a structural honesty constraint that an independent broker can turn into a trust differentiator.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Life insurance and Medicare bundling education — Humana sells Medicare Advantage but completely ignores the enormous beneficiary segment simultaneously needing a life insurance review, a natural cross-sell that an independent advisor captures and Humana structurally cannot.</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name"><a href="https://www.smartchoiceagents.com" target="_blank" rel="noreferrer">Smart Choice Agents</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">B2B agent-enablement network: 10,000+ independent agencies with contracts across 120+ carriers. Recruits independent agents and small agencies by offering carrier appointment access without the individual direct-appointment process. Entirely B2B infrastructure — no consumer brand.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Completely invisible to end consumers. Smart Choice has zero consumer-facing brand equity — their agents must build their own brands independently, with Smart Choice providing only carrier access rails, not marketing support, content, or consumer trust-building.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Consumer-facing everything — Smart Choice publishes no buyer's guides, no Medicare plan comparison tools, no YouTube explainers. Their 10,000+ member agents are left to fill that gap individually, and most don't, creating a massive consumer education vacuum across their entire network.</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name"><a href="https://ga-health-insurance.com" target="_blank" rel="noreferrer">Georgia Health Insurance Inc</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Local Georgia independent broker positioning on geographic specificity — 'we know the Georgia market' — with multi-carrier health and life access for individuals and small businesses in the state. Hyper-local positioning is the primary differentiator over national platforms.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Minimal online presence and no discernible content strategy; the site shows limited SEO investment, no structured blog or Medicare education section, and no video content. Brand recall outside of direct referral networking is near zero, making digital lead generation essentially nonexistent.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Virtually all digital content: Georgia county-level Medicare Advantage plan comparisons, ACA Open Enrollment guides for Georgia zip codes, a structured Google review program, and YouTube educational content for the 55-70 Georgia demographic who research online before calling.</div></div>
+      </div><div class="card" style="--c:#d4a574">
+        <div class="card-name"><a href="https://www.bestow.com" target="_blank" rel="noreferrer">Bestow</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">DTC insurtech that issues no-exam term life policies in under 10 minutes entirely online; targets 25-40 tech-comfortable consumers with instant decisions and zero agent interaction. The anti-advisor brand — built on the premise that insurance should work like Amazon.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Product scope is narrow by design: term life only, coverage capped at $1.5M, no health insurance, no ACA plans, no Medicare Advantage, no whole life, no IUL. Consumers who buy on Bestow and later need Medicare guidance have no path forward on the platform.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Everything beyond term life: ACA health plan comparison, Medicare 101 education, IUL vs. term explainers for aging policyholders. Bestow deliberately avoids complexity, leaving an entire client lifecycle of insurance decisions abandoned after the initial term sale.</div></div>
+      </div><div class="card" style="--c:#5ab896">
+        <div class="card-name"><a href="https://www.nationallife.com" target="_blank" rel="noreferrer">National Life Group</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Captive carrier built on 'Living Benefits' IUL and term life with accelerated death benefit riders; heavy social media recruitment culture targeting new agents with income-opportunity messaging. Strong downline and network marketing energy around product promotion.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Consumer-facing reputation is damaged by association with aggressive MLM-adjacent recruitment culture; online forums and review sites conflate buying National Life insurance with joining a downline, creating trust friction before the first product conversation even begins.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Unbiased carrier comparison content — NLG publishes only promotional material for their own products. An independent advisor who can explain honestly when a National Life IUL makes sense versus term from Banner or Protective wins the trust comparison before the close.</div></div>
+      </div><div class="card" style="--c:#c4607e">
+        <div class="card-name"><a href="https://www.inspiredinsurancesolutions.com" target="_blank" rel="noreferrer">Inspired Insurance Solutions</a></div>
+        <div class="field"><div class="field-label">Positioning Angle</div><div class="field-text">Multi-state independent brokerage licensed in all 50 states offering health, Medicare, and life across multiple carriers — the broadest product scope in the competitive set on paper, but no dominant regional or national brand identity to back it up.</div></div><div class="field"><div class="field-label">Key Weakness</div><div class="field-text">Website is content-thin with no distinguishing editorial strategy, no visible YouTube presence, no local review infrastructure, and no geographic specialization. Being licensed everywhere without being known anywhere is the core strategic weakness — indistinguishable from hundreds of other all-50-state brokerages.</div></div><div class="field"><div class="field-label">Content Gap</div><div class="field-text">Video content, local community presence, and a structured agent review system — the three trust signals that convert online insurance shoppers in 2025. A brokerage with identical carrier access but 100 Google reviews and a weekly YouTube series wins on trust every time.</div></div>
+      </div></div>
+    </section><section class="block" id="s1-market-gaps-trends">
+      <div class="block-head">
+        <div class="ghost">03</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 03</div>
+        <h2 class="block-title">Market Gaps &amp; Trends</h2>
+        <p class="block-sub">Where the industry is moving — and where no one is leading yet</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">01</span>
+      <div><div class="list-lead">Medicare Advantage Carrier Pullback Creates an Independent Agent Opening</div><div class="list-body">UnitedHealthcare shed 3 percentage points of Medicare Advantage market share between 2025 and 2026 per KFF data, while insurers industry-wide cut broker commissions on 15-20% of plans to discourage enrollment in unprofitable products. The resulting beneficiary confusion — 'why did my plan change, and what should I do?' — is a premium entry point for an independent advisor who can re-shop the full market. Chronic Condition SNPs (C-SNPs) grew 49% in 2026 and represent the highest-need, highest-loyalty Medicare segment with almost no independent broker specialization yet.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">02</span>
+      <div><div class="list-lead">Digital Platforms Are Earning Consumer Trust Failures Faster Than They Can Fix Them</div><div class="list-body">Policygenius 2025 BBB complaints document quote prices rising multiple times through underwriting after initial agreement, inability to compare plans side-by-side online as advertised, and processing delays stretching nearly 3 months. eHealth faced CMS TPMO compliance restrictions that curtailed its direct-enrollment marketing model and hit enrollment numbers. These platforms built their brands on 'skip the agent' convenience, but the post-sale experience is producing the exact trust failures that human advisors structurally avoid — and the window to position 'advisor-first' against the digital incumbents is open right now.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">03</span>
+      <div><div class="list-lead">Phone-First Intake Converts 10-15x Higher Than Web Forms — Almost No One Is Optimizing For It</div><div class="list-body">Pay-per-call leads in health insurance convert 10-15x higher than web form leads; live transfer calls from a pre-screened IVR intake convert at 20-35% because the consumer is already engaged and speaking to a licensed agent. Exclusive form leads with a 5-minute follow-up convert at 10-20%. The dominant digital competitors — Policygenius, eHealth, Bestow — have all optimized for self-service form fills that convert at under 2%. Any independent broker who builds a click-to-call or live-transfer-from-content funnel is operating on a fundamentally different conversion math than the entire digital-first competitive set.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">04</span>
+      <div><div class="list-lead">No Competitor Owns 'Honest Comparison' Content — In an Industry Built Entirely on Trust</div><div class="list-body">Captive carriers (MassMutual, NYL, Northwestern Mutual, Bankers Life, State Farm, NLG) are contractually blocked from publishing multi-carrier comparisons. Digital platforms (Policygenius, eHealth) produce compliance-neutered comparison content that names no specific plan weaknesses. Local independents (Georgia Health Insurance Inc., Inspired) have no content budget or strategy. The result: zero brands in this entire competitive set publish candid, named-carrier Medicare Advantage comparisons, real ACA plan cost breakdowns by income, or IUL-vs-whole-life side-by-sides written for buyers. This is a durable SEO and trust moat sitting unclaimed by any competitor.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">05</span>
+      <div><div class="list-lead">ACA Special Enrollment Period Is a Year-Round Demand Channel Nobody Is Cultivating</div><div class="list-body">Qualifying life events — job loss, marriage, divorce, new baby, relocation — trigger 60-day ACA Special Enrollment windows outside the November-January Open Enrollment Period. Captive carriers don't sell ACA plans. Digital platforms treat SEP as a transactional moment with no pre-event education. The consumer who Googles 'I lost my job what happens to my health insurance' finds generic government pages, not a local advisor with a clear answer and a phone number. A year-round SEP education library paired with an intake funnel keyed to qualifying life events would capture leads with zero competitive pressure.</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">06</span>
+      <div><div class="list-lead">$59.4B Healthcare Broker Market Is Highly Fragmented — No Independent Brand Dominates at the Regional Level</div><div class="list-body">The global healthcare insurance broker market reached $59.4B in 2025 growing at 9.6% CAGR, yet independent brokers hold 53% of global distribution across thousands of regional and local firms with no dominant brand names. At the local level — Georgia, the Southeast — there is no identifiable independent broker brand with meaningful consumer recall outside of captive carriers and TV-advertised national platforms. This fragmentation means a focused local brand-building campaign combining content, reviews, and referral systems can establish recognizable category ownership within 12-18 months without competing against entrenched incumbents at the consumer level.</div></div>
+    </div></div>
+    </section><section class="block" id="opportunity">
+      <div class="block-head">
+        <div class="ghost">04</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 04</div>
+        <h2 class="block-title">Your Opportunity</h2>
+        
+      </div>
+      <div class="opp"><div class="opp-label">Where Your Best Health Quote Wins</div><div class="opp-text">Your Best Health Quote can own the 'carrier-agnostic local advisor who publishes the comparison content everyone else is afraid to write' position — a space that literally none of the 15 competitors can occupy: captives are contractually blocked from multi-carrier comparisons, digital platforms produce compliance-sanitized content, and local Georgia independents have no content infrastructure whatsoever. The most defensible execution is a Georgia-first Medicare Advantage plan comparison library — county-level, named carriers, real premium and formulary data — paired with a phone-first intake strategy where live transfer and callback leads convert at 20-35%, an order of magnitude above the form-fill model Policygenius and eHealth are built around. Stack consistent Google review velocity on top and the moat compounds: 87% of consumers read reviews before contacting a local service provider, and no local competitor in this set has systematized review collection at any meaningful scale.</div></div>
+    </section><section class="block" id="wins">
+      <div class="block-head">
+        <div class="ghost">05</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 05</div>
+        <h2 class="block-title">Quick Wins</h2>
+        
+      </div>
+      <div class="wins"><div class="win"><span class="win-num">01</span><span class="win-text">Publish a Georgia county-level Medicare Advantage comparison page (UHC vs. Humana vs. Aetna vs. Devoted, broken out by county) — Georgia Health Insurance Inc. has zero SEO content in this category; this single page will rank for high-intent queries like 'best Medicare Advantage plan Cobb County GA' with minimal link-building and drives inbound calls from the highest-value segment</span></div><div class="win"><span class="win-num">02</span><span class="win-text">Launch a structured Google review collection campaign targeting current and past clients with a 2-step text/email ask immediately after enrollment confirmation — 87% of consumers read reviews before calling a local service, none of your 15 local competitors has a review velocity program, and even 40-60 reviews within 90 days establishes visible dominance in local search for insurance-related queries</span></div><div class="win"><span class="win-num">03</span><span class="win-text">Build an ACA Special Enrollment Period intake funnel anchored by a qualifying event quiz ('Did you recently lose job-based coverage? Get married? Move to a new state?') — this captures year-round demand that captives cannot serve, digital platforms don't educate on, and represents an exclusive lead channel with no identifiable local competition in the Georgia market</span></div><div class="win"><span class="win-num">04</span><span class="win-text">Test a 'quote accuracy guarantee' landing page directly counter-positioning against Policygenius and eHealth ('No bait-and-switch. The rate you see when we quote you is the rate we enroll you at — guaranteed') — their 2025 BBB complaints are publicly indexed, this promise is verifiable and ownable, and it converts the exact online-first shopper who got burned by a digital platform and is now searching for a trustworthy human alternative</span></div></div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  Prepared for <strong>Your Best Health Quote</strong> &nbsp;Â·&nbsp; Phase 01 â€” Competitor Intelligence &nbsp;Â·&nbsp; Generated by <strong>Manifestic Agent OS</strong> &nbsp;Â·&nbsp; July 2026
+</footer>
+<script>
+function downloadReportHTML(){try{var d=document.querySelector('.actions');if(d)d.remove();var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="Your-Best-Health-Quote-Competitor-Intelligence-July-2026.html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){location.reload()},200);}catch(e){window.print();}}
+</script>
+</body>
+</html>

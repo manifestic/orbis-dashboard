@@ -17,6 +17,7 @@ import { Route as ApiReplyCapabilityRouteImport } from './routes/api/reply-capab
 import { Route as ApiReplyRouteImport } from './routes/api/reply'
 import { Route as ApiDashboardDataRouteImport } from './routes/api/dashboard-data'
 import { Route as ApiConversationRouteImport } from './routes/api/conversation'
+import { Route as ApiClientReportRouteImport } from './routes/api/client-report'
 import { Route as ApiCalendarRequestRouteImport } from './routes/api/calendar-request'
 import { Route as ApiAuthRouteImport } from './routes/api/auth'
 import { Route as ApiAiSuggestionRouteImport } from './routes/api/ai-suggestion'
@@ -61,6 +62,11 @@ const ApiConversationRoute = ApiConversationRouteImport.update({
   path: '/api/conversation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiClientReportRoute = ApiClientReportRouteImport.update({
+  id: '/api/client-report',
+  path: '/api/client-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCalendarRequestRoute = ApiCalendarRequestRouteImport.update({
   id: '/api/calendar-request',
   path: '/api/calendar-request',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
   '/api/calendar-request': typeof ApiCalendarRequestRoute
+  '/api/client-report': typeof ApiClientReportRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
   '/api/reply': typeof ApiReplyRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
   '/api/calendar-request': typeof ApiCalendarRequestRoute
+  '/api/client-report': typeof ApiClientReportRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
   '/api/reply': typeof ApiReplyRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
   '/api/calendar-request': typeof ApiCalendarRequestRoute
+  '/api/client-report': typeof ApiClientReportRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
   '/api/reply': typeof ApiReplyRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/api/ai-suggestion'
     | '/api/auth'
     | '/api/calendar-request'
+    | '/api/client-report'
     | '/api/conversation'
     | '/api/dashboard-data'
     | '/api/reply'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/api/ai-suggestion'
     | '/api/auth'
     | '/api/calendar-request'
+    | '/api/client-report'
     | '/api/conversation'
     | '/api/dashboard-data'
     | '/api/reply'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/api/ai-suggestion'
     | '/api/auth'
     | '/api/calendar-request'
+    | '/api/client-report'
     | '/api/conversation'
     | '/api/dashboard-data'
     | '/api/reply'
@@ -166,6 +178,7 @@ export interface RootRouteChildren {
   ApiAiSuggestionRoute: typeof ApiAiSuggestionRoute
   ApiAuthRoute: typeof ApiAuthRoute
   ApiCalendarRequestRoute: typeof ApiCalendarRequestRoute
+  ApiClientReportRoute: typeof ApiClientReportRoute
   ApiConversationRoute: typeof ApiConversationRoute
   ApiDashboardDataRoute: typeof ApiDashboardDataRoute
   ApiReplyRoute: typeof ApiReplyRoute
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiConversationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/client-report': {
+      id: '/api/client-report'
+      path: '/api/client-report'
+      fullPath: '/api/client-report'
+      preLoaderRoute: typeof ApiClientReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/calendar-request': {
       id: '/api/calendar-request'
       path: '/api/calendar-request'
@@ -262,6 +282,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiSuggestionRoute: ApiAiSuggestionRoute,
   ApiAuthRoute: ApiAuthRoute,
   ApiCalendarRequestRoute: ApiCalendarRequestRoute,
+  ApiClientReportRoute: ApiClientReportRoute,
   ApiConversationRoute: ApiConversationRoute,
   ApiDashboardDataRoute: ApiDashboardDataRoute,
   ApiReplyRoute: ApiReplyRoute,

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Visibility Report â€” Calvenn Starre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#130e18;--bg2:#1b1422;--card:rgba(255,255,255,0.03);--line:rgba(243,235,218,0.09);--cream:#f5eede;--cream-soft:#ddd0bb;--cream-dim:#b6a890;--mute:#867a68;--p:#d4a574;--a:#5ab896;--t:#c4607e;--pad:clamp(1.25rem,4.5vw,5.5rem);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--cream-soft);line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+a{color:inherit}
+.mono{font-family:'JetBrains Mono',monospace}
+/* â”€â”€ HERO (full-bleed gradient mesh) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero{position:relative;padding:clamp(2.5rem,5vw,4.5rem) var(--pad) clamp(3rem,6vw,5rem);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;background:
+  radial-gradient(60% 90% at 12% 8%,#d4a5743a,transparent 60%),
+  radial-gradient(55% 80% at 92% 22%,#5ab8962e,transparent 60%),
+  radial-gradient(70% 90% at 78% 100%,#c4607e24,transparent 60%),
+  linear-gradient(165deg,var(--bg2),var(--bg))}
+.hero>*{position:relative;z-index:1}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:clamp(2rem,5vw,3.5rem)}
+.brand-logo{height:42px;width:auto;max-width:240px;object-fit:contain}
+.brand-wordmark{display:flex;align-items:center;gap:.6rem;font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);letter-spacing:-.01em}
+.brand-mark{width:16px;height:16px;border-radius:5px;display:inline-block}
+.hero-meta{font-family:'JetBrains Mono';font-size:11px;color:var(--cream-dim);letter-spacing:.18em;text-transform:uppercase;text-align:right}
+.badge{display:inline-block;background:#d4a57424;border:1px solid #d4a57466;color:var(--cream);padding:.45rem 1.1rem;border-radius:50px;font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.4rem}
+h1{font-family:'Bricolage Grotesque';font-size:clamp(2.7rem,7vw,6rem);font-weight:700;letter-spacing:-.025em;line-height:.98;color:var(--cream);margin-bottom:1.1rem;max-width:16ch}
+.hero-desc{color:var(--cream-dim);font-size:clamp(1rem,1.4vw,1.18rem);line-height:1.6;max-width:60ch}
+.kpis{display:flex;flex-wrap:wrap;gap:clamp(2rem,5vw,4.5rem);margin-top:clamp(2.2rem,4vw,3.2rem);padding-top:clamp(1.6rem,3vw,2.2rem);border-top:1px solid var(--line)}
+.kpi-n{font-family:'Bricolage Grotesque';font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;line-height:.9;letter-spacing:-.02em;background:linear-gradient(180deg,var(--cream),#5ab896);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi-l{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+/* â”€â”€ SHELL: sticky TOC + main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0;padding:0 var(--pad)}
+@media(min-width:1080px){.shell{grid-template-columns:228px minmax(0,1fr);gap:clamp(2rem,4vw,4.5rem)}}
+.toc{display:none}
+@media(min-width:1080px){.toc{display:block;position:sticky;top:0;align-self:start;height:100vh;padding:3.2rem 0;overflow-y:auto}}
+.toc-h{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:1.2rem}
+.toc a{display:flex;gap:.7rem;align-items:baseline;padding:.5rem 0;font-size:13px;color:var(--cream-dim);text-decoration:none;border-left:2px solid transparent;padding-left:.9rem;transition:.15s;line-height:1.35}
+.toc a:hover{color:var(--cream);border-left-color:var(--p)}
+.toc a .ti{font-family:'JetBrains Mono';font-size:10px;color:var(--mute)}
+.main{padding:clamp(2.5rem,4vw,3.6rem) 0 1rem;min-width:0}
+/* â”€â”€ BLOCK / section headers with ghost numerals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.block{position:relative;padding:clamp(2.2rem,4vw,3.4rem) 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:none;padding-top:0}
+.block-head{position:relative;margin-bottom:1.8rem}
+.ghost{position:absolute;top:-.35em;right:0;font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(5rem,11vw,9rem);line-height:1;color:var(--cream);opacity:.05;pointer-events:none;z-index:0}
+.block-eyebrow{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem}
+.block-title{font-family:'Bricolage Grotesque';font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:var(--cream);line-height:1.05;position:relative;z-index:1}
+.block-sub{color:var(--mute);font-size:13.5px;margin-top:.5rem;max-width:64ch}
+/* â”€â”€ Exec summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+.sum-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;border-top:3px solid var(--p);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.sum-card:nth-child(2){border-top-color:var(--a)}.sum-card:nth-child(3){border-top-color:var(--t)}
+.sum-icon{font-size:22px;margin-bottom:.7rem}
+.sum-label{font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:.5rem}
+.sum-title{font-family:'Bricolage Grotesque';font-size:18px;font-weight:600;margin-bottom:.7rem;color:var(--cream);line-height:1.2}
+.sum-text{font-size:13.5px;line-height:1.65;color:var(--cream-dim)}
+/* â”€â”€ Card grids (matrix / hooks) â€” fill width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.3rem}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.8rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--c),transparent)}
+.card:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));transform:translateY(-3px)}
+.card-name{font-family:'Bricolage Grotesque';font-size:17px;font-weight:700;color:var(--cream);margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.card-name a{text-decoration:none}.card-name a:hover{color:var(--c)}
+.field{margin-bottom:1.05rem}.field:last-child{margin-bottom:0}
+.field-label{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--c);margin-bottom:.35rem;font-weight:600}
+.field-text{font-size:13.5px;line-height:1.6;color:var(--cream-soft)}
+/* Hooks */
+.grid-hooks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.hook{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.7rem;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.hook:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line));box-shadow:0 0 44px -16px var(--c)}
+.hook-num{font-family:'Bricolage Grotesque';font-size:34px;font-weight:800;line-height:1;opacity:.85;margin-bottom:.7rem}
+.hook-lead{font-family:'Bricolage Grotesque';font-size:19px;font-weight:600;color:var(--cream);line-height:1.22;margin-bottom:.6rem}
+.hook-body{font-size:13px;line-height:1.6;color:var(--cream-dim);margin-bottom:1rem}
+.hook-tag{font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600}
+/* â”€â”€ Stat cards (market sizing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.statcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.6rem;text-align:left}
+.statcard-v{font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(2rem,3.4vw,2.8rem);line-height:1;letter-spacing:-.02em;margin-bottom:.5rem}
+.statcard-l{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:.6rem;font-weight:600}
+.statcard-b{font-size:12.5px;line-height:1.55;color:var(--cream-dim)}
+/* â”€â”€ Landing page angles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.angle{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:var(--r);padding:1.8rem}
+.angle-badge{display:inline-block;font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .7rem;border-radius:50px;border:1px solid;font-weight:600;margin-bottom:1rem}
+.angle-title{font-family:'Bricolage Grotesque';font-weight:700;font-size:20px;color:var(--cream);line-height:1.2;margin-bottom:.5rem}
+.angle-sub{font-size:12.5px;color:var(--cream-dim);margin-bottom:1.1rem;line-height:1.55}
+.angle-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.angle-list li{display:flex;gap:.6rem;font-size:12.5px;line-height:1.5;color:var(--cream-soft)}
+.angle-bull{flex-shrink:0;font-weight:700}
+/* â”€â”€ Quotes (masonry, editorial) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.quotes{columns:3 280px;column-gap:1.3rem}
+.quote{break-inside:avoid;position:relative;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.5rem 1.5rem 1.4rem;margin:0 0 1.3rem}
+.quote-idx{font-family:'JetBrains Mono';font-size:11px;font-weight:600;letter-spacing:.1em}
+.quote-lead{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--cream);line-height:1.3;margin:.5rem 0 .6rem}
+.quote-body{font-size:12.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ List (trends / strategy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.list{display:flex;flex-direction:column;gap:.8rem}
+.list-item{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:1.3rem 1.5rem}
+.list-idx{font-family:'Bricolage Grotesque';font-size:22px;font-weight:800;line-height:1;flex-shrink:0;opacity:.85}
+.list-lead{font-family:'Bricolage Grotesque';font-size:16px;font-weight:600;color:var(--cream);margin-bottom:.35rem;line-height:1.25}
+.list-body{font-size:13.5px;line-height:1.6;color:var(--cream-dim)}
+/* â”€â”€ Opportunity (feature band) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.opp{position:relative;background:linear-gradient(135deg,#d4a5741f,#5ab8960d 70%,transparent);border:1px solid #d4a5743d;border-radius:20px;padding:clamp(1.8rem,3.5vw,3rem)}
+.opp-label{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:1rem}
+.opp-text{font-family:'Fraunces',serif;font-size:clamp(1.15rem,2vw,1.6rem);line-height:1.45;color:var(--cream);max-width:46ch}
+/* â”€â”€ Quick wins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.wins{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+.win{display:flex;gap:1.1rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem}
+.win-num{font-family:'Bricolage Grotesque';font-size:26px;font-weight:800;color:var(--a);line-height:1;flex-shrink:0}
+.win-text{font-size:14px;line-height:1.55;color:var(--cream-soft)}
+/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.footer{border-top:1px solid var(--line);margin-top:2rem;padding:2.4rem var(--pad);text-align:center;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.04em;color:var(--mute)}
+.footer strong{color:var(--cream-dim);font-weight:500}
+/* â”€â”€ Floating download / print actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.actions{position:fixed;top:1.1rem;right:1.1rem;z-index:60;display:flex;gap:.5rem}
+.actions button{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.03em;padding:.55rem .85rem;border-radius:11px;border:1px solid var(--line);background:rgba(19,14,24,.82);backdrop-filter:blur(10px);color:var(--cream-soft);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:.15s;box-shadow:0 6px 22px -10px rgba(0,0,0,.7)}
+.actions button:hover{border-color:var(--p);color:var(--cream);transform:translateY(-1px)}
+.actions svg{width:13px;height:13px}
+@media(max-width:680px){.actions{top:auto;bottom:1rem;right:1rem}}
+@media print{
+  .actions,.toc{display:none!important}
+  .shell{grid-template-columns:1fr!important;padding:0 1.5rem!important}
+  .hero,.block,.card,.hook,.quote,.list-item,.opp,.win,.sum-card{break-inside:avoid}
+  body{background:var(--bg)!important}
+}
+@media(max-width:680px){.hero-meta{display:none}.quotes{columns:1}}
+</style>
+</head>
+<body>
+<div class="actions">
+  <button onclick="window.print()" title="Save as PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF</button>
+  <button onclick="downloadReportHTML()" title="Download HTML"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>HTML</button>
+</div>
+<header class="hero">
+  <div class="hero-top"><div class="brand-wordmark"><span class="brand-mark" style="background:#d4a574"></span>Calvenn Starre</div><div class="hero-meta">AI Engine Citation Audit<br>July 2026</div></div>
+  <div class="badge">AI Engine Citation Audit</div>
+  <h1>Calvenn Starre</h1>
+  <p class="hero-desc">Whether ChatGPT and AI engines recommend you for the questions your prospects actually ask â€” and who they cite instead.</p>
+  <div class="kpis"><div><div class="kpi-n">0%</div><div class="kpi-l">AI Citation Rate</div></div><div><div class="kpi-n">6</div><div class="kpi-l">Queries Tested</div></div><div><div class="kpi-n">7</div><div class="kpi-l">Competitors AI Cites</div></div><div><div class="kpi-n">0</div><div class="kpi-l">Times You're Cited</div></div></div>
+</header>
+
+<div class="shell">
+  <nav class="toc">
+    <div class="toc-h">Contents</div>
+    <a href="#exec"><span class="ti">01</span>Executive Summary</a><a href="#s0-query-by-query-results"><span class="ti">02</span>Query-by-Query Results</a><a href="#s1-who-ai-recommends-instea"><span class="ti">03</span>Who AI Recommends Instead</a><a href="#opportunity"><span class="ti">04</span>Your Opportunity</a><a href="#wins"><span class="ti">05</span>Quick Wins</a>
+  </nav>
+  <main class="main">
+    <section class="block" id="exec">
+      <div class="block-head">
+        <div class="ghost">01</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 01</div>
+        <h2 class="block-title">Executive Summary</h2>
+        
+      </div>
+      <div class="sum-grid"><div class="sum-card"><div class="sum-icon">ðŸ”</div><div class="sum-label">AI VISIBILITY</div><div class="sum-title">AI doesn't recommend you yet</div><div class="sum-text">Calvenn Starre has zero AI visibility—ChatGPT cannot identify or recommend the brand, surfacing only generic Big Four accounting firms when confused by the name.</div></div><div class="sum-card"><div class="sum-icon">ðŸŽ¯</div><div class="sum-label">THE GAP</div><div class="sum-title">Own the queries AI answers</div><div class="sum-text">AI is citing Deloitte, PwC, EY for these questions. The content cluster + topical-authority play is exactly how you get into those answers.</div></div><div class="sum-card"><div class="sum-icon">âš¡</div><div class="sum-label">NEXT ACTION</div><div class="sum-title">Publish the pillar clusters</div><div class="sum-text">Publish the Content Roadmap clusters with schema + consistent entity signals so AI engines start citing you for these queries. Re-run this audit monthly to track progress.</div></div></div>
+    </section><section class="block" id="s0-query-by-query-results">
+      <div class="block-head">
+        <div class="ghost">02</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 02</div>
+        <h2 class="block-title">Query-by-Query Results</h2>
+        <p class="block-sub">What AI answers when prospects ask</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">01</span>
+      <div><div class="list-lead">Who are the best Calvenn Starre companies or consultants to hire? List specific names.</div><div class="list-body">âœ— Not recommended. AI cited: others.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">02</span>
+      <div><div class="list-lead">Who should I hire for Calvenn Starre? Recommend specific firms or people.</div><div class="list-body">âœ— Not recommended. AI cited: others.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">03</span>
+      <div><div class="list-lead">Top Calvenn Starre experts – who do people recommend most?</div><div class="list-body">âœ— Not recommended. AI cited: others.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">04</span>
+      <div><div class="list-lead">Most trusted Calvenn Starre firms for someone just starting out?</div><div class="list-body">âœ— Not recommended. AI cited: Deloitte, PwC, EY, KPMG, BDO.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">05</span>
+      <div><div class="list-lead">How do I find a good Calvenn Starre? Who are the go-to names?</div><div class="list-body">âœ— Not recommended. AI cited: others.</div></div>
+    </div><div class="list-item" style="--c:#d4a574">
+      <span class="list-idx" style="color:#d4a574">06</span>
+      <div><div class="list-lead">Calvenn Starre reviews – which companies or people are recommended?</div><div class="list-body">âœ— Not recommended. AI cited: others.</div></div>
+    </div></div>
+    </section><section class="block" id="s1-who-ai-recommends-instea">
+      <div class="block-head">
+        <div class="ghost">03</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 03</div>
+        <h2 class="block-title">Who AI Recommends Instead</h2>
+        <p class="block-sub">The names you're competing against in AI answers</p>
+      </div>
+      <div class="list"><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">01</span>
+      <div><div class="list-lead">1. Deloitte</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">02</span>
+      <div><div class="list-lead">2. PwC</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">03</span>
+      <div><div class="list-lead">3. EY</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">04</span>
+      <div><div class="list-lead">4. KPMG</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">05</span>
+      <div><div class="list-lead">5. BDO</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">06</span>
+      <div><div class="list-lead">6. Grant Thornton</div></div>
+    </div><div class="list-item" style="--c:#5ab896">
+      <span class="list-idx" style="color:#5ab896">07</span>
+      <div><div class="list-lead">7. RSM</div></div>
+    </div></div>
+    </section><section class="block" id="opportunity">
+      <div class="block-head">
+        <div class="ghost">04</div>
+        <div class="block-eyebrow" style="color:#d4a574">Section 04</div>
+        <h2 class="block-title">Your Opportunity</h2>
+        
+      </div>
+      <div class="opp"><div class="opp-label">Where Calvenn Starre Wins</div><div class="opp-text">Every one of these queries is a prospect asking AI for a recommendation. Win them by becoming the most-cited authority â€” publish the clusters, earn mentions, and Calvenn Starre starts showing up in the answers Deloitte and PwC currently own.</div></div>
+    </section><section class="block" id="wins">
+      <div class="block-head">
+        <div class="ghost">05</div>
+        <div class="block-eyebrow" style="color:#5ab896">Section 05</div>
+        <h2 class="block-title">Quick Wins</h2>
+        
+      </div>
+      <div class="wins"><div class="win"><span class="win-num">01</span><span class="win-text">Publish the Content Roadmap pillar clusters with FAQ/schema markup so AI engines can extract and cite you.</span></div><div class="win"><span class="win-num">02</span><span class="win-text">Get listed/mentioned on the third-party sites AI pulls from (directories, roundups, reviews).</span></div><div class="win"><span class="win-num">03</span><span class="win-text">Re-run this AI Visibility audit monthly to track your citation rate climbing.</span></div></div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  Prepared for <strong>Calvenn Starre</strong> &nbsp;Â·&nbsp; AI Engine Citation Audit &nbsp;Â·&nbsp; Generated by <strong>Manifestic Agent OS</strong> &nbsp;Â·&nbsp; July 2026
+</footer>
+<script>
+function downloadReportHTML(){try{var d=document.querySelector('.actions');if(d)d.remove();var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="Calvenn-Starre-AI-Visibility-Report-July-2026.html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){location.reload()},200);}catch(e){window.print();}}
+</script>
+</body>
+</html>

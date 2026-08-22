@@ -1008,6 +1008,9 @@ function ClientCommandCenter() {
     reports: "Intelligence",
   };
   const activeLabel = sectionLabels[activeSection];
+  const authenticatedDisplayName =
+    authState.user?.displayName?.trim() || authState.user?.clientName?.trim() || client.name;
+  const greetingName = authenticatedDisplayName.split(/\s+/)[0] || "there";
 
   return (
     <main
@@ -1137,7 +1140,7 @@ function ClientCommandCenter() {
                   Client Command Center
                 </p>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                  {activeSection === "overview" ? `Good morning, ${client.name}.` : activeLabel}
+                  {activeSection === "overview" ? `Welcome, ${greetingName}.` : activeLabel}
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400 sm:text-base">
                   {activeSection === "overview"
@@ -3768,7 +3771,20 @@ function RenderedReportView({ report }: { report: RenderedReport }) {
         <p><span className="font-semibold text-[#102336]">Source:</span> {report.source}</p>
         <p className="mt-1"><span className="font-semibold text-[#102336]">Last analyzed:</span> {report.updated}</p>
         <p className="mt-1"><span className="font-semibold text-[#102336]">Tenant scope:</span> Calvenn Starre · Your Best Health Quote</p>
-        <p className="mt-1">Rendered summary only. Raw implementation files are not exposed in the client experience.</p>
+        <p className="mt-1">Complete report rendered from the canonical tenant-scoped Agent OS source. Raw implementation files are not exposed in the client experience.</p>
+      </div>
+      <div className="mt-5 overflow-hidden rounded-2xl border border-[#dbe5ed] bg-[#0e1523]">
+        <div className="border-b border-white/10 px-4 py-3 text-xs text-slate-300 sm:px-5">
+          <p className="font-semibold text-white">Complete source report</p>
+          <p className="mt-1 text-slate-400">Full long-form report · rendered read-only for Calvenn Starre</p>
+        </div>
+        <iframe
+          title={`${report.name} — complete source report`}
+          src={`/api/client-report?report=${encodeURIComponent(report.id)}`}
+          loading="lazy"
+          sandbox="allow-scripts"
+          className="h-[1100px] w-full bg-white"
+        />
       </div>
     </article>
   );
