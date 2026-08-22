@@ -921,7 +921,7 @@ function ClientCommandCenter() {
     opportunities: "Opportunities",
     content: "Content Review",
     websites: "Web & Insights",
-    documents: "Documents",
+    documents: "Documents & Contracts",
     reports: "Reports",
   };
   const activeLabel = sectionLabels[activeSection];
@@ -975,7 +975,7 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
                 <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
-                <SideNavItem top icon={FileText} label="Documents" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
+                <SideNavItem top icon={FileText} label="Documents & Contracts" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
               </div>
             </nav>
 
@@ -2352,7 +2352,7 @@ function DashboardSectionView({
     opportunities: "Opportunities",
     content: "Content Review",
     websites: "Web & Insights",
-    documents: "Documents",
+    documents: "Documents & Contracts",
     reports: "Reports",
   };
   const detail: Record<DashboardSection, string> = {
