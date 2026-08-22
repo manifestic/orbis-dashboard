@@ -3579,9 +3579,10 @@ function DocumentsCard({
             Contracts and templates in one place
           </h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
-            Use these focused links to open the native HighLevel document workspaces. This client
-            view exposes Documents only; broader Payments access stays separate and is not enabled
-            for Calvenn.
+            These focused links target the native HighLevel document workspaces. HighLevel currently
+            requires its Payments parent capability for those destinations; this client view does
+            not enable broader Payments tools, so native access remains setup-gated until that
+            minimum capability is configured.
           </p>
         </div>
         <FileText className="h-5 w-5 text-cyan-300" />
@@ -3623,10 +3624,10 @@ function DocumentsCard({
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
         <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-2.5 py-1 text-cyan-200">
-          Documents enabled
+          Documents entry point
         </span>
         <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2.5 py-1 text-slate-500">
-          {paymentAccessEnabled ? "Payment capability enabled for this client" : "Payments not enabled for this client"}
+          {paymentAccessEnabled ? "Native document access verified" : "Native access requires Payments capability"}
         </span>
       </div>
     </section>
