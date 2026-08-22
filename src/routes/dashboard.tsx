@@ -239,41 +239,86 @@ const workspaceLinks = [
 
 const reports = [
   {
+    id: "ai-visibility",
     name: "AI visibility report",
     detail: "How Calvenn appears in answer engines",
-    updated: "Agent OS · Aug 10",
+    updated: "Agent OS · July 18, 2026",
+    source: "Calvenn Agent OS · AI Engine Citation Audit",
+    summary: "Calvenn has zero AI visibility in the six-query audit; generic Big Four accounting firms appear when the brand name is misunderstood.",
+    opportunity: "Own the queries AI answers with a focused content cluster and consistent entity signals.",
+    nextAction: "Publish the pillar clusters with schema, then rerun this audit monthly.",
+    signals: [
+      ["AI mentions", "0 of 6 queries"],
+      ["Rate", "0%"],
+      ["Common confusion", "Deloitte, PwC, and EY"],
+    ],
     icon: Sparkles,
-    href: "https://drive.google.com/file/d/17e-TpeI9V-PYqvtQdnoI5TvHkbkcKBLM/view",
   },
   {
+    id: "community",
     name: "Community report",
     detail: "Communities, conversations, and audience signals",
-    updated: "Agent OS · Aug 10",
+    updated: "Agent OS · July 22, 2026",
+    source: "Calvenn Agent OS · Community Intelligence",
+    summary: "Confusion is the dominant buying barrier: 75% of Medicare beneficiaries report that choosing a plan is confusing, and 33% cannot distinguish major plan types.",
+    opportunity: "Own the honest-comparison position by explaining options in plain language, including choices that may pay less.",
+    nextAction: "Launch a plain-English series answering the ten recurring questions communities leave unresolved.",
+    signals: [
+      ["Audience signal", "Comprehension drives inaction"],
+      ["Trust gap", "Mis-selling is the leading complaint"],
+      ["Content angle", "Plain-English comparisons"],
+    ],
     icon: UsersRound,
-    href: "https://drive.google.com/file/d/1TY_c7iNHN_y_ESpGlvFzzjdOLBk6zIOW/view",
   },
   {
+    id: "competitors",
     name: "Competitors report",
     detail: "Competitive positioning and whitespace",
-    updated: "Agent OS · Aug 10",
+    updated: "Agent OS · July 22, 2026",
+    source: "Calvenn Agent OS · Competitor Intelligence",
+    summary: "The report identifies a large healthcare insurance broker market without an obvious honest, carrier-agnostic advisor position.",
+    opportunity: "Medicare Advantage carrier retrenchment and rising chronic-condition SNP enrollment create an opening for trusted comparison help.",
+    nextAction: "Build local Georgia Medicare comparison pages with clear carrier context and a five-minute callback promise.",
+    signals: [
+      ["Market signal", "$59.4B market in 2025"],
+      ["Growth signal", "9.6% reported CAGR"],
+      ["Local gap", "Limited structured comparison content"],
+    ],
     icon: Target,
-    href: "https://drive.google.com/file/d/1qtDq1SgzIctXbv2EQb2xjXaYWLLTWUt3/view",
   },
   {
+    id: "keywords",
     name: "Keyword report",
     detail: "Search opportunities for the insurance content engine",
-    updated: "Agent OS · Aug 10",
+    updated: "Agent OS · July 19, 2026",
+    source: "Calvenn Agent OS · Keyword Opportunity Report",
+    summary: "The strongest relevant demand is concentrated in Medicare, life insurance, individual health coverage, and disability protection.",
+    opportunity: "A Medicare-centered content hub has tighter intent and topical alignment than unrelated provider-login, auto, renters, or property terms.",
+    nextAction: "Start with five quick-win pages, then connect pillar pages to quote, eligibility, and consultation paths.",
+    signals: [
+      ["Priority topics", "Medicare and life insurance"],
+      ["Hub angle", "2026 premiums and plan education"],
+      ["Exclude", "Unrelated insurance categories"],
+    ],
     icon: Search,
-    href: "https://drive.google.com/file/d/1wQ3suVeeboTDUxDHqv8sXiIdmKOXFeBx/view",
   },
   {
+    id: "youtube",
     name: "YouTube report",
     detail: "Video hooks and creator opportunities",
-    updated: "Agent OS · Aug 10",
+    updated: "Agent OS · July 18, 2026",
+    source: "Calvenn Agent OS · YouTube Intelligence",
+    summary: "The strongest mined themes emphasize consistency, one clear position, and the leverage that comes from sustained weekly execution.",
+    opportunity: "A contrarian point of view can separate Calvenn from creators who frame multiple opportunities as diversification.",
+    nextAction: "Lead with the hook: chasing five opportunities may guarantee that none of them works.",
+    signals: [
+      ["Recurring theme", "A 52-week process"],
+      ["Contrarian angle", "Multiple companies can dilute focus"],
+      ["Strongest hook", "Choose one position and repeat"],
+    ],
     icon: Youtube,
-    href: "https://drive.google.com/file/d/11XV34tobWRwanXIApnggl61Kl6fOuQna/view",
   },
-];
+] as const;
 
 type LiveConversation = {
   id?: string;
@@ -382,8 +427,10 @@ type DashboardSection =
   | "content"
   | "websites"
   | "documents"
+  | "intelligence"
   | "reports";
-type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence";
+type WebsiteTab = "pages" | "funnels";
+type IntelligenceTab = "reports" | "company";
 
 const calvennIntelligence = {
   scope: "Calvenn Starre · Your Best Health Quote",
@@ -414,7 +461,7 @@ const calvennIntelligence = {
   buildout: [
     { label: "Command Center", status: "Live preview", detail: "Branded dashboard shell and tenant-scoped navigation" },
     { label: "Content Review", status: "Live route", detail: "Review workspace remains approval-gated" },
-    { label: "Web & Insights", status: "This module", detail: "Pages, funnels, reports, and context in one place" },
+    { label: "Deliverables", status: "This module", detail: "Websites, landing pages, and funnels" },
     { label: "Live outbound inbox", status: "Setup gated", detail: "Read-only conversation view; sending safeguards remain incomplete" },
   ],
 } as const;
@@ -647,6 +694,7 @@ function ClientCommandCenter() {
   const [demoMode, setDemoMode] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [websiteTab, setWebsiteTab] = useState<WebsiteTab>("pages");
+  const [intelligenceTab, setIntelligenceTab] = useState<IntelligenceTab>("reports");
   const [approvedBrandInterview, setApprovedBrandInterview] = useState<BusinessBrandInterviewDraft>();
   const [selectedConversation, setSelectedConversation] = useState(conversations[0].name);
   const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>();
@@ -684,6 +732,8 @@ function ClientCommandCenter() {
     else params.set("section", section);
     if (section === "websites") params.set("websiteTab", websiteTab);
     else params.delete("websiteTab");
+    if (section === "intelligence") params.set("intelligenceTab", intelligenceTab);
+    else if (section !== "reports") params.delete("intelligenceTab");
     window.history.pushState(
       {},
       "",
@@ -697,6 +747,20 @@ function ClientCommandCenter() {
     const params = new URLSearchParams(window.location.search);
     params.set("section", "websites");
     params.set("websiteTab", tab);
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const goToIntelligenceTab = (tab: IntelligenceTab) => {
+    setActiveSection("intelligence");
+    setIntelligenceTab(tab);
+    const params = new URLSearchParams(window.location.search);
+    params.set("section", "intelligence");
+    params.set("intelligenceTab", tab);
+    params.delete("websiteTab");
     window.history.pushState(
       {},
       "",
@@ -841,27 +905,45 @@ function ClientCommandCenter() {
         });
       }
     })();
-    const requestedSection = params.get("section") as DashboardSection | null;
-    if (
-      requestedSection &&
-        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "reports"].includes(
-        requestedSection,
-      )
-    )
-      setActiveSection(requestedSection);
-    const requestedWebsiteTab = params.get("websiteTab") as WebsiteTab | null;
-    if (requestedWebsiteTab && ["pages", "funnels", "reports", "intelligence"].includes(requestedWebsiteTab))
-      setWebsiteTab(requestedWebsiteTab);
+    const requestedSection = params.get("section");
+    const requestedWebsiteTab = params.get("websiteTab");
+    const requestedIntelligenceTab = params.get("intelligenceTab");
+    const validSections = ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "intelligence", "reports"];
+    if (requestedSection && validSections.includes(requestedSection)) {
+      if (requestedSection === "reports") {
+        setActiveSection("intelligence");
+        setIntelligenceTab("reports");
+      } else {
+        setActiveSection(requestedSection as DashboardSection);
+      }
+    }
+    if (requestedWebsiteTab === "reports" || requestedWebsiteTab === "intelligence") {
+      setActiveSection("intelligence");
+      setIntelligenceTab(requestedWebsiteTab === "reports" ? "reports" : "company");
+    } else if (requestedWebsiteTab && ["pages", "funnels"].includes(requestedWebsiteTab)) {
+      setWebsiteTab(requestedWebsiteTab as WebsiteTab);
+    }
+    if (requestedIntelligenceTab && ["reports", "company"].includes(requestedIntelligenceTab))
+      setIntelligenceTab(requestedIntelligenceTab as IntelligenceTab);
     const onPopState = () =>
       (() => {
         const nextParams = new URLSearchParams(window.location.search);
-        setActiveSection(
-          (nextParams.get("section") as DashboardSection | null) || "overview",
-        );
-        const nextWebsiteTab = nextParams.get("websiteTab") as WebsiteTab | null;
-        if (nextWebsiteTab && ["pages", "funnels", "reports", "intelligence"].includes(nextWebsiteTab))
-          setWebsiteTab(nextWebsiteTab);
-        else setWebsiteTab("pages");
+        const nextSection = nextParams.get("section");
+        const nextWebsiteTab = nextParams.get("websiteTab");
+        const nextIntelligenceTab = nextParams.get("intelligenceTab");
+        if (nextWebsiteTab === "reports" || nextWebsiteTab === "intelligence" || nextSection === "reports") {
+          setActiveSection("intelligence");
+          setIntelligenceTab(nextWebsiteTab === "intelligence" ? "company" : "reports");
+        } else {
+          setActiveSection(
+            (nextSection as DashboardSection | null) || "overview",
+          );
+          if (nextWebsiteTab && ["pages", "funnels"].includes(nextWebsiteTab))
+            setWebsiteTab(nextWebsiteTab as WebsiteTab);
+          else setWebsiteTab("pages");
+          if (nextIntelligenceTab && ["reports", "company"].includes(nextIntelligenceTab))
+            setIntelligenceTab(nextIntelligenceTab as IntelligenceTab);
+        }
       })();
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -920,9 +1002,10 @@ function ClientCommandCenter() {
     calendar: "Calendar",
     opportunities: "Opportunities",
     content: "Content Review",
-    websites: "Web & Insights",
+    websites: "Deliverables",
     documents: "Documents & Contracts",
-    reports: "Reports",
+    intelligence: "Intelligence",
+    reports: "Intelligence",
   };
   const activeLabel = sectionLabels[activeSection];
 
@@ -974,7 +1057,8 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={CalendarDays} label="Calendar" active={activeSection === "calendar"} onClick={() => goToSection("calendar")} />
                 <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
-                <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                <SideNavItem top icon={Globe2} label="Deliverables" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                <SideNavItem top icon={Sparkles} label="Intelligence" active={activeSection === "intelligence" || activeSection === "reports"} onClick={() => goToSection("intelligence")} />
                 <SideNavItem top icon={FileText} label="Documents & Contracts" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
               </div>
             </nav>
@@ -1105,7 +1189,7 @@ function ClientCommandCenter() {
                 brandInterviewDraft={approvedBrandInterview}
                 brandInterviewStartingPoint={businessBrandInterviewStartingPoint}
                 onBrandInterviewApproved={setApprovedBrandInterview}
-                onOpenIntelligence={() => goToWebsiteTab("intelligence")}
+                onOpenIntelligence={() => goToIntelligenceTab("company")}
               />
             ) : activeSection === "overview" ? (
               <PortalOverview
@@ -1145,6 +1229,8 @@ function ClientCommandCenter() {
                 onOpenInbox={() => setShowAllMessages(true)}
                 websiteTab={websiteTab}
                 onWebsiteTabChange={goToWebsiteTab}
+                intelligenceTab={intelligenceTab}
+                onIntelligenceTabChange={goToIntelligenceTab}
                 inboxHref={ghl("/conversations/conversations/?category=team-inbox&tab=unread")}
                 calendarHref={ghl("/calendars/view")}
                 calendarSettingsHref={ghl("/settings/calendars")}
@@ -2003,19 +2089,6 @@ function LegacyPortalOverview({
     : "Connect the client location to show live HighLevel data.";
   const linkClass =
     "group flex items-center gap-3 rounded-2xl border border-[#dbe5ed] bg-[#f8fbfd] px-4 py-3 text-left transition hover:border-[#8bc9dc] hover:bg-[#eef8fb]";
-  const clientLinks =
-    client.locationId === "QsbCjo5HFBGuRG0AKms0"
-      ? workspaceLinks
-      : client.websiteUrl
-        ? [
-            {
-              label: client.websiteName,
-              detail: "Primary production site",
-              href: client.websiteUrl,
-            },
-          ]
-        : [];
-  const clientReports = client.locationId === "QsbCjo5HFBGuRG0AKms0" ? reports : [];
   return (
     <div className="mt-8 space-y-5 pb-10">
       <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
@@ -2166,56 +2239,30 @@ function LegacyPortalOverview({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#466174]">
-                Links
+                Deliverables & intelligence
               </p>
               <h2 className="mt-2 text-xl font-semibold text-[#102336]">
-                Your client workspace links.
+                Keep the build outputs and context together.
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-[#466174]">
-                Live pages, demos, and the intelligence prepared for {client.name}.
+                Open the focused module when you need the client’s websites, funnels, reports, or
+                approved business context.
               </p>
             </div>
             <Globe2 className="h-5 w-5 text-[#1377b8]" />
           </div>
           <div className="mt-5 grid gap-2 md:grid-cols-2">
-            {clientLinks.map((link) => (
-              <PortalLinkRow
-                key={link.href}
-                href={link.href}
-                label={link.label}
-                detail={link.detail}
-                className={linkClass}
-                external
-              />
-            ))}
+            <button type="button" onClick={() => onGoToSection("websites")} className={linkClass}>
+              <Globe2 className="h-4 w-4 text-[#1377b8]" />
+              <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-[#102336]">Deliverables</span><span className="mt-1 block text-xs text-[#466174]">Websites, landing pages, and funnels</span></span>
+              <ChevronRight className="h-4 w-4 text-[#9bb0bd]" />
+            </button>
+            <button type="button" onClick={() => onGoToSection("intelligence")} className={linkClass}>
+              <Sparkles className="h-4 w-4 text-[#0e9a85]" />
+              <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-[#102336]">Intelligence</span><span className="mt-1 block text-xs text-[#466174]">Reports and company & client info</span></span>
+              <ChevronRight className="h-4 w-4 text-[#9bb0bd]" />
+            </button>
           </div>
-          {clientReports.length > 0 && (
-            <div className="mt-6 border-t border-[#dbe5ed] pt-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#466174]">
-                    Agent OS intelligence
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-[#102336]">
-                    Five current reports are ready to open.
-                  </p>
-                </div>
-                <FileText className="h-5 w-5 text-[#0e9a85]" />
-              </div>
-              <div className="mt-3 grid gap-2 md:grid-cols-2">
-                {clientReports.map((report) => (
-                  <PortalLinkRow
-                    key={report.href}
-                    href={report.href}
-                    label={report.name}
-                    detail={report.updated}
-                    className={linkClass}
-                    external
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </section>
       </div>
     </div>
@@ -2312,6 +2359,8 @@ function DashboardSectionView({
   onOpenInbox,
   websiteTab,
   onWebsiteTabChange,
+  intelligenceTab,
+  onIntelligenceTabChange,
   inboxHref,
   calendarHref,
   calendarSettingsHref,
@@ -2334,6 +2383,8 @@ function DashboardSectionView({
   onOpenInbox: () => void;
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
+  intelligenceTab: IntelligenceTab;
+  onIntelligenceTabChange: (tab: IntelligenceTab) => void;
   inboxHref?: string;
   calendarHref?: string;
   calendarSettingsHref?: string;
@@ -2351,9 +2402,10 @@ function DashboardSectionView({
     calendar: "Calendar",
     opportunities: "Opportunities",
     content: "Content Review",
-    websites: "Web & Insights",
+    websites: "Deliverables",
     documents: "Documents & Contracts",
-    reports: "Reports",
+    intelligence: "Intelligence",
+    reports: "Intelligence",
   };
   const detail: Record<DashboardSection, string> = {
     "getting-started": "Connect the essentials and install the mobile app.",
@@ -2363,9 +2415,10 @@ function DashboardSectionView({
       "Review upcoming appointments here, then use native HighLevel for scheduling changes.",
     opportunities: "Move prospects through the pipeline without mixing them into the overview.",
     content: "Keep approvals, Social Planner, and connection actions together.",
-    websites: "Open the client’s public sites and landing pages.",
+    websites: "Websites, landing pages, and funnels in one client-facing area.",
     documents: "Open Documents & Contracts and reusable Templates in native HighLevel.",
-    reports: "Open intelligence and reporting in one place.",
+    intelligence: "Rendered reports and approved company context for better decisions.",
+    reports: "Rendered reports and approved company context for better decisions.",
   };
   return (
     <section className="mt-8 pb-10 rounded-2xl border border-white/[0.09] bg-white/[0.035] p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
@@ -2426,7 +2479,6 @@ function DashboardSectionView({
             sitesHref={client.websiteUrl || undefined}
             websiteTab={websiteTab}
             onWebsiteTabChange={onWebsiteTabChange}
-            approvedBrandInterview={approvedBrandInterview}
           />
         )}
         {section === "documents" && (
@@ -2436,7 +2488,14 @@ function DashboardSectionView({
             paymentAccessEnabled={client.paymentAccessEnabled}
           />
         )}
-        {section === "reports" && <ReportsCard client={client} />}
+        {(section === "intelligence" || section === "reports") && (
+          <IntelligenceArea
+            client={client}
+            tab={section === "reports" ? "reports" : intelligenceTab}
+            onTabChange={onIntelligenceTabChange}
+            approvedDraft={approvedBrandInterview}
+          />
+        )}
       </div>
     </section>
   );
@@ -3052,13 +3111,11 @@ function WebsitesCard({
   sitesHref,
   websiteTab,
   onWebsiteTabChange,
-  approvedBrandInterview,
 }: {
   client: ClientConfig;
   sitesHref?: string;
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
-  approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   if (client.locationId !== "QsbCjo5HFBGuRG0AKms0") {
     const href = sitesHref || client.websiteUrl;
@@ -3112,7 +3169,6 @@ function WebsitesCard({
       sitesHref={sitesHref}
       websiteTab={websiteTab}
       onWebsiteTabChange={onWebsiteTabChange}
-      approvedBrandInterview={approvedBrandInterview}
     />
   );
 }
@@ -3121,31 +3177,27 @@ function ClientWebsitesCard({
   sitesHref,
   websiteTab,
   onWebsiteTabChange,
-  approvedBrandInterview,
 }: {
   sitesHref?: string;
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
-  approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   const tabs: Array<{ id: WebsiteTab; label: string; description: string }> = [
-    { id: "pages", label: "Pages", description: "Public sites, pillar pages, and briefs" },
+    { id: "pages", label: "Websites & Landing Pages", description: "Public sites, landing pages, and briefs" },
     { id: "funnels", label: "Funnels", description: "Quote, matching, and conversion flows" },
-    { id: "reports", label: "Reports", description: "Agent OS intelligence and research" },
-    { id: "intelligence", label: "Intelligence", description: "Editable business context · setup gated" },
   ];
-  const visibleLinks = workspaceLinks.filter((link) => link.kind === websiteTab.slice(0, -1));
+  const visibleLinks = workspaceLinks.filter((link) => link.kind === (websiteTab === "pages" ? "page" : "funnel"));
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-            Web & Insights
+            Deliverables
           </p>
-          <h3 className="mt-1 text-lg font-semibold text-white">Client destinations in one place</h3>
+          <h3 className="mt-1 text-lg font-semibold text-white">Websites, landing pages, and funnels</h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
-            Pages, funnels, and Agent OS intelligence stay together here so the Dashboard can stay
-            focused on today’s work.
+            Keep client-facing build outputs together while Intelligence holds the reports and
+            business context that explain what to build next.
           </p>
         </div>
         <Globe2 className="h-5 w-5 text-cyan-300" />
@@ -3172,50 +3224,24 @@ function ClientWebsitesCard({
         <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
           {tabs.find((tab) => tab.id === websiteTab)?.description}
         </p>
-        {websiteTab === "intelligence" ? (
-          <IntelligencePreview approvedDraft={approvedBrandInterview} />
-        ) : websiteTab === "reports" ? (
-          <div className="mt-3 grid gap-2 md:grid-cols-2">
-            {reports.map((report) => {
-              const Icon = report.icon;
-              return (
-                <a
-                  key={report.href}
-                  href={report.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-3 text-left transition hover:border-emerald-300/25 hover:bg-white/[0.05]"
-                >
-                  <Icon className="h-4 w-4 shrink-0 text-emerald-300" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-medium text-slate-200">{report.name}</span>
-                    <span className="mt-1 block truncate text-[10px] text-slate-600">{report.detail} · {report.updated}</span>
-                  </span>
-                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-600 transition group-hover:text-emerald-300" />
-                </a>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-3 grid gap-2 md:grid-cols-2">
-            {visibleLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-3 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.05]"
-              >
-                <PanelTop className="h-4 w-4 shrink-0 text-cyan-300" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-medium text-slate-200">{link.label}</span>
-                  <span className="mt-1 block truncate text-[10px] text-slate-600">{link.detail}</span>
-                </span>
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-600 transition group-hover:text-cyan-300" />
-              </a>
-            ))}
-          </div>
-        )}
+        <div className="mt-3 grid gap-2 md:grid-cols-2">
+          {visibleLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-3 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.05]"
+            >
+              <PanelTop className="h-4 w-4 shrink-0 text-cyan-300" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-medium text-slate-200">{link.label}</span>
+                <span className="mt-1 block truncate text-[10px] text-slate-600">{link.detail}</span>
+              </span>
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-600 transition group-hover:text-cyan-300" />
+            </a>
+          ))}
+        </div>
       </div>
       {websiteTab === "pages" && sitesHref && (
         <a
@@ -3607,69 +3633,143 @@ function DocumentsCard({
   );
 }
 
-function ReportsCard({ client }: { client: ClientConfig }) {
-  const clientReports = client.locationId === "QsbCjo5HFBGuRG0AKms0" ? reports : [];
-  if (!clientReports.length) {
-    return (
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-          Intelligence reports
-        </p>
-        <h3 className="mt-1 text-lg font-semibold text-white">
-          {client.name} reports are not configured yet
-        </h3>
-        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
-          Client-specific audience, competitive, search, and content reports will appear here when
-          they are added to this sub-account workspace.
-        </p>
-      </section>
-    );
-  }
+type RenderedReport = (typeof reports)[number];
+
+function IntelligenceArea({
+  client,
+  tab,
+  onTabChange,
+  approvedDraft,
+}: {
+  client: ClientConfig;
+  tab: IntelligenceTab;
+  onTabChange: (tab: IntelligenceTab) => void;
+  approvedDraft?: BusinessBrandInterviewDraft;
+}) {
+  const tenantReady = client.locationId === "QsbCjo5HFBGuRG0AKms0";
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-            Intelligence reports
-          </p>
-          <h3 className="mt-1 text-lg font-semibold text-white">Know what is changing</h3>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Intelligence</p>
+          <h3 className="mt-1 text-lg font-semibold text-white">Reports and company context</h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
-            These are the client-context reports that ground the posting machine: audience signals,
-            competitive whitespace, search opportunities, AI visibility, and video hooks.
+            Tenant-scoped research and approved business context live here. Reports are rendered
+            for review; raw implementation files are never the client experience.
           </p>
         </div>
-        <FileText className="h-5 w-5 text-emerald-300" />
+        <Sparkles className="h-5 w-5 text-emerald-300" />
       </div>
-      <div className="mt-5 space-y-3">
-        {clientReports.map((report) => {
-          const Icon = report.icon;
-          return (
-            <a
-              key={report.name}
-              href={report.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex w-full items-start gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-4 text-left transition hover:border-emerald-300/25 hover:bg-white/[0.05]"
+      <div className="mt-5 border-b border-[#dbe5ed]" role="tablist" aria-label="Intelligence destinations">
+        <div className="flex gap-1 overflow-x-auto">
+          {[
+            { id: "reports" as const, label: "Reports", detail: "Rendered research and signals" },
+            { id: "company" as const, label: "Company & Client Info", detail: "Approved business and partnership context" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === item.id}
+              onClick={() => onTabChange(item.id)}
+              className={`shrink-0 rounded-t-xl px-4 py-3 text-left transition ${tab === item.id ? "border-b-2 border-[#1377b8] bg-[#e8f4fa] text-[#1377b8]" : "text-[#466174] hover:bg-[#f3f8fb]"}`}
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-300/15 bg-emerald-300/[0.07] text-emerald-200">
-                <Icon className="h-4 w-4" />
+              <span className="block text-xs font-bold">{item.label}</span>
+              <span className="mt-1 block text-[10px] opacity-75">{item.detail}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-5">
+        {tenantReady ? (
+          tab === "reports" ? <RenderedReportsList /> : <IntelligencePreview approvedDraft={approvedDraft} />
+        ) : (
+          <div className="rounded-xl border border-amber-300/25 bg-amber-50 p-5 text-sm text-amber-950">
+            <p className="font-semibold">Intelligence is not configured for this tenant.</p>
+            <p className="mt-1 text-xs leading-relaxed">No report or company context is shown until a tenant-scoped source is verified.</p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function RenderedReportsList() {
+  const [selectedId, setSelectedId] = useState<string>(reports[0].id);
+  const selected = reports.find((report) => report.id === selectedId) ?? reports[0];
+  return (
+    <div>
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {reports.map((report) => {
+          const Icon = report.icon;
+          const active = report.id === selected.id;
+          return (
+            <button
+              key={report.id}
+              type="button"
+              onClick={() => setSelectedId(report.id)}
+              aria-pressed={active}
+              className={`group rounded-xl border p-4 text-left transition ${active ? "border-emerald-300/50 bg-emerald-50" : "border-white/[0.08] bg-white/[0.025] hover:border-emerald-300/30 hover:bg-white/[0.05]"}`}
+            >
+              <div className="flex items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-300/15 bg-emerald-300/[0.07] text-emerald-200">
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-slate-200">{report.name}</span>
+                  <span className="mt-1 block text-xs leading-relaxed text-slate-500">{report.detail}</span>
+                  <span className="mt-3 block text-[10px] uppercase tracking-[0.12em] text-slate-600">{report.updated}</span>
+                </span>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-200">{report.name}</p>
-                <p className="mt-1 text-xs leading-relaxed text-slate-500">{report.detail}</p>
-                <p className="mt-3 text-[10px] uppercase tracking-[0.12em] text-slate-600">
-                  {report.updated}
-                </p>
-              </div>
-              <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-600 transition group-hover:text-emerald-300" />
-            </a>
+            </button>
           );
         })}
       </div>
-      <p className="mt-4 text-xs text-slate-600">
-        Open a report above to view the full intelligence file.
-      </p>
-    </section>
+      <RenderedReportView report={selected} />
+    </div>
+  );
+}
+
+function RenderedReportView({ report }: { report: RenderedReport }) {
+  return (
+    <article className="mt-5 rounded-2xl border border-emerald-300/25 bg-white p-5 shadow-[0_18px_60px_-35px_rgba(8,123,104,0.35)] sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">Rendered tenant report · review before use</p>
+          <h4 className="mt-2 text-2xl font-semibold text-[#102336]">{report.name}</h4>
+          <p className="mt-2 text-sm text-[#466174]">{report.detail}</p>
+        </div>
+        <span className="rounded-full border border-amber-300/50 bg-amber-50 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-800">Source-backed · not a live action</span>
+      </div>
+      <div className="mt-5 rounded-xl border border-[#dbe5ed] bg-[#f5f8fb] p-4">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#466174]">Executive summary</p>
+        <p className="mt-2 text-sm leading-relaxed text-[#102336]">{report.summary}</p>
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-3">
+        {report.signals.map(([label, value]) => (
+          <div key={label} className="rounded-xl border border-[#dbe5ed] bg-[#f8fbfd] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#466174]">{label}</p>
+            <p className="mt-2 text-sm font-semibold text-[#102336]">{value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-800">Opportunity</p>
+          <p className="mt-2 text-sm leading-relaxed text-[#102336]">{report.opportunity}</p>
+        </div>
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800">Next action</p>
+          <p className="mt-2 text-sm leading-relaxed text-[#102336]">{report.nextAction}</p>
+        </div>
+      </div>
+      <div className="mt-5 rounded-xl border border-dashed border-[#b8c9d4] bg-[#fbfdfe] p-4 text-xs leading-relaxed text-[#466174]">
+        <p><span className="font-semibold text-[#102336]">Source:</span> {report.source}</p>
+        <p className="mt-1"><span className="font-semibold text-[#102336]">Last analyzed:</span> {report.updated}</p>
+        <p className="mt-1"><span className="font-semibold text-[#102336]">Tenant scope:</span> Calvenn Starre · Your Best Health Quote</p>
+        <p className="mt-1">Rendered summary only. Raw implementation files are not exposed in the client experience.</p>
+      </div>
+    </article>
   );
 }
 
