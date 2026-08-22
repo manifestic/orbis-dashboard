@@ -1010,7 +1010,7 @@ function ClientCommandCenter() {
   const activeLabel = sectionLabels[activeSection];
   const authenticatedDisplayName =
     authState.user?.displayName?.trim() || authState.user?.clientName?.trim() || client.name;
-  const greetingName = authenticatedDisplayName.split(/\s+/)[0] || "there";
+  const greetingName = authenticatedDisplayName || "there";
 
   return (
     <main
