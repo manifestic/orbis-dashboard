@@ -9,14 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SetupTileRouteImport } from './routes/setup-tile'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiReviewUrlRouteImport } from './routes/api/review-url'
 import { Route as ApiReplyCapabilityRouteImport } from './routes/api/reply-capability'
 import { Route as ApiReplyRouteImport } from './routes/api/reply'
 import { Route as ApiDashboardDataRouteImport } from './routes/api/dashboard-data'
 import { Route as ApiConversationRouteImport } from './routes/api/conversation'
+import { Route as ApiCalendarRequestRouteImport } from './routes/api/calendar-request'
 import { Route as ApiAuthRouteImport } from './routes/api/auth'
+import { Route as ApiAiSuggestionRouteImport } from './routes/api/ai-suggestion'
 
+const SetupTileRoute = SetupTileRouteImport.update({
+  id: '/setup-tile',
+  path: '/setup-tile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -25,6 +34,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReviewUrlRoute = ApiReviewUrlRouteImport.update({
+  id: '/api/review-url',
+  path: '/api/review-url',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReplyCapabilityRoute = ApiReplyCapabilityRouteImport.update({
@@ -47,82 +61,127 @@ const ApiConversationRoute = ApiConversationRouteImport.update({
   path: '/api/conversation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCalendarRequestRoute = ApiCalendarRequestRouteImport.update({
+  id: '/api/calendar-request',
+  path: '/api/calendar-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthRoute = ApiAuthRouteImport.update({
   id: '/api/auth',
   path: '/api/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiSuggestionRoute = ApiAiSuggestionRouteImport.update({
+  id: '/api/ai-suggestion',
+  path: '/api/ai-suggestion',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/setup-tile': typeof SetupTileRoute
+  '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
+  '/api/calendar-request': typeof ApiCalendarRequestRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
+  '/api/review-url': typeof ApiReviewUrlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/setup-tile': typeof SetupTileRoute
+  '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
+  '/api/calendar-request': typeof ApiCalendarRequestRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
+  '/api/review-url': typeof ApiReviewUrlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/setup-tile': typeof SetupTileRoute
+  '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
+  '/api/calendar-request': typeof ApiCalendarRequestRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
+  '/api/review-url': typeof ApiReviewUrlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/setup-tile'
+    | '/api/ai-suggestion'
     | '/api/auth'
+    | '/api/calendar-request'
     | '/api/conversation'
     | '/api/dashboard-data'
     | '/api/reply'
     | '/api/reply-capability'
+    | '/api/review-url'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
+    | '/setup-tile'
+    | '/api/ai-suggestion'
     | '/api/auth'
+    | '/api/calendar-request'
     | '/api/conversation'
     | '/api/dashboard-data'
     | '/api/reply'
     | '/api/reply-capability'
+    | '/api/review-url'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/setup-tile'
+    | '/api/ai-suggestion'
     | '/api/auth'
+    | '/api/calendar-request'
     | '/api/conversation'
     | '/api/dashboard-data'
     | '/api/reply'
     | '/api/reply-capability'
+    | '/api/review-url'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  SetupTileRoute: typeof SetupTileRoute
+  ApiAiSuggestionRoute: typeof ApiAiSuggestionRoute
   ApiAuthRoute: typeof ApiAuthRoute
+  ApiCalendarRequestRoute: typeof ApiCalendarRequestRoute
   ApiConversationRoute: typeof ApiConversationRoute
   ApiDashboardDataRoute: typeof ApiDashboardDataRoute
   ApiReplyRoute: typeof ApiReplyRoute
   ApiReplyCapabilityRoute: typeof ApiReplyCapabilityRoute
+  ApiReviewUrlRoute: typeof ApiReviewUrlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/setup-tile': {
+      id: '/setup-tile'
+      path: '/setup-tile'
+      fullPath: '/setup-tile'
+      preLoaderRoute: typeof SetupTileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -135,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/review-url': {
+      id: '/api/review-url'
+      path: '/api/review-url'
+      fullPath: '/api/review-url'
+      preLoaderRoute: typeof ApiReviewUrlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/reply-capability': {
@@ -165,11 +231,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiConversationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/calendar-request': {
+      id: '/api/calendar-request'
+      path: '/api/calendar-request'
+      fullPath: '/api/calendar-request'
+      preLoaderRoute: typeof ApiCalendarRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth': {
       id: '/api/auth'
       path: '/api/auth'
       fullPath: '/api/auth'
       preLoaderRoute: typeof ApiAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-suggestion': {
+      id: '/api/ai-suggestion'
+      path: '/api/ai-suggestion'
+      fullPath: '/api/ai-suggestion'
+      preLoaderRoute: typeof ApiAiSuggestionRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -178,11 +258,15 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  SetupTileRoute: SetupTileRoute,
+  ApiAiSuggestionRoute: ApiAiSuggestionRoute,
   ApiAuthRoute: ApiAuthRoute,
+  ApiCalendarRequestRoute: ApiCalendarRequestRoute,
   ApiConversationRoute: ApiConversationRoute,
   ApiDashboardDataRoute: ApiDashboardDataRoute,
   ApiReplyRoute: ApiReplyRoute,
   ApiReplyCapabilityRoute: ApiReplyCapabilityRoute,
+  ApiReviewUrlRoute: ApiReviewUrlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
