@@ -14,6 +14,7 @@ import {
   Inbox,
   Instagram,
   LayoutDashboard,
+  LifeBuoy,
   Linkedin,
   Mail,
   MessageCircle,
@@ -29,7 +30,7 @@ import {
   X,
   Youtube,
 } from "lucide-react";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { BusinessBrandInterview } from "../components/business-brand-interview";
 import type {
   BusinessBrandInterviewDraft,
@@ -429,7 +430,8 @@ type DashboardSection =
   | "websites"
   | "documents"
   | "intelligence"
-  | "reports";
+  | "reports"
+  | "support";
 type WebsiteTab = "pages" | "funnels";
 type IntelligenceTab = "reports" | "company";
 
@@ -726,8 +728,6 @@ function ClientCommandCenter() {
     client.locationId === "QsbCjo5HFBGuRG0AKms0"
       ? ghl("/custom-menu-link/473f9ef0-f446-4725-8f22-4e0e60af04f3")
       : client.reviewUrl || undefined;
-  const documentsHref = ghl("/payments/proposals-estimates");
-  const templatesHref = ghl("/payments/invoice-templates");
   const goToSection = (section: DashboardSection) => {
     setActiveSection(section);
     const params = new URLSearchParams(window.location.search);
@@ -911,7 +911,7 @@ function ClientCommandCenter() {
     const requestedSection = params.get("section");
     const requestedWebsiteTab = params.get("websiteTab");
     const requestedIntelligenceTab = params.get("intelligenceTab");
-    const validSections = ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "intelligence", "reports"];
+    const validSections = ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "intelligence", "reports", "support"];
     if (requestedSection && validSections.includes(requestedSection)) {
       if (requestedSection === "reports") {
         setActiveSection("intelligence");
@@ -1009,6 +1009,7 @@ function ClientCommandCenter() {
     documents: "Documents & Contracts",
     intelligence: "Intelligence",
     reports: "Intelligence",
+    support: "Help & Support",
   };
   const activeLabel = sectionLabels[activeSection];
   const sessionDisplayName = authState.user?.displayName?.trim() ?? "";
@@ -1073,6 +1074,7 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={Globe2} label="Deliverables" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
                 <SideNavItem top icon={Sparkles} label="Intelligence" active={activeSection === "intelligence" || activeSection === "reports"} onClick={() => goToSection("intelligence")} />
                 <SideNavItem top icon={FileText} label="Documents & Contracts" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
+                <SideNavItem top icon={LifeBuoy} label="Help & Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
               </div>
             </nav>
 
@@ -1250,8 +1252,6 @@ function ClientCommandCenter() {
                 opportunitiesHref={ghl("/opportunities/list")}
                 plannerHref={ghl("/marketing/social-planner")}
                 contentReviewHref={contentReviewHref}
-                documentsHref={documentsHref}
-                templatesHref={templatesHref}
                 approvedBrandInterview={approvedBrandInterview}
               />
             )}
@@ -2380,8 +2380,6 @@ function DashboardSectionView({
   opportunitiesHref,
   plannerHref,
   contentReviewHref,
-  documentsHref,
-  templatesHref,
   approvedBrandInterview,
 }: {
   client: ClientConfig;
@@ -2404,8 +2402,6 @@ function DashboardSectionView({
   opportunitiesHref?: string;
   plannerHref?: string;
   contentReviewHref?: string;
-  documentsHref?: string;
-  templatesHref?: string;
   approvedBrandInterview?: BusinessBrandInterviewDraft;
 }) {
   const labels: Record<DashboardSection, string> = {
@@ -2419,6 +2415,7 @@ function DashboardSectionView({
     documents: "Documents & Contracts",
     intelligence: "Intelligence",
     reports: "Intelligence",
+    support: "Help & Support",
   };
   const detail: Record<DashboardSection, string> = {
     "getting-started": "Connect the essentials and install the mobile app.",
@@ -2429,9 +2426,10 @@ function DashboardSectionView({
     opportunities: "Move prospects through the pipeline without mixing them into the overview.",
     content: "Keep approvals, Social Planner, and connection actions together.",
     websites: "Websites, landing pages, and funnels in one client-facing area.",
-    documents: "Open Documents & Contracts and reusable Templates in native HighLevel.",
+    documents: "Review approved documents and reusable templates in a view-only workspace.",
     intelligence: "Rendered reports and approved company context for better decisions.",
     reports: "Rendered reports and approved company context for better decisions.",
+    support: "Ask Manifestic Ops for help with this client workspace.",
   };
   return (
     <section className="mt-8 pb-10 rounded-2xl border border-white/[0.09] bg-white/[0.035] p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
@@ -2497,11 +2495,9 @@ function DashboardSectionView({
         {section === "documents" && (
           <DocumentsCard
             clientName={client.name}
-            documentsHref={documentsHref}
-            templatesHref={templatesHref}
-            paymentAccessEnabled={client.paymentAccessEnabled}
           />
         )}
+        {section === "support" && <HelpSupportArea clientName={client.name} />}
         {(section === "intelligence" || section === "reports") && (
           <IntelligenceArea
             client={client}
@@ -3562,28 +3558,10 @@ function LegacyWebsitesCard({ sitesHref }: { sitesHref?: string }) {
 
 function DocumentsCard({
   clientName,
-  documentsHref,
-  templatesHref,
-  paymentAccessEnabled,
 }: {
   clientName: string;
-  documentsHref?: string;
-  templatesHref?: string;
-  paymentAccessEnabled: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<"documents" | "templates">("documents");
-  const links = [
-    {
-      label: "All Documents & Contracts",
-      detail: "Open proposals, estimates, and contracts in native HighLevel.",
-      href: documentsHref,
-    },
-    {
-      label: "Templates",
-      detail: "Open reusable document templates in native HighLevel.",
-      href: templatesHref,
-    },
-  ];
 
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
@@ -3596,10 +3574,8 @@ function DocumentsCard({
             Contracts and templates in one place
           </h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
-            These focused links target the native HighLevel document workspaces. HighLevel currently
-            requires its Payments parent capability for those destinations; this client view does
-            not enable broader Payments tools, so native access remains setup-gated until that
-            minimum capability is configured.
+            This client-facing workspace shows approved, read-only documents and templates. It does
+            not require native Payments access, and nothing here can send, sign, edit, or delete.
           </p>
         </div>
         <FileText className="h-5 w-5 text-cyan-300" />
@@ -3636,7 +3612,7 @@ function DocumentsCard({
             title="No approved documents imported yet"
             detail="Manifestic Ops must map an approved source file to this tenant before it appears here. This prevents draft proposals or another client’s documents from being exposed."
           />
-          <NativeDocumentLinks links={links} />
+          <DocumentSupportNote />
         </>
       ) : (
         <>
@@ -3658,15 +3634,15 @@ function DocumentsCard({
               </div>
             ))}
           </div>
-          <NativeDocumentLinks links={links.filter((link) => link.label === "Templates")} />
+          <DocumentSupportNote />
         </>
       )}
       <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
         <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-2.5 py-1 text-cyan-200">
-          Documents entry point
+          View-only catalog
         </span>
         <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2.5 py-1 text-slate-500">
-          {paymentAccessEnabled ? "Native document access verified" : "Native access requires Payments capability"}
+          Tenant scoped · No payment actions
         </span>
       </div>
     </section>
@@ -3689,38 +3665,182 @@ function DocumentCatalogEmptyState({ title, detail }: { title: string; detail: s
   );
 }
 
-function NativeDocumentLinks({
-  links,
-}: {
-  links: Array<{ label: string; detail: string; href?: string }>;
-}) {
+function DocumentSupportNote() {
   return (
-    <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Native HighLevel fallback</p>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">These links remain available if the owner later enables the minimum native capability. They do not bypass HighLevel permissions.</p>
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
-        {links.map((link) =>
-          link.href ? (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_top"
-              rel="noreferrer"
-              className="group flex items-center gap-3 rounded-xl border border-white/[0.08] bg-[#0b0f1a] p-4 text-left transition hover:border-cyan-300/35 hover:bg-white/[0.06]"
-            >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-cyan-300/15 bg-cyan-300/[0.07] text-cyan-200">
-                <ArrowUpRight className="h-4 w-4" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-medium text-slate-200">{link.label}</span>
-                <span className="mt-1 block text-xs leading-relaxed text-slate-500">{link.detail}</span>
-              </span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-cyan-300" />
-            </a>
-          ) : null,
-        )}
-      </div>
+    <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4">
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
+        Need document help?
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-[#102336]">
+        Contact Manifestic Ops and we’ll review the approved source and add a tenant-safe,
+        view-only version here.
+      </p>
     </div>
+  );
+}
+
+const SUPPORT_CATEGORIES = [
+  "Documents & Contracts",
+  "Templates",
+  "Dashboard",
+  "Inbox",
+  "Calendar",
+  "Other",
+] as const;
+
+function HelpSupportArea({ clientName }: { clientName: string }) {
+  const [category, setCategory] = useState<(typeof SUPPORT_CATEGORIES)[number]>("Documents & Contracts");
+  const [message, setMessage] = useState("");
+  const [screenshotUrl, setScreenshotUrl] = useState("");
+  const [contactContext, setContactContext] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
+  const [status, setStatus] = useState<{
+    state: "idle" | "loading" | "success" | "error";
+    message?: string;
+  }>({ state: "idle" });
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/support-request", { cache: "no-store" })
+      .then(async (response) => {
+        const body = (await response.json().catch(() => ({}))) as { csrfToken?: string; error?: string };
+        if (!response.ok || !body.csrfToken) throw new Error(body.error || "support_unavailable");
+        if (!cancelled) setCsrfToken(body.csrfToken);
+      })
+      .catch(() => {
+        if (!cancelled)
+          setStatus({ state: "error", message: "Support requests are not available right now." });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
+      setStatus({ state: "error", message: "Tell us what you need help with before submitting." });
+      return;
+    }
+    if (trimmedMessage.length > 4000 || contactContext.length > 1000 || screenshotUrl.length > 1000) {
+      setStatus({ state: "error", message: "Please shorten the request details and try again." });
+      return;
+    }
+    if (screenshotUrl.trim() && !/^https?:\/\//i.test(screenshotUrl.trim())) {
+      setStatus({ state: "error", message: "Screenshot links must start with http:// or https://." });
+      return;
+    }
+    if (!csrfToken) {
+      setStatus({ state: "error", message: "Support security is still loading. Please try again." });
+      return;
+    }
+    setStatus({ state: "loading" });
+    try {
+      const response = await fetch("/api/support-request", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrfToken },
+        body: JSON.stringify({
+          action: "create",
+          category,
+          message: trimmedMessage,
+          screenshotUrl: screenshotUrl.trim(),
+          contactContext: contactContext.trim(),
+          idempotencyKey: `support-${crypto.randomUUID().replaceAll("-", "")}`,
+        }),
+      });
+      const body = (await response.json().catch(() => ({}))) as { message?: string; error?: string };
+      if (!response.ok) throw new Error(body.message || body.error || "support_request_unavailable");
+      setStatus({ state: "success", message: "Your request was sent to Manifestic Ops." });
+      setMessage("");
+      setScreenshotUrl("");
+      setContactContext("");
+    } catch (error) {
+      setStatus({
+        state: "error",
+        message:
+          error instanceof Error && error.message === "support_notifications_unconfigured"
+            ? "Support notifications are not configured yet. Please contact Manifestic Ops directly."
+            : "We couldn’t submit that request. Nothing was sent; please try again later.",
+      });
+    }
+  }
+
+  return (
+    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+            Manifestic Ops
+          </p>
+          <h3 className="mt-1 text-lg font-semibold text-white">Help & Support</h3>
+          <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
+            Send a tenant-scoped request about {clientName}’s Command Center. This form does not
+            expose HighLevel admin tools or make changes to your account.
+          </p>
+        </div>
+        <LifeBuoy className="h-5 w-5 text-cyan-300" />
+      </div>
+      <form onSubmit={submit} className="mt-6 grid gap-4 md:grid-cols-2">
+        <label className="grid gap-2 text-xs font-semibold text-slate-300">
+          Category
+          <select
+            value={category}
+            onChange={(event) => setCategory(event.target.value as (typeof SUPPORT_CATEGORIES)[number])}
+            className="rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none focus:border-cyan-300"
+          >
+            {SUPPORT_CATEGORIES.map((option) => <option key={option}>{option}</option>)}
+          </select>
+        </label>
+        <label className="grid gap-2 text-xs font-semibold text-slate-300">
+          Screenshot link <span className="font-normal text-slate-500">(optional)</span>
+          <input
+            value={screenshotUrl}
+            onChange={(event) => setScreenshotUrl(event.target.value)}
+            placeholder="https://..."
+            inputMode="url"
+            className="rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-cyan-300"
+          />
+        </label>
+        <label className="grid gap-2 text-xs font-semibold text-slate-300 md:col-span-2">
+          What do you need help with?
+          <textarea
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            required
+            rows={5}
+            maxLength={4000}
+            placeholder="Describe the issue or document request..."
+            className="resize-y rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-cyan-300"
+          />
+        </label>
+        <label className="grid gap-2 text-xs font-semibold text-slate-300 md:col-span-2">
+          Contact context <span className="font-normal text-slate-500">(optional)</span>
+          <input
+            value={contactContext}
+            onChange={(event) => setContactContext(event.target.value)}
+            placeholder="Best way to follow up or relevant context"
+            className="rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-cyan-300"
+          />
+        </label>
+        <div className="flex flex-wrap items-center justify-between gap-3 md:col-span-2">
+          <p
+            aria-live="polite"
+            className={`text-xs ${status.state === "error" ? "text-rose-300" : status.state === "success" ? "text-emerald-300" : "text-slate-500"}`}
+          >
+            {status.message || "Requests are reviewed by Manifestic Ops before any account-level action."}
+          </p>
+          <button
+            type="submit"
+            disabled={status.state === "loading"}
+            className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {status.state === "loading" ? "Submitting…" : "Submit request"}
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }
 

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SetupTileRouteImport } from './routes/setup-tile'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSupportRequestRouteImport } from './routes/api/support-request'
 import { Route as ApiReviewUrlRouteImport } from './routes/api/review-url'
 import { Route as ApiReplyCapabilityRouteImport } from './routes/api/reply-capability'
 import { Route as ApiReplyRouteImport } from './routes/api/reply'
@@ -35,6 +36,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSupportRequestRoute = ApiSupportRequestRouteImport.update({
+  id: '/api/support-request',
+  path: '/api/support-request',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReviewUrlRoute = ApiReviewUrlRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
   '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/support-request': typeof ApiSupportRequestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
   '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/support-request': typeof ApiSupportRequestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
   '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/support-request': typeof ApiSupportRequestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/api/reply'
     | '/api/reply-capability'
     | '/api/review-url'
+    | '/api/support-request'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/api/reply'
     | '/api/reply-capability'
     | '/api/review-url'
+    | '/api/support-request'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/api/reply'
     | '/api/reply-capability'
     | '/api/review-url'
+    | '/api/support-request'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   ApiReplyRoute: typeof ApiReplyRoute
   ApiReplyCapabilityRoute: typeof ApiReplyCapabilityRoute
   ApiReviewUrlRoute: typeof ApiReviewUrlRoute
+  ApiSupportRequestRoute: typeof ApiSupportRequestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/support-request': {
+      id: '/api/support-request'
+      path: '/api/support-request'
+      fullPath: '/api/support-request'
+      preLoaderRoute: typeof ApiSupportRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/review-url': {
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReplyRoute: ApiReplyRoute,
   ApiReplyCapabilityRoute: ApiReplyCapabilityRoute,
   ApiReviewUrlRoute: ApiReviewUrlRoute,
+  ApiSupportRequestRoute: ApiSupportRequestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
