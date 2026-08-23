@@ -1015,10 +1015,10 @@ function ClientCommandCenter() {
     opportunities: "Opportunities",
     content: "Content Review",
     websites: "Deliverables",
-    documents: "Documents & Contracts",
+    documents: "Documents",
     intelligence: "Intelligence",
     reports: "Intelligence",
-    support: "Help & Support",
+    support: "Support",
     "voice-ai": "Voice AI",
   };
   const activeLabel = sectionLabels[activeSection];
@@ -1058,12 +1058,6 @@ function ClientCommandCenter() {
         .ybq-dashboard [class*="bg-emerald-"] { background-color:#e9f7f1!important; }
         .ybq-dashboard [class*="text-slate-950"] { color:#fff!important; }
         .ybq-dashboard a[class*="bg-cyan-"], .ybq-dashboard button[class*="bg-cyan-"] { background:var(--ybq-blue)!important; color:#fff!important; }
-        .ybq-dashboard .ybq-latest-message { background:#167db8!important; border-color:#3aa9d6!important; color:#fff!important; }
-        .ybq-dashboard .ybq-latest-message .ybq-latest-message-label,
-        .ybq-dashboard .ybq-latest-message .ybq-latest-message-time,
-        .ybq-dashboard .ybq-latest-message .ybq-latest-message-name,
-        .ybq-dashboard .ybq-latest-message .ybq-latest-message-preview,
-        .ybq-dashboard .ybq-latest-message .ybq-latest-message-meta { color:#fff!important; }
       `}</style>
       <div className="pointer-events-none fixed inset-0 -z-0 bg-[radial-gradient(circle_at_78%_0%,rgba(19,119,184,0.09),transparent_30%),radial-gradient(circle_at_12%_28%,rgba(14,154,133,0.07),transparent_28%)]" />
       <div className="relative z-10 flex min-h-screen">
@@ -1075,12 +1069,11 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={LayoutDashboard} label="Dashboard" active={activeSection === "overview"} onClick={() => goToSection("overview")} />
                 <SideNavItem top icon={Inbox} label="Inbox" badge={`${unreadCount}`} active={activeSection === "inbox"} onClick={() => goToSection("inbox")} />
                 <SideNavItem top icon={CalendarDays} label="Calendar" active={activeSection === "calendar"} onClick={() => goToSection("calendar")} />
-                <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
                 <SideNavItem top icon={Globe2} label="Deliverables" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
                 <SideNavItem top icon={Sparkles} label="Intelligence" active={activeSection === "intelligence" || activeSection === "reports"} onClick={() => goToSection("intelligence")} />
-                <SideNavItem top icon={FileText} label="Documents & Contracts" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
-                <SideNavItem top icon={LifeBuoy} label="Help & Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
+                <SideNavItem top icon={FileText} label="Documents" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
+                <SideNavItem top icon={LifeBuoy} label="Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
                 <SideNavItem top icon={Mic2} label="Voice AI" active={activeSection === "voice-ai"} onClick={() => goToSection("voice-ai")} />
               </div>
             </nav>
@@ -2399,10 +2392,10 @@ function DashboardSectionView({
     opportunities: "Opportunities",
     content: "Content Review",
     websites: "Deliverables",
-    documents: "Documents & Contracts",
+    documents: "Documents",
     intelligence: "Intelligence",
     reports: "Intelligence",
-    support: "Help & Support",
+    support: "Support",
     "voice-ai": "Voice AI",
   };
   const detail: Record<DashboardSection, string> = {
@@ -2520,7 +2513,6 @@ function InboxPreview({
   onOpenFull: () => void;
   inboxHref?: string;
 }) {
-  const latest = conversations[0];
   return (
     <section className="rounded-2xl border border-white/[0.09] bg-white/[0.04] p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.35)] sm:p-6">
       <CardHeading
@@ -2530,31 +2522,7 @@ function InboxPreview({
         action="Open inbox"
         actionHref={inboxHref}
       />
-      {latest && (
-        <button
-          onClick={() => onSelect(latest.name)}
-          className="ybq-latest-message mt-5 w-full rounded-xl border p-4 text-left transition hover:brightness-105"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <p className="ybq-latest-message-label text-[10px] font-semibold uppercase tracking-[0.16em]">
-              Latest message
-            </p>
-            <span className="ybq-latest-message-time text-[11px] font-medium">
-              {live
-                ? formatRelativeTime(latest.lastMessageDate)
-                : ((latest as LiveConversation & { time?: string }).time ?? "recently")}
-            </span>
-          </div>
-          <p className="ybq-latest-message-name mt-2 text-sm font-semibold">{latest.name}</p>
-          <p className="ybq-latest-message-preview mt-1 text-sm leading-relaxed">
-            {latest.preview}
-          </p>
-          <p className="ybq-latest-message-meta mt-3 text-[10px] font-semibold uppercase tracking-[0.12em]">
-            {latest.channel} · {live ? "live message" : "message preview"}
-          </p>
-        </button>
-      )}
-      <div className="mt-4 flex flex-col items-start gap-3 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.045] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-5 flex flex-col items-start gap-3 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.045] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-300/15 text-cyan-100">
             <Mail className="h-4 w-4" />
@@ -4082,7 +4050,7 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
             Manifestic Ops
           </p>
-          <h3 className="mt-1 text-lg font-semibold text-white">Help & Support</h3>
+          <h3 className="mt-1 text-lg font-semibold text-white">Support</h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
             Send a tenant-scoped request about {clientName}’s Command Center. This form does not
             expose HighLevel admin tools or make changes to your account.
