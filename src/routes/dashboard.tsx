@@ -1232,6 +1232,7 @@ function ClientCommandCenter() {
                 tasks={visibleTasks}
                 opportunities={visibleOpportunities}
                 live={isLive || isPartial}
+                demoMode={demoMode}
                 unreadCount={unreadCount}
                 onSelectConversation={(name) => {
                   setSelectedConversation(name);
@@ -2367,6 +2368,7 @@ function DashboardSectionView({
   tasks: visibleTasks,
   opportunities: visibleOpportunities,
   live,
+  demoMode,
   unreadCount,
   onSelectConversation,
   onOpenInbox,
@@ -2389,6 +2391,7 @@ function DashboardSectionView({
   tasks: LiveTask[];
   opportunities: LiveOpportunitySummary;
   live: boolean;
+  demoMode: boolean;
   unreadCount: number;
   onSelectConversation: (name: string) => void;
   onOpenInbox: () => void;
@@ -2495,6 +2498,8 @@ function DashboardSectionView({
         {section === "documents" && (
           <DocumentsCard
             clientName={client.name}
+            locationId={client.locationId}
+            demoMode={demoMode}
           />
         )}
         {section === "support" && <HelpSupportArea clientName={client.name} />}
@@ -3558,10 +3563,15 @@ function LegacyWebsitesCard({ sitesHref }: { sitesHref?: string }) {
 
 function DocumentsCard({
   clientName,
+  locationId,
+  demoMode,
 }: {
   clientName: string;
+  locationId: string;
+  demoMode: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<"documents" | "templates">("documents");
+  const syntheticDemo = demoMode && locationId === "QsbCjo5HFBGuRG0AKms0";
 
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
@@ -3608,10 +3618,20 @@ function DocumentsCard({
               Approved {clientName} documents will appear here as read-only previews. Nothing in this library can send, sign, edit, delete, or change payment data.
             </p>
           </div>
-          <DocumentCatalogEmptyState
-            title="No approved documents imported yet"
-            detail="Manifestic Ops must map an approved source file to this tenant before it appears here. This prevents draft proposals or another client’s documents from being exposed."
-          />
+          {syntheticDemo ? (
+            <SyntheticDocumentFixture
+              kind="contract"
+              title="Medicare Consultation Agreement"
+              detail="Simulated executed-state contract for demonstration only."
+              status="Executed · simulated"
+              id="demo-calvenn-contract-001"
+            />
+          ) : (
+            <DocumentCatalogEmptyState
+              title="No approved documents imported yet"
+              detail="Manifestic Ops must map an approved source file to this tenant before it appears here. This prevents draft proposals or another client’s documents from being exposed."
+            />
+          )}
           <DocumentSupportNote />
         </>
       ) : (
@@ -3622,18 +3642,30 @@ function DocumentsCard({
               Templates can live in this Command Center without being created in HighLevel Payments. We import an approved source, assign a tenant-safe version, and show a preview here.
             </p>
           </div>
-          <DocumentCatalogEmptyState
-            title="No approved templates imported yet"
-            detail="The next setup step is to choose the approved source files and placeholder fields. Importing a template here does not create a native HighLevel template or activate sending."
-          />
-          <div className="mt-4 grid gap-3 md:grid-cols-4">
-            {["Choose source", "Map placeholders", "Review preview", "Approve version"].map((step, index) => (
-              <div key={step} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-300">0{index + 1}</p>
-                <p className="mt-2 text-xs font-semibold text-slate-200">{step}</p>
+          {syntheticDemo ? (
+            <SyntheticDocumentFixture
+              kind="template"
+              title="Health Insurance Consultation Intake"
+              detail="Approved template fixture with placeholder fields; no native template was created."
+              status="Approved · simulated"
+              id="demo-calvenn-template-001"
+            />
+          ) : (
+            <>
+              <DocumentCatalogEmptyState
+                title="No approved templates imported yet"
+                detail="The next setup step is to choose the approved source files and placeholder fields. Importing a template here does not create a native HighLevel template or activate sending."
+              />
+              <div className="mt-4 grid gap-3 md:grid-cols-4">
+                {["Choose source", "Map placeholders", "Review preview", "Approve version"].map((step, index) => (
+                  <div key={step} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-300">0{index + 1}</p>
+                    <p className="mt-2 text-xs font-semibold text-slate-200">{step}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
           <DocumentSupportNote />
         </>
       )}
@@ -3665,6 +3697,51 @@ function DocumentCatalogEmptyState({ title, detail }: { title: string; detail: s
   );
 }
 
+function SyntheticDocumentFixture({
+  kind,
+  title,
+  detail,
+  status,
+  id,
+}: {
+  kind: "contract" | "template";
+  title: string;
+  detail: string;
+  status: string;
+  id: string;
+}) {
+  return (
+    <article className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-5 text-[#102336]">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
+            SYNTHETIC DEMO · REVIEW ONLY
+          </p>
+          <h4 className="mt-2 text-base font-semibold">{title}</h4>
+          <p className="mt-1 text-xs leading-relaxed text-[#466174]">{detail}</p>
+        </div>
+        <span className="rounded-full border border-amber-300 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-amber-900">
+          {status}
+        </span>
+      </div>
+      <div className="mt-4 grid gap-3 text-xs sm:grid-cols-3">
+        <div className="rounded-lg border border-amber-200 bg-white/75 p-3">
+          <p className="font-semibold uppercase tracking-[0.1em] text-amber-800">Type</p>
+          <p className="mt-1">{kind === "contract" ? "Contract" : "Template"}</p>
+        </div>
+        <div className="rounded-lg border border-amber-200 bg-white/75 p-3">
+          <p className="font-semibold uppercase tracking-[0.1em] text-amber-800">Demo ID</p>
+          <p className="mt-1 break-all font-mono text-[11px]">{id}</p>
+        </div>
+        <div className="rounded-lg border border-amber-200 bg-white/75 p-3">
+          <p className="font-semibold uppercase tracking-[0.1em] text-amber-800">Actions</p>
+          <p className="mt-1">Preview only · no send or signature</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function DocumentSupportNote() {
   return (
     <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4">
@@ -3687,6 +3764,8 @@ const SUPPORT_CATEGORIES = [
   "Calendar",
   "Other",
 ] as const;
+const SUPPORT_FIELD_CLASS =
+  "w-full rounded-xl border border-[#a8c0cc] bg-white px-3 py-3 text-sm font-normal text-[#102336] shadow-sm outline-none transition placeholder:text-[#466174] hover:border-[#7eacbd] focus:border-[#1377b8] focus:ring-2 focus:ring-[#1377b8]/25";
 
 function HelpSupportArea({ clientName }: { clientName: string }) {
   const [category, setCategory] = useState<(typeof SUPPORT_CATEGORIES)[number]>("Documents & Contracts");
@@ -3787,9 +3866,14 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
           <select
             value={category}
             onChange={(event) => setCategory(event.target.value as (typeof SUPPORT_CATEGORIES)[number])}
-            className="rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none focus:border-cyan-300"
+            className={`${SUPPORT_FIELD_CLASS} cursor-pointer`}
+            style={{ backgroundColor: "#ffffff", color: "#102336", colorScheme: "light" }}
           >
-            {SUPPORT_CATEGORIES.map((option) => <option key={option}>{option}</option>)}
+            {SUPPORT_CATEGORIES.map((option) => (
+              <option key={option} value={option} className="bg-white text-[#102336]">
+                {option}
+              </option>
+            ))}
           </select>
         </label>
         <label className="grid gap-2 text-xs font-semibold text-slate-300">
@@ -3799,7 +3883,8 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
             onChange={(event) => setScreenshotUrl(event.target.value)}
             placeholder="https://..."
             inputMode="url"
-            className="rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-cyan-300"
+            className={SUPPORT_FIELD_CLASS}
+            style={{ backgroundColor: "#ffffff", color: "#102336", colorScheme: "light" }}
           />
         </label>
         <label className="grid gap-2 text-xs font-semibold text-slate-300 md:col-span-2">
@@ -3811,7 +3896,8 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
             rows={5}
             maxLength={4000}
             placeholder="Describe the issue or document request..."
-            className="resize-y rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-cyan-300"
+            className={`${SUPPORT_FIELD_CLASS} min-h-32 resize-y`}
+            style={{ backgroundColor: "#ffffff", color: "#102336", colorScheme: "light" }}
           />
         </label>
         <label className="grid gap-2 text-xs font-semibold text-slate-300 md:col-span-2">
@@ -3820,7 +3906,8 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
             value={contactContext}
             onChange={(event) => setContactContext(event.target.value)}
             placeholder="Best way to follow up or relevant context"
-            className="rounded-xl border border-white/[0.12] bg-[#101828] px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-cyan-300"
+            className={SUPPORT_FIELD_CLASS}
+            style={{ backgroundColor: "#ffffff", color: "#102336", colorScheme: "light" }}
           />
         </label>
         <div className="flex flex-wrap items-center justify-between gap-3 md:col-span-2">
