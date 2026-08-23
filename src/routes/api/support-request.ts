@@ -12,6 +12,8 @@ const SUPPORT_CATEGORIES = new Set([
   "Calendar",
   "Other",
 ]);
+const SUPPORT_SCREENSHOT_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+const SUPPORT_SCREENSHOT_MAX_BYTES = 5 * 1024 * 1024;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -32,6 +34,41 @@ async function readJson(request: Request) {
   } catch {
     return {};
   }
+}
+
+function isUploadedScreenshot(value: FormDataEntryValue | null): value is File {
+  return value !== null && typeof value !== "string";
+}
+
+async function readSupportPayload(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().startsWith("multipart/form-data")) {
+    return { body: await readJson(request), screenshotFile: null as File | null };
+  }
+  const form = await request.formData();
+  const body: Record<string, unknown> = {};
+  for (const field of ["action", "category", "message", "contactContext", "idempotencyKey"]) {
+    body[field] = form.get(field) ?? "";
+  }
+  const screenshotEntry = form.get("screenshotFile");
+  return {
+    body,
+    screenshotFile: isUploadedScreenshot(screenshotEntry) ? screenshotEntry : null,
+  };
+}
+
+function safeFilename(value: string) {
+  return value.replace(/[^A-Za-z0-9._() -]/g, "_").slice(0, 120) || "screenshot";
+}
+
+async function fileToBase64(file: File) {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+  return btoa(binary);
 }
 
 function text(value: unknown, name: string, maxLength: number, required = true) {
@@ -64,6 +101,10 @@ async function notifyOps(input: {
   clientName: string;
   locationId: string;
   requesterEmail: string;
+  screenshot?: {
+    filename: string;
+    contentBase64: string;
+  };
 }) {
   const apiKey = (process.env.RESEND_API_KEY ?? "").trim();
   const from = (process.env.MANIFESTIC_SUPPORT_FROM_EMAIL ?? "").trim();
@@ -80,9 +121,11 @@ async function notifyOps(input: {
     requesterEmail: escapeHtml(input.requesterEmail),
   };
   const optionalContext = safe.contactContext || "Not provided";
-  const optionalScreenshot = safe.screenshotUrl
-    ? `<p><strong>Screenshot:</strong> <a href="${safe.screenshotUrl}">${safe.screenshotUrl}</a></p>`
-    : "<p><strong>Screenshot:</strong> Not provided</p>";
+  const optionalScreenshot = input.screenshot
+    ? `<p><strong>Screenshot attachment:</strong> ${escapeHtml(input.screenshot.filename)}</p>`
+    : safe.screenshotUrl
+      ? `<p><strong>Screenshot:</strong> <a href="${safe.screenshotUrl}">${safe.screenshotUrl}</a></p>`
+      : "<p><strong>Screenshot:</strong> Not provided</p>";
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -96,6 +139,16 @@ async function notifyOps(input: {
       reply_to: input.requesterEmail,
       subject: `[Command Center support] ${input.category} · ${input.clientName}`,
       html: `<h2>Command Center support request</h2><p><strong>Client:</strong> ${safe.clientName}</p><p><strong>Location:</strong> ${safe.locationId}</p><p><strong>Requester:</strong> ${safe.requesterEmail}</p><p><strong>Category:</strong> ${safe.category}</p><p><strong>Request:</strong><br />${safe.message}</p><p><strong>Contact context:</strong><br />${optionalContext}</p>${optionalScreenshot}<p><strong>Request ID:</strong> ${safe.idempotencyKey}</p><p>No HighLevel changes were made by this form.</p>`,
+      ...(input.screenshot
+        ? {
+            attachments: [
+              {
+                filename: input.screenshot.filename,
+                content: input.screenshot.contentBase64,
+              },
+            ],
+          }
+        : {}),
     }),
   });
   if (!response.ok) throw new Error("support_notification_failed");
@@ -122,7 +175,8 @@ export const Route = createFileRoute("/api/support-request")({
 
         const csrf = issueCsrfToken(request);
         try {
-          const body = await readJson(request);
+          const payload = await readSupportPayload(request);
+          const body = payload.body;
           if (body.action !== "create")
             return applyCookies(
               json({ error: "unsupported_action" }, 400),
@@ -151,6 +205,25 @@ export const Route = createFileRoute("/api/support-request")({
               auth.cookies,
               csrf.cookie,
             );
+          const screenshotFile = payload.screenshotFile;
+          if (screenshotFile && !SUPPORT_SCREENSHOT_TYPES.has(screenshotFile.type))
+            return applyCookies(
+              json({ error: "screenshot_type_invalid" }, 400),
+              auth.cookies,
+              csrf.cookie,
+            );
+          if (screenshotFile && screenshotFile.size > SUPPORT_SCREENSHOT_MAX_BYTES)
+            return applyCookies(
+              json({ error: "screenshot_too_large" }, 400),
+              auth.cookies,
+              csrf.cookie,
+            );
+          const screenshot = screenshotFile
+            ? {
+                filename: safeFilename(screenshotFile.name),
+                contentBase64: await fileToBase64(screenshotFile),
+              }
+            : undefined;
           const contactContext = text(body.contactContext, "contact_context", 1000, false);
           const conversationId = `support-request:${requestKey}`;
           const draft = JSON.stringify({
@@ -159,6 +232,13 @@ export const Route = createFileRoute("/api/support-request")({
             category,
             message,
             screenshotUrl,
+            screenshot: screenshotFile
+              ? {
+                  filename: safeFilename(screenshotFile.name),
+                  mimeType: screenshotFile.type,
+                  bytes: screenshotFile.size,
+                }
+              : null,
             contactContext,
             status: "submitted",
             highLevelChangesMade: false,
@@ -197,6 +277,7 @@ export const Route = createFileRoute("/api/support-request")({
             clientName: auth.session.clientName,
             locationId: auth.session.locationId,
             requesterEmail: auth.session.email,
+            screenshot,
           });
           return applyCookies(
             json({

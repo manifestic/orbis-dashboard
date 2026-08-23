@@ -30,7 +30,7 @@ import {
   X,
   Youtube,
 } from "lucide-react";
-import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type CSSProperties, type FormEvent } from "react";
 import { BusinessBrandInterview } from "../components/business-brand-interview";
 import type {
   BusinessBrandInterviewDraft,
@@ -3571,6 +3571,7 @@ function DocumentsCard({
   demoMode: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<"documents" | "templates">("documents");
+  const [preview, setPreview] = useState<SyntheticDocumentFixtureData | null>(null);
   const syntheticDemo = demoMode && locationId === "QsbCjo5HFBGuRG0AKms0";
 
   return (
@@ -3625,6 +3626,15 @@ function DocumentsCard({
               detail="Simulated executed-state contract for demonstration only."
               status="Executed · simulated"
               id="demo-calvenn-contract-001"
+              onView={() =>
+                setPreview({
+                  kind: "contract",
+                  title: "Medicare Consultation Agreement",
+                  detail: "Simulated executed-state contract for demonstration only.",
+                  status: "Executed · simulated",
+                  id: "demo-calvenn-contract-001",
+                })
+              }
             />
           ) : (
             <DocumentCatalogEmptyState
@@ -3649,6 +3659,15 @@ function DocumentsCard({
               detail="Approved template fixture with placeholder fields; no native template was created."
               status="Approved · simulated"
               id="demo-calvenn-template-001"
+              onView={() =>
+                setPreview({
+                  kind: "template",
+                  title: "Health Insurance Consultation Intake",
+                  detail: "Approved template fixture with placeholder fields; no native template was created.",
+                  status: "Approved · simulated",
+                  id: "demo-calvenn-template-001",
+                })
+              }
             />
           ) : (
             <>
@@ -3677,6 +3696,7 @@ function DocumentsCard({
           Tenant scoped · No payment actions
         </span>
       </div>
+      {preview ? <SyntheticDocumentPreview fixture={preview} onClose={() => setPreview(null)} /> : null}
     </section>
   );
 }
@@ -3697,19 +3717,22 @@ function DocumentCatalogEmptyState({ title, detail }: { title: string; detail: s
   );
 }
 
+type SyntheticDocumentFixtureData = {
+  kind: "contract" | "template";
+  title: string;
+  detail: string;
+  status: string;
+  id: string;
+};
+
 function SyntheticDocumentFixture({
   kind,
   title,
   detail,
   status,
   id,
-}: {
-  kind: "contract" | "template";
-  title: string;
-  detail: string;
-  status: string;
-  id: string;
-}) {
+  onView,
+}: SyntheticDocumentFixtureData & { onView: () => void }) {
   return (
     <article className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-5 text-[#102336]">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -3735,10 +3758,83 @@ function SyntheticDocumentFixture({
         </div>
         <div className="rounded-lg border border-amber-200 bg-white/75 p-3">
           <p className="font-semibold uppercase tracking-[0.1em] text-amber-800">Actions</p>
-          <p className="mt-1">Preview only · no send or signature</p>
+          <button
+            type="button"
+            onClick={onView}
+            className="mt-2 inline-flex items-center gap-1 rounded-lg border border-[#1377b8] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#1377b8] transition hover:bg-[#e8f4fa] focus:outline-none focus:ring-2 focus:ring-[#1377b8]/25"
+          >
+            View {kind}
+          </button>
+          <p className="mt-2 text-[11px]">Preview only · no send or signature</p>
         </div>
       </div>
     </article>
+  );
+}
+
+function SyntheticDocumentPreview({
+  fixture,
+  onClose,
+}: {
+  fixture: SyntheticDocumentFixtureData;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/65 p-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="synthetic-document-preview-title"
+        className="w-full max-w-xl rounded-2xl border border-amber-200 bg-white p-5 text-[#102336] shadow-2xl sm:p-6"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
+              Synthetic demo · read-only preview
+            </p>
+            <h3 id="synthetic-document-preview-title" className="mt-2 text-xl font-semibold">
+              {fixture.title}
+            </h3>
+          </div>
+          <button
+            type="button"
+            aria-label="Close preview"
+            onClick={onClose}
+            className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1377b8]/25"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-[#466174]">{fixture.detail}</p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-[#dbe5ed] bg-[#f7fbfd] p-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Type</p>
+            <p className="mt-1 text-sm">{fixture.kind === "contract" ? "Contract" : "Template"}</p>
+          </div>
+          <div className="rounded-xl border border-[#dbe5ed] bg-[#f7fbfd] p-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Status</p>
+            <p className="mt-1 text-sm">{fixture.status}</p>
+          </div>
+          <div className="rounded-xl border border-[#dbe5ed] bg-[#f7fbfd] p-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Demo ID</p>
+            <p className="mt-1 break-all font-mono text-[11px]">{fixture.id}</p>
+          </div>
+        </div>
+        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-[#102336]">
+          Synthetic demonstration only. This preview does not open, download, sign, send, edit, or
+          create any HighLevel or payment record.
+        </div>
+        <div className="mt-5 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl bg-[#1377b8] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f669d] focus:outline-none focus:ring-2 focus:ring-[#1377b8]/25"
+          >
+            Close preview
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -3764,15 +3860,20 @@ const SUPPORT_CATEGORIES = [
   "Calendar",
   "Other",
 ] as const;
+const SUPPORT_SCREENSHOT_ACCEPT = "image/png,image/jpeg,image/webp";
+const SUPPORT_SCREENSHOT_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+const SUPPORT_SCREENSHOT_MAX_BYTES = 5 * 1024 * 1024;
 const SUPPORT_FIELD_CLASS =
   "w-full rounded-xl border border-[#a8c0cc] bg-white px-3 py-3 text-sm font-normal text-[#102336] shadow-sm outline-none transition placeholder:text-[#466174] hover:border-[#7eacbd] focus:border-[#1377b8] focus:ring-2 focus:ring-[#1377b8]/25";
 
 function HelpSupportArea({ clientName }: { clientName: string }) {
   const [category, setCategory] = useState<(typeof SUPPORT_CATEGORIES)[number]>("Documents & Contracts");
   const [message, setMessage] = useState("");
-  const [screenshotUrl, setScreenshotUrl] = useState("");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshotPreviewUrl, setScreenshotPreviewUrl] = useState("");
   const [contactContext, setContactContext] = useState("");
   const [csrfToken, setCsrfToken] = useState("");
+  const screenshotInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<{
     state: "idle" | "loading" | "success" | "error";
     message?: string;
@@ -3795,6 +3896,36 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (screenshotPreviewUrl) URL.revokeObjectURL(screenshotPreviewUrl);
+    };
+  }, [screenshotPreviewUrl]);
+
+  function handleScreenshotChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    if (!file) return;
+    if (!SUPPORT_SCREENSHOT_TYPES.has(file.type)) {
+      event.currentTarget.value = "";
+      setStatus({ state: "error", message: "Choose a PNG, JPEG, or WebP image." });
+      return;
+    }
+    if (file.size > SUPPORT_SCREENSHOT_MAX_BYTES) {
+      event.currentTarget.value = "";
+      setStatus({ state: "error", message: "Screenshots must be 5 MB or smaller." });
+      return;
+    }
+    setScreenshotFile(file);
+    setScreenshotPreviewUrl(URL.createObjectURL(file));
+    setStatus({ state: "idle" });
+  }
+
+  function removeScreenshot() {
+    setScreenshotFile(null);
+    setScreenshotPreviewUrl("");
+    if (screenshotInputRef.current) screenshotInputRef.current.value = "";
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedMessage = message.trim();
@@ -3802,12 +3933,8 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
       setStatus({ state: "error", message: "Tell us what you need help with before submitting." });
       return;
     }
-    if (trimmedMessage.length > 4000 || contactContext.length > 1000 || screenshotUrl.length > 1000) {
+    if (trimmedMessage.length > 4000 || contactContext.length > 1000) {
       setStatus({ state: "error", message: "Please shorten the request details and try again." });
-      return;
-    }
-    if (screenshotUrl.trim() && !/^https?:\/\//i.test(screenshotUrl.trim())) {
-      setStatus({ state: "error", message: "Screenshot links must start with http:// or https://." });
       return;
     }
     if (!csrfToken) {
@@ -3816,23 +3943,23 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
     }
     setStatus({ state: "loading" });
     try {
+      const formData = new FormData();
+      formData.set("action", "create");
+      formData.set("category", category);
+      formData.set("message", trimmedMessage);
+      formData.set("contactContext", contactContext.trim());
+      formData.set("idempotencyKey", `support-${crypto.randomUUID().replaceAll("-", "")}`);
+      if (screenshotFile) formData.set("screenshotFile", screenshotFile, screenshotFile.name);
       const response = await fetch("/api/support-request", {
         method: "POST",
-        headers: { "content-type": "application/json", "x-csrf-token": csrfToken },
-        body: JSON.stringify({
-          action: "create",
-          category,
-          message: trimmedMessage,
-          screenshotUrl: screenshotUrl.trim(),
-          contactContext: contactContext.trim(),
-          idempotencyKey: `support-${crypto.randomUUID().replaceAll("-", "")}`,
-        }),
+        headers: { "x-csrf-token": csrfToken },
+        body: formData,
       });
       const body = (await response.json().catch(() => ({}))) as { message?: string; error?: string };
       if (!response.ok) throw new Error(body.message || body.error || "support_request_unavailable");
       setStatus({ state: "success", message: "Your request was sent to Manifestic Ops." });
       setMessage("");
-      setScreenshotUrl("");
+      removeScreenshot();
       setContactContext("");
     } catch (error) {
       setStatus({
@@ -3877,15 +4004,40 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
           </select>
         </label>
         <label className="grid gap-2 text-xs font-semibold text-slate-300">
-          Screenshot link <span className="font-normal text-slate-500">(optional)</span>
+          Screenshot <span className="font-normal text-slate-500">(optional)</span>
           <input
-            value={screenshotUrl}
-            onChange={(event) => setScreenshotUrl(event.target.value)}
-            placeholder="https://..."
-            inputMode="url"
+            ref={screenshotInputRef}
+            type="file"
+            accept={SUPPORT_SCREENSHOT_ACCEPT}
+            onChange={handleScreenshotChange}
             className={SUPPORT_FIELD_CLASS}
             style={{ backgroundColor: "#ffffff", color: "#102336", colorScheme: "light" }}
           />
+          <span className="text-[11px] font-normal leading-relaxed text-slate-500">
+            PNG, JPEG, or WebP · max 5 MB. Nothing uploads until you submit this request.
+          </span>
+          {screenshotFile && screenshotPreviewUrl ? (
+            <div className="flex items-start gap-3 rounded-xl border border-[#a8c0cc] bg-white p-3">
+              <img
+                src={screenshotPreviewUrl}
+                alt={`Selected screenshot: ${screenshotFile.name}`}
+                className="h-16 w-16 rounded-lg border border-[#dbe5ed] object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-semibold text-[#102336]">{screenshotFile.name}</p>
+                <p className="mt-1 text-[11px] text-[#466174]">
+                  {(screenshotFile.size / 1024 / 1024).toFixed(2)} MB · ready locally, not uploaded
+                </p>
+                <button
+                  type="button"
+                  onClick={removeScreenshot}
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#1377b8] hover:text-[#0f669d]"
+                >
+                  <X className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
+            </div>
+          ) : null}
         </label>
         <label className="grid gap-2 text-xs font-semibold text-slate-300 md:col-span-2">
           What do you need help with?
