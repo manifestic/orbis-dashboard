@@ -5,7 +5,6 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
-  ChevronDown,
   ChevronRight,
   CircleAlert,
   Clock3,
@@ -18,11 +17,11 @@ import {
   Linkedin,
   Mail,
   MessageCircle,
+  Mic2,
   MoreHorizontal,
   PanelTop,
   RefreshCw,
   Search,
-  Settings2,
   Smartphone,
   Sparkles,
   Target,
@@ -431,7 +430,8 @@ type DashboardSection =
   | "documents"
   | "intelligence"
   | "reports"
-  | "support";
+  | "support"
+  | "voice-ai";
 type WebsiteTab = "pages" | "funnels";
 type IntelligenceTab = "reports" | "company";
 
@@ -691,10 +691,19 @@ function requestHighLevelSignedContext(timeoutMs = 2500) {
   });
 }
 
+function personalGreetingName(displayName: string | undefined, workspaceName: string) {
+  const value = displayName?.trim() ?? "";
+  if (!value || value.includes("@") || value.toLowerCase() === workspaceName.trim().toLowerCase()) {
+    return "";
+  }
+
+  const firstName = value.split(/\s+/)[0]?.replace(/[^\p{L}'’-]/gu, "") ?? "";
+  return firstName.length >= 2 ? firstName : "";
+}
+
 function ClientCommandCenter() {
   const [hydrated, setHydrated] = useState(false);
   const [authState, setAuthState] = useState<AuthState>({ status: "loading" });
-  const [customizeOpen, setCustomizeOpen] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [websiteTab, setWebsiteTab] = useState<WebsiteTab>("pages");
@@ -911,7 +920,7 @@ function ClientCommandCenter() {
     const requestedSection = params.get("section");
     const requestedWebsiteTab = params.get("websiteTab");
     const requestedIntelligenceTab = params.get("intelligenceTab");
-    const validSections = ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "intelligence", "reports", "support"];
+    const validSections = ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "documents", "intelligence", "reports", "support", "voice-ai"];
     if (requestedSection && validSections.includes(requestedSection)) {
       if (requestedSection === "reports") {
         setActiveSection("intelligence");
@@ -1010,18 +1019,11 @@ function ClientCommandCenter() {
     intelligence: "Intelligence",
     reports: "Intelligence",
     support: "Help & Support",
+    "voice-ai": "Voice AI",
   };
   const activeLabel = sectionLabels[activeSection];
-  const sessionDisplayName = authState.user?.displayName?.trim() ?? "";
-  const workspaceNames = new Set(
-    [authState.user?.clientName?.trim(), client.name.trim()].filter(Boolean),
-  );
-  const authenticatedDisplayName =
-    sessionDisplayName && !workspaceNames.has(sessionDisplayName)
-      ? sessionDisplayName
-      : "";
-  const configuredGreetingName = client.greetingName.trim();
-  const greetingName = authenticatedDisplayName || configuredGreetingName || "there";
+  const greetingName =
+    client.greetingName || personalGreetingName(authState.user?.displayName, client.name);
 
   return (
     <main
@@ -1079,62 +1081,69 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={Sparkles} label="Intelligence" active={activeSection === "intelligence" || activeSection === "reports"} onClick={() => goToSection("intelligence")} />
                 <SideNavItem top icon={FileText} label="Documents & Contracts" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
                 <SideNavItem top icon={LifeBuoy} label="Help & Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
+                <SideNavItem top icon={Mic2} label="Voice AI" active={activeSection === "voice-ai"} onClick={() => goToSection("voice-ai")} />
               </div>
             </nav>
 
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 px-1">
-              <div className="flex min-w-0 items-center gap-3">
-                {client.logoUrl ? (
-                  <img
-                    src={client.logoUrl}
-                    alt={`${client.name} logo`}
-                    className="h-8 w-32 rounded-lg object-contain object-left"
-                  />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-300 via-blue-500 to-violet-500 text-xs font-black text-slate-950">
-                    M
-                  </div>
-                )}
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span
-                  className={`h-2 w-2 rounded-full ${demoDataActive ? "bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.7)]" : isLive ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]" : isPartial ? "bg-amber-300" : "bg-red-400"}`}
-                />
-                {demoDataActive
-                  ? "Demo data · synthetic values"
-                  : isLive
-                  ? "Live HighLevel data"
-                  : isPartial
-                    ? "Partial HighLevel data"
-                    : client.locationId
-                      ? "HighLevel connection unavailable"
-                      : "Demo workspace · Sample data"}
-                </div>
+            <div className="mt-6 flex flex-col justify-between gap-5 px-1 md:flex-row md:items-end">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                  Client Command Center
+                </p>
+                <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+                  {activeSection === "overview"
+                    ? greetingName
+                      ? `Welcome, ${greetingName}.`
+                      : "Welcome."
+                    : activeLabel}
+                </h1>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400 sm:text-base">
+                  {activeSection === "overview"
+                    ? "Today’s docket, next moves, conversations, and follow-up in one focused view."
+                    : `A focused ${activeLabel.toLowerCase()} workspace inside the Command Center.`}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
+            </div>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dbe5ed] bg-white/75 px-3 py-2.5 shadow-[0_12px_30px_-28px_rgba(16,35,54,0.65)]">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
+                <span className="inline-flex items-center gap-2 font-medium">
+                  <span
+                    className={`h-2 w-2 rounded-full ${demoDataActive ? "bg-amber-400" : isLive ? "bg-emerald-500" : isPartial ? "bg-amber-400" : "bg-red-400"}`}
+                  />
+                  {demoDataActive
+                    ? "Demo data · synthetic values"
+                    : isLive
+                      ? "Live HighLevel data"
+                      : isPartial
+                        ? "Partial HighLevel data"
+                        : client.locationId
+                          ? "HighLevel connection unavailable"
+                          : "Demo workspace · Sample data"}
+                </span>
+                <span className="text-slate-500">
+                  {demoMode
+                    ? "Synthetic demo state"
+                    : liveState.generatedAt
+                      ? `Updated ${formatRelativeTime(liveState.generatedAt)} ago`
+                      : "Updated just now"}
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
                 {client.locationId && (
                   <button
                     type="button"
                     aria-pressed={demoMode}
-                    className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition ${demoMode ? "border-amber-300/50 bg-amber-100 text-amber-900 hover:bg-amber-200" : "border-white/[0.09] bg-white/[0.035] text-slate-300 hover:bg-white/[0.08]"}`}
+                    className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition ${demoMode ? "border-amber-300 bg-amber-100 text-amber-900 hover:bg-amber-200" : "border-[#dbe5ed] bg-white text-slate-700 hover:border-[#b7d3df] hover:bg-[#f5fbfd]"}`}
                     onClick={() => setDemoModeFromUser(!demoMode)}
                   >
-                    {demoMode ? "Demo data · on" : "Show demo data"}
+                    {demoMode ? "Hide demo data" : "Show demo data"}
                   </button>
                 )}
-                <button
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.035] px-3 py-2 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08]"
-                  onClick={() => setCustomizeOpen((value) => !value)}
-                >
-                  <Settings2 className="h-3.5 w-3.5" />
-                  Customize{" "}
-                  <ChevronDown
-                    className={`h-3.5 w-3.5 transition ${customizeOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
                 {client.locationId && (
                   <button
+                    type="button"
                     aria-label="Refresh live data"
-                    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.035] px-3 py-2 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08] disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-lg border border-[#dbe5ed] bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-[#b7d3df] hover:bg-[#f5fbfd] disabled:opacity-50"
                     onClick={() => void refreshLiveData()}
                     disabled={liveState.status === "loading"}
                   >
@@ -1144,33 +1153,6 @@ function ClientCommandCenter() {
                     Refresh
                   </button>
                 )}
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-300/30 bg-violet-400/15 text-xs font-semibold text-violet-100">
-                  CS
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-9 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
-                  Client Command Center
-                </p>
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                  {activeSection === "overview" ? `Welcome, ${greetingName}.` : activeLabel}
-                </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400 sm:text-base">
-                  {activeSection === "overview"
-                    ? "Today’s docket, next moves, conversations, and follow-up in one focused view."
-                    : `A focused ${activeLabel.toLowerCase()} workspace inside the Command Center.`}
-                </p>
-              </div>
-              <div className="flex items-center gap-3 text-xs text-slate-500">
-                <RefreshCw className="h-4 w-4 text-slate-400" />
-                {demoMode
-                  ? "Synthetic demo state"
-                  : liveState.generatedAt
-                  ? `Updated ${formatRelativeTime(liveState.generatedAt)} ago`
-                  : "Updated just now"}
               </div>
             </div>
             {demoDataActive && (
@@ -1179,8 +1161,6 @@ function ClientCommandCenter() {
                 <p className="mt-1 text-xs leading-relaxed">This demonstration uses fictional records and demo-only IDs. Nothing here reads from, writes to, sends, publishes, books, or activates automation in HighLevel.</p>
               </div>
             )}
-            {customizeOpen && <CustomizePanel onClose={() => setCustomizeOpen(false)} />}
-
             {!demoMode && liveState.status === "error" && (
               <div className="mt-6 rounded-xl border border-amber-300/20 bg-amber-300/[0.05] px-4 py-3 text-xs text-amber-100">
                 Live data is not available yet: {liveState.message}
@@ -2423,6 +2403,7 @@ function DashboardSectionView({
     intelligence: "Intelligence",
     reports: "Intelligence",
     support: "Help & Support",
+    "voice-ai": "Voice AI",
   };
   const detail: Record<DashboardSection, string> = {
     "getting-started": "Connect the essentials and install the mobile app.",
@@ -2437,6 +2418,7 @@ function DashboardSectionView({
     intelligence: "Rendered reports and approved company context for better decisions.",
     reports: "Rendered reports and approved company context for better decisions.",
     support: "Ask Manifestic Ops for help with this client workspace.",
+    "voice-ai": "Review the planned client voice experience before any live setup or activation.",
   };
   return (
     <section className="ybq-module-shell mt-8 rounded-2xl border border-white/[0.09] bg-white/[0.035] pb-10 p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
@@ -2507,6 +2489,7 @@ function DashboardSectionView({
           />
         )}
         {section === "support" && <HelpSupportArea clientName={client.name} />}
+        {section === "voice-ai" && <VoiceAiPreview clientName={client.name} />}
         {(section === "intelligence" || section === "reports") && (
           <IntelligenceArea
             client={client}
@@ -4376,46 +4359,109 @@ function SectionHeading({
   );
 }
 
-function CustomizePanel({ onClose }: { onClose: () => void }) {
+function VoiceAiPreview({ clientName }: { clientName: string }) {
+  const [showPlan, setShowPlan] = useState(false);
+
   return (
-    <div className="mt-7 rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.045] p-5 shadow-2xl shadow-cyan-950/20">
-      <div className="flex items-start justify-between gap-4">
+    <div className="overflow-hidden rounded-3xl border border-[#c9dfe7] bg-gradient-to-br from-white via-[#f7fcfd] to-[#eaf7f8] shadow-[0_26px_65px_-42px_rgba(16,35,54,0.5)]">
+      <div className="border-b border-[#dbe5ed] bg-[radial-gradient(circle_at_92%_0%,rgba(19,119,184,0.16),transparent_36%),linear-gradient(135deg,#f8fcfd,#eef8fa)] p-5 sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1377b8] to-[#0e9a85] text-white shadow-lg shadow-[#1377b8]/20">
+              <Mic2 className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1377b8]">
+                Coming soon · review only
+              </p>
+              <h3 className="mt-1 text-2xl font-semibold text-[#102336]">Voice AI workspace</h3>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#466174]">
+                A tenant-scoped planning area for {clientName}. Review the intended call experience
+                here before Manifestic configures a provider, phone number, knowledge source, or live
+                routing.
+              </p>
+            </div>
+          </div>
+          <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-900">
+            No live voice connection
+          </span>
+        </div>
+      </div>
+
+      <div className="grid gap-4 p-5 sm:p-7 lg:grid-cols-3">
+        {[
+          {
+            title: "Client-branded guide",
+            detail: "Planned greeting, tone, and business context derived only from this tenant’s approved Intelligence profile.",
+            status: "Draft boundary",
+          },
+          {
+            title: "Call flow review",
+            detail: "Qualification questions, appointment intent, escalation rules, and human handoff remain reviewable before setup.",
+            status: "Ready to review",
+          },
+          {
+            title: "Provider connection",
+            detail: "Gemini TTS and HighLevel Voice AI are evaluation options; neither is connected or exposed from this client view.",
+            status: "Not configured",
+          },
+        ].map((item) => (
+          <article key={item.title} className="rounded-2xl border border-[#dbe5ed] bg-white p-5 shadow-[0_16px_35px_-30px_rgba(16,35,54,0.55)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#0e9a85]">{item.status}</p>
+            <h4 className="mt-2 text-base font-semibold text-[#102336]">{item.title}</h4>
+            <p className="mt-2 text-sm leading-relaxed text-[#5a7184]">{item.detail}</p>
+          </article>
+        ))}
+      </div>
+
+      {showPlan && (
+        <div className="mx-5 mb-5 rounded-2xl border border-[#b9dce3] bg-white p-5 sm:mx-7 sm:mb-7">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1377b8]">
+            Proposed call flow · not active
+          </p>
+          <ol className="mt-4 grid gap-3 md:grid-cols-2">
+            {[
+              "Introduce the client’s business using approved brand language.",
+              "Ask the approved qualification and reason-for-call questions.",
+              "Offer a human handoff or approved scheduling path when appropriate.",
+              "Record nothing and take no action until consent, retention, and routing rules are configured.",
+            ].map((step, index) => (
+              <li key={step} className="flex gap-3 rounded-xl bg-[#f5f9fb] p-4 text-sm leading-relaxed text-[#466174]">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1377b8] text-xs font-bold text-white">
+                  {index + 1}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#dbe5ed] bg-white/80 px-5 py-4 sm:px-7">
         <div>
-          <p className="text-sm font-semibold text-white">Configure this client view</p>
-          <p className="mt-1 text-xs text-slate-400">
-            The production version can turn modules on or off after the client discovery call.
+          <p className="text-sm font-semibold text-[#102336]">Human review required</p>
+          <p className="mt-1 text-xs text-[#60798b]">
+            Reviewing this plan cannot place calls, record audio, change an agent, or update HighLevel.
           </p>
         </div>
-        <button
-          aria-label="Close customization"
-          className="text-slate-500 hover:text-white"
-          onClick={onClose}
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {[
-          "Inbox preview",
-          "Calendar",
-          "Tasks",
-          "Content & social",
-          "Websites",
-          "Reports",
-          "Brand guide",
-        ].map((label, index) => (
-          <span
-            key={label}
-            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs ${index === 6 ? "border-white/[0.08] bg-white/[0.025] text-slate-500" : "border-cyan-300/25 bg-cyan-300/10 text-cyan-100"}`}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-expanded={showPlan}
+            className="rounded-xl border border-[#b9dce3] bg-[#edf8fa] px-4 py-2.5 text-sm font-semibold text-[#116b8c] transition hover:border-[#83c5d3] hover:bg-[#e2f4f7]"
+            onClick={() => setShowPlan((value) => !value)}
           >
-            <span
-              className={`flex h-4 w-4 items-center justify-center rounded border ${index === 6 ? "border-white/20" : "border-cyan-300 bg-cyan-300 text-slate-950"}`}
-            >
-              {index !== 6 && <Check className="h-3 w-3" />}
-            </span>
-            {label}
-          </span>
-        ))}
+            {showPlan ? "Hide planned call flow" : "Review planned call flow"}
+          </button>
+          <button
+            type="button"
+            disabled
+            title="Voice activation is not configured"
+            className="cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-400"
+          >
+            Activate Voice AI · unavailable
+          </button>
+        </div>
       </div>
     </div>
   );
