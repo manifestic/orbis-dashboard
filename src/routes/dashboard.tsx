@@ -2496,6 +2496,7 @@ function DashboardSectionView({
         )}
         {section === "documents" && (
           <DocumentsCard
+            clientName={client.name}
             documentsHref={documentsHref}
             templatesHref={templatesHref}
             paymentAccessEnabled={client.paymentAccessEnabled}
@@ -3560,14 +3561,17 @@ function LegacyWebsitesCard({ sitesHref }: { sitesHref?: string }) {
 }
 
 function DocumentsCard({
+  clientName,
   documentsHref,
   templatesHref,
   paymentAccessEnabled,
 }: {
+  clientName: string;
   documentsHref?: string;
   templatesHref?: string;
   paymentAccessEnabled: boolean;
 }) {
+  const [activeTab, setActiveTab] = useState<"documents" | "templates">("documents");
   const links = [
     {
       label: "All Documents & Contracts",
@@ -3600,7 +3604,101 @@ function DocumentsCard({
         </div>
         <FileText className="h-5 w-5 text-cyan-300" />
       </div>
-      <div className="mt-5 grid gap-3 md:grid-cols-2">
+      <div className="mt-5 border-b border-[#dbe5ed]" role="tablist" aria-label="Documents destinations">
+        <div className="flex gap-1 overflow-x-auto">
+          {[
+            { id: "documents" as const, label: "All Documents & Contracts", detail: "Read-only library" },
+            { id: "templates" as const, label: "Templates", detail: "Approved catalog" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`shrink-0 rounded-t-xl px-4 py-3 text-left transition ${activeTab === item.id ? "border-b-2 border-[#1377b8] bg-[#e8f4fa] text-[#1377b8]" : "text-[#466174] hover:bg-[#f3f8fb]"}`}
+            >
+              <span className="block text-xs font-bold">{item.label}</span>
+              <span className="mt-1 block text-[10px] opacity-75">{item.detail}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      {activeTab === "documents" ? (
+        <>
+          <div className="mt-5 rounded-xl border border-cyan-200 bg-cyan-50 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-800">View-only library</p>
+            <p className="mt-2 text-sm leading-relaxed text-[#102336]">
+              Approved {clientName} documents will appear here as read-only previews. Nothing in this library can send, sign, edit, delete, or change payment data.
+            </p>
+          </div>
+          <DocumentCatalogEmptyState
+            title="No approved documents imported yet"
+            detail="Manifestic Ops must map an approved source file to this tenant before it appears here. This prevents draft proposals or another client’s documents from being exposed."
+          />
+          <NativeDocumentLinks links={links} />
+        </>
+      ) : (
+        <>
+          <div className="mt-5 rounded-xl border border-violet-200 bg-violet-50 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-800">Template catalog · view only</p>
+            <p className="mt-2 text-sm leading-relaxed text-[#102336]">
+              Templates can live in this Command Center without being created in HighLevel Payments. We import an approved source, assign a tenant-safe version, and show a preview here.
+            </p>
+          </div>
+          <DocumentCatalogEmptyState
+            title="No approved templates imported yet"
+            detail="The next setup step is to choose the approved source files and placeholder fields. Importing a template here does not create a native HighLevel template or activate sending."
+          />
+          <div className="mt-4 grid gap-3 md:grid-cols-4">
+            {["Choose source", "Map placeholders", "Review preview", "Approve version"].map((step, index) => (
+              <div key={step} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-300">0{index + 1}</p>
+                <p className="mt-2 text-xs font-semibold text-slate-200">{step}</p>
+              </div>
+            ))}
+          </div>
+          <NativeDocumentLinks links={links.filter((link) => link.label === "Templates")} />
+        </>
+      )}
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
+        <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-2.5 py-1 text-cyan-200">
+          Documents entry point
+        </span>
+        <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2.5 py-1 text-slate-500">
+          {paymentAccessEnabled ? "Native document access verified" : "Native access requires Payments capability"}
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function DocumentCatalogEmptyState({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div className="mt-4 rounded-xl border border-dashed border-[#b8c9d4] bg-[#fbfdfe] p-5">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#dbe5ed] bg-white text-[#466174]">
+          <FileText className="h-4 w-4" />
+        </span>
+        <div>
+          <p className="text-sm font-semibold text-[#102336]">{title}</p>
+          <p className="mt-1 text-xs leading-relaxed text-[#466174]">{detail}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NativeDocumentLinks({
+  links,
+}: {
+  links: Array<{ label: string; detail: string; href?: string }>;
+}) {
+  return (
+    <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Native HighLevel fallback</p>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">These links remain available if the owner later enables the minimum native capability. They do not bypass HighLevel permissions.</p>
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
         {links.map((link) =>
           link.href ? (
             <a
@@ -3619,31 +3717,10 @@ function DocumentsCard({
               </span>
               <ChevronRight className="h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-cyan-300" />
             </a>
-          ) : (
-            <div
-              key={link.label}
-              className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 opacity-70"
-            >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] text-slate-500">
-                <FileText className="h-4 w-4" />
-              </span>
-              <span>
-                <span className="block text-sm font-medium text-slate-400">{link.label}</span>
-                <span className="mt-1 block text-xs text-slate-600">Destination not configured</span>
-              </span>
-            </div>
-          ),
+          ) : null,
         )}
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
-        <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-2.5 py-1 text-cyan-200">
-          Documents entry point
-        </span>
-        <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2.5 py-1 text-slate-500">
-          {paymentAccessEnabled ? "Native document access verified" : "Native access requires Payments capability"}
-        </span>
-      </div>
-    </section>
+    </div>
   );
 }
 
