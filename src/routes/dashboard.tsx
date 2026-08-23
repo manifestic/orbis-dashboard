@@ -1036,7 +1036,11 @@ function ClientCommandCenter() {
       }
     >
       <style>{`
-        .ybq-dashboard { --ybq-blue:#1377b8; --ybq-teal:#0e9a85; --ybq-ink:#102336; --ybq-muted:#466174; --ybq-line:#dbe5ed; --ybq-amber:#8a5200; --ybq-green:#087b68; }
+        .ybq-dashboard { --ybq-blue:#1377b8; --ybq-teal:#0e9a85; --ybq-ink:#102336; --ybq-muted:#466174; --ybq-line:#dbe5ed; --ybq-amber:#8a5200; --ybq-green:#087b68; background:linear-gradient(180deg,#f8fcfd 0%,#eef6f9 100%); }
+        .ybq-dashboard .ybq-command-shell { background:linear-gradient(135deg,rgba(255,255,255,.96) 0%,rgba(247,252,253,.9) 58%,rgba(234,247,248,.78) 100%); border:1px solid rgba(195,219,228,.9); border-radius:30px; box-shadow:0 28px 70px -42px rgba(16,35,54,.42); }
+        .ybq-dashboard .ybq-top-nav { background:linear-gradient(100deg,rgba(255,255,255,.96),rgba(239,249,252,.88)); box-shadow:0 14px 32px -27px rgba(16,35,54,.58); }
+        .ybq-dashboard .ybq-module-shell { background:linear-gradient(135deg,#fff 0%,#f8fcfd 62%,#eef8fa 100%) !important; border-color:#c9dfe7 !important; box-shadow:0 22px 55px -38px rgba(16,35,54,.38); }
+        .ybq-dashboard .ybq-module-shell:hover { border-color:#add3df !important; box-shadow:0 25px 60px -36px rgba(19,119,184,.28); }
         .ybq-dashboard aside { background:#fff!important; border-color:var(--ybq-line)!important; }
         .ybq-dashboard [class*="bg-[#0b0f1a]"], .ybq-dashboard [class*="bg-white/[0.025]"], .ybq-dashboard [class*="bg-white/[0.035]"], .ybq-dashboard [class*="bg-white/[0.04]"], .ybq-dashboard [class*="bg-white/[0.045]"] { background:#fff!important; }
         .ybq-dashboard [class*="border-white/"] { border-color:var(--ybq-line)!important; }
@@ -1062,8 +1066,8 @@ function ClientCommandCenter() {
       <div className="pointer-events-none fixed inset-0 -z-0 bg-[radial-gradient(circle_at_78%_0%,rgba(19,119,184,0.09),transparent_30%),radial-gradient(circle_at_12%_28%,rgba(14,154,133,0.07),transparent_28%)]" />
       <div className="relative z-10 flex min-h-screen">
         <section className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:px-10 lg:py-8">
-          <header className="mx-auto max-w-[1380px]">
-            <nav aria-label="Command Center sections" className="overflow-x-auto rounded-2xl border border-[#dbe5ed] bg-white/80 p-2 shadow-[0_14px_35px_-28px_rgba(16,35,54,0.6)]">
+          <header className="ybq-command-shell mx-auto max-w-[1380px] p-3 sm:p-5 lg:p-6">
+            <nav aria-label="Command Center sections" className="ybq-top-nav overflow-x-auto rounded-2xl border border-[#dbe5ed] bg-white/80 p-2 shadow-[0_14px_35px_-28px_rgba(16,35,54,0.6)]">
               <div className="flex min-w-max items-center gap-1">
                 <SideNavItem top icon={CheckCircle2} label="Getting Started" active={activeSection === "getting-started"} onClick={() => goToSection("getting-started")} />
                 <SideNavItem top icon={LayoutDashboard} label="Dashboard" active={activeSection === "overview"} onClick={() => goToSection("overview")} />
@@ -2435,7 +2439,7 @@ function DashboardSectionView({
     support: "Ask Manifestic Ops for help with this client workspace.",
   };
   return (
-    <section className="mt-8 pb-10 rounded-2xl border border-white/[0.09] bg-white/[0.035] p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
+    <section className="ybq-module-shell mt-8 rounded-2xl border border-white/[0.09] bg-white/[0.035] pb-10 p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">
@@ -2740,7 +2744,7 @@ function CalendarPreview({
 
 function TasksCard({ tasks: visibleTasks, live, demoMode = false }: { tasks: LiveTask[]; live: boolean; demoMode?: boolean }) {
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+    <section className="ybq-module-shell rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       {demoMode && <p className="mb-3 text-[9px] font-black uppercase tracking-[0.13em] text-[#9a5b00]">Synthetic demo · review only</p>}
       <CardHeading
         icon={CheckCircle2}
@@ -2811,7 +2815,7 @@ function OpportunitiesCard({
     { label: "Abandoned", value: opportunities.abandoned, color: "bg-amber-300" },
   ];
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+    <section className="ybq-module-shell rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <CardHeading
         icon={UsersRound}
         eyebrow="Opportunities"
@@ -3575,7 +3579,7 @@ function DocumentsCard({
   const syntheticDemo = demoMode && locationId === "QsbCjo5HFBGuRG0AKms0";
 
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+    <section className="ybq-module-shell rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
@@ -3779,20 +3783,22 @@ function SyntheticDocumentPreview({
   fixture: SyntheticDocumentFixtureData;
   onClose: () => void;
 }) {
+  const isTemplate = fixture.kind === "template";
+
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/65 p-4">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="synthetic-document-preview-title"
-        className="w-full max-w-xl rounded-2xl border border-amber-200 bg-white p-5 text-[#102336] shadow-2xl sm:p-6"
+        className="flex max-h-[calc(100vh-2rem)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-amber-200 bg-white text-[#102336] shadow-2xl"
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 border-b border-[#dbe5ed] px-5 py-4 sm:px-6">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
-              Synthetic demo · read-only preview
+              Synthetic demo · read-only document preview
             </p>
-            <h3 id="synthetic-document-preview-title" className="mt-2 text-xl font-semibold">
+            <h3 id="synthetic-document-preview-title" className="mt-1 text-lg font-semibold sm:text-xl">
               {fixture.title}
             </h3>
           </div>
@@ -3805,26 +3811,140 @@ function SyntheticDocumentPreview({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-3 text-sm leading-relaxed text-[#466174]">{fixture.detail}</p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-[#dbe5ed] bg-[#f7fbfd] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Type</p>
-            <p className="mt-1 text-sm">{fixture.kind === "contract" ? "Contract" : "Template"}</p>
-          </div>
-          <div className="rounded-xl border border-[#dbe5ed] bg-[#f7fbfd] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Status</p>
-            <p className="mt-1 text-sm">{fixture.status}</p>
-          </div>
-          <div className="rounded-xl border border-[#dbe5ed] bg-[#f7fbfd] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Demo ID</p>
-            <p className="mt-1 break-all font-mono text-[11px]">{fixture.id}</p>
-          </div>
+        <div className="min-h-0 overflow-y-auto bg-[#eef3f6] p-4 sm:p-6">
+          <article className="mx-auto max-w-2xl border border-[#d5e0e7] bg-white shadow-sm">
+            <header className="border-b-4 border-[#1377b8] p-6 sm:p-8">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black tracking-[0.18em] text-[#1377b8]">YOUR BEST HEALTH QUOTE</p>
+                  <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[#466174]">
+                    Client document preview · illustrative only
+                  </p>
+                </div>
+                <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-amber-900">
+                  {fixture.status}
+                </span>
+              </div>
+              <h4 className="mt-8 text-2xl font-semibold tracking-tight text-[#102336] sm:text-3xl">
+                {fixture.title}
+              </h4>
+              <p className="mt-2 text-sm leading-relaxed text-[#466174]">
+                {fixture.detail} This rendered page is a synthetic demonstration, not legal terms or a live record.
+              </p>
+            </header>
+
+            <div className="space-y-7 p-6 sm:p-8">
+              <dl className="grid gap-4 border-b border-[#dbe5ed] pb-6 text-sm sm:grid-cols-3">
+                <div>
+                  <dt className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Effective date</dt>
+                  <dd className="mt-1 text-[#466174]">Demo date · not legally effective</dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Parties</dt>
+                  <dd className="mt-1 text-[#466174]">{isTemplate ? "Placeholders only" : "Simulated parties"}</dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#1377b8]">Demo record</dt>
+                  <dd className="mt-1 break-all font-mono text-[11px] text-[#466174]">{fixture.id}</dd>
+                </div>
+              </dl>
+
+              {isTemplate ? (
+                <section aria-labelledby="template-fields-heading">
+                  <h5 id="template-fields-heading" className="text-sm font-bold text-[#102336]">
+                    Intake fields · inert placeholders
+                  </h5>
+                  <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                    {["[Client full name]", "[Consultation date]", "[Coverage goals]", "[Preferred follow-up method]"].map(
+                      (placeholder) => (
+                        <label key={placeholder} className="grid gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#466174]">
+                          {placeholder.replace(/[\[\]]/g, "")}
+                          <input
+                            readOnly
+                            tabIndex={-1}
+                            aria-label={placeholder}
+                            value={placeholder}
+                            className="rounded-lg border border-dashed border-[#a8c0cc] bg-[#f7fbfd] px-3 py-2.5 text-sm font-normal normal-case tracking-normal text-[#466174] outline-none"
+                            onChange={() => undefined}
+                          />
+                        </label>
+                      ),
+                    )}
+                  </div>
+                </section>
+              ) : (
+                <section aria-labelledby="contract-parties-heading">
+                  <h5 id="contract-parties-heading" className="text-sm font-bold text-[#102336]">
+                    Parties · simulated demo context
+                  </h5>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-lg border border-[#dbe5ed] bg-[#f7fbfd] p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#466174]">Client / participant</p>
+                      <p className="mt-1 text-sm text-[#102336]">Calvenn Starre · simulated</p>
+                    </div>
+                    <div className="rounded-lg border border-[#dbe5ed] bg-[#f7fbfd] p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#466174]">Service context</p>
+                      <p className="mt-1 text-sm text-[#102336]">Your Best Health Quote · simulated</p>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              <section aria-labelledby="document-sections-heading" className="space-y-5">
+                <h5 id="document-sections-heading" className="text-sm font-bold text-[#102336]">
+                  Representative sections
+                </h5>
+                <div>
+                  <h6 className="font-semibold text-[#102336]">1. Consultation purpose</h6>
+                  <p className="mt-2 text-sm leading-relaxed text-[#466174]">
+                    This sample organizes a conversation about coverage goals, questions, and follow-up preferences. It does not determine eligibility, coverage, pricing, or an obligation for any person.
+                  </p>
+                </div>
+                <div>
+                  <h6 className="font-semibold text-[#102336]">2. Information to review</h6>
+                  <ul className="mt-2 grid gap-2 text-sm leading-relaxed text-[#466174] sm:grid-cols-3">
+                    <li className="rounded-lg bg-[#f7fbfd] p-3">Coverage goals</li>
+                    <li className="rounded-lg bg-[#f7fbfd] p-3">Relevant questions</li>
+                    <li className="rounded-lg bg-[#f7fbfd] p-3">Follow-up preferences</li>
+                  </ul>
+                </div>
+                <div>
+                  <h6 className="font-semibold text-[#102336]">3. Review and next steps</h6>
+                  <p className="mt-2 text-sm leading-relaxed text-[#466174]">
+                    A human owner reviews this demonstration before any real document, message, appointment, or account change could occur. The Command Center preview itself performs no action.
+                  </p>
+                </div>
+              </section>
+
+              {!isTemplate ? (
+                <section aria-labelledby="simulated-signature-heading" className="rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 p-5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-900">
+                    SYNTHETIC DEMO · REVIEW ONLY
+                  </p>
+                  <h5 id="simulated-signature-heading" className="mt-2 font-bold text-[#102336]">
+                    Simulated executed status · no signature collected
+                  </h5>
+                  <p className="mt-2 text-sm leading-relaxed text-[#466174]">
+                    The lines below are placeholders for presentation only. This is not an executed legal agreement and no person signed or approved anything here.
+                  </p>
+                  <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                    {["Client / participant · simulated placeholder", "Service representative · simulated placeholder"].map((label) => (
+                      <div key={label} className="border-t border-[#466174] pt-2 text-xs text-[#466174]">
+                        {label}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+            </div>
+
+            <footer className="border-t border-[#dbe5ed] px-6 py-4 text-[10px] leading-relaxed text-[#466174] sm:px-8">
+              Synthetic demo · review only · {fixture.id} · No signing, editing, downloading, payment action, native record, or external write is available from this preview.
+            </footer>
+          </article>
         </div>
-        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-[#102336]">
-          Synthetic demonstration only. This preview does not open, download, sign, send, edit, or
-          create any HighLevel or payment record.
-        </div>
-        <div className="mt-5 flex justify-end">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#dbe5ed] px-5 py-4 sm:px-6">
+          <p className="text-xs text-[#466174]">Read-only preview. Nothing is saved or sent.</p>
           <button
             type="button"
             onClick={onClose}
@@ -3973,7 +4093,7 @@ function HelpSupportArea({ clientName }: { clientName: string }) {
   }
 
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+    <section className="ybq-module-shell rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
@@ -4098,7 +4218,7 @@ function IntelligenceArea({
 }) {
   const tenantReady = client.locationId === "QsbCjo5HFBGuRG0AKms0";
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+    <section className="ybq-module-shell rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Intelligence</p>

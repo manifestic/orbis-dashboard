@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, FileText, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { useState } from "react";
 import {
   approveBusinessBrandInterviewDraft,
@@ -102,6 +102,7 @@ export function BusinessBrandInterview({
   const [step, setStep] = useState<"interview" | "review" | "approved">(
     approvedDraft ? "approved" : "interview",
   );
+  const [started, setStarted] = useState(Boolean(approvedDraft));
 
   const generateDraft = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -139,9 +140,9 @@ export function BusinessBrandInterview({
           <span className="rounded-xl bg-[#e8f4fb] p-2.5 text-[#1377b8]"><Sparkles className="h-5 w-5" /></span>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1377b8]">Business &amp; Brand Interview</p>
-            <h3 className="mt-1 text-xl font-semibold text-[#102336]">Give the workspace the right context.</h3>
+            <h3 className="mt-1 text-xl font-semibold text-[#102336]">Chat with your AI guide.</h3>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#466174]">
-              Answer once, review the structured draft, and approve what should inform {clientName}&apos;s Intelligence view.
+              Start a guided conversation, review the structured draft, and approve what should inform {clientName}&apos;s Intelligence view.
             </p>
           </div>
         </div>
@@ -163,7 +164,35 @@ export function BusinessBrandInterview({
         ))}
       </div>
 
-      {step === "interview" && (
+      {step === "interview" && !started && (
+        <div className="mt-5 rounded-2xl border border-[#b9dce9] bg-gradient-to-br from-[#f4fbfe] via-white to-[#eefaf7] p-5 shadow-[0_16px_35px_-28px_rgba(19,119,184,0.7)] sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex max-w-2xl items-start gap-3">
+              <span className="rounded-xl bg-[#dff3ef] p-2.5 text-[#087b68]"><MessageCircle className="h-5 w-5" /></span>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#087b68]">Controlled Gemini experience · preview entry</p>
+                <h4 className="mt-1 text-lg font-semibold text-[#102336]">Start AI Interview</h4>
+                <p className="mt-2 text-sm leading-relaxed text-[#466174]">
+                  Your AI guide will walk through business identity, audience, offers, differentiators, tone, goals, and safe receptionist context one step at a time.
+                </p>
+              </div>
+            </div>
+            <span className="rounded-full border border-[#f0c67c] bg-[#fffaf0] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#8a5200]">Review-only</span>
+          </div>
+          <div className="mt-4 rounded-xl border border-[#dbe5ed] bg-white/80 px-4 py-3 text-xs leading-relaxed text-[#466174]">
+            The live Gemini chat route is not connected in this client surface yet. This entry opens the controlled guided interview below; it creates a session-only draft and does not expose HighLevel AI Studio, activate an agent, or write external settings.
+          </div>
+          <button
+            type="button"
+            onClick={() => setStarted(true)}
+            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1377b8] px-4 py-2.5 text-[11px] font-semibold text-white transition hover:bg-[#0f649b]"
+          >
+            Start AI Interview <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
+      {step === "interview" && started && (
         <form className="mt-5" onSubmit={generateDraft}>
           <div className="rounded-xl border border-[#f0c67c] bg-[#fffaf0] px-4 py-3 text-xs leading-relaxed text-[#6f4b12]">
             Existing tenant context may be prefilled as a starting point. Review every answer. Do not enter passwords, API keys, or private customer information.
@@ -184,6 +213,9 @@ export function BusinessBrandInterview({
             ))}
           </div>
           <div className="mt-5 flex flex-wrap items-center gap-3">
+            <button type="button" onClick={() => setStarted(false)} className="rounded-xl border border-[#b9d7e2] bg-white px-4 py-2.5 text-[11px] font-semibold text-[#1377b8] transition hover:bg-[#eef8fb]">
+              Back to AI guide
+            </button>
             <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-[#1377b8] px-4 py-2.5 text-[11px] font-semibold text-white transition hover:bg-[#0f649b]">
               Generate review draft <ArrowRight className="h-3.5 w-3.5" />
             </button>
