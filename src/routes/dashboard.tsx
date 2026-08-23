@@ -406,6 +406,7 @@ type AuthState = {
 type ClientConfig = {
   locationId: string;
   name: string;
+  greetingName: string;
   logoUrl: string;
   reviewUrl: string;
   websiteUrl: string;
@@ -576,6 +577,7 @@ function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
   return {
     locationId,
     name,
+    greetingName: branding.greetingName,
     logoUrl: branding.logoUrl,
     reviewUrl: params.get("reviewUrl")?.trim() || "",
     websiteUrl:
@@ -703,6 +705,7 @@ function ClientCommandCenter() {
   const [client, setClient] = useState<ClientConfig>({
     locationId: "",
     name: "Client",
+    greetingName: "",
     logoUrl: "",
     reviewUrl: "",
     websiteUrl: "",
@@ -1008,9 +1011,16 @@ function ClientCommandCenter() {
     reports: "Intelligence",
   };
   const activeLabel = sectionLabels[activeSection];
+  const sessionDisplayName = authState.user?.displayName?.trim() ?? "";
+  const workspaceNames = new Set(
+    [authState.user?.clientName?.trim(), client.name.trim()].filter(Boolean),
+  );
   const authenticatedDisplayName =
-    authState.user?.displayName?.trim() || authState.user?.clientName?.trim() || client.name;
-  const greetingName = authenticatedDisplayName || "there";
+    sessionDisplayName && !workspaceNames.has(sessionDisplayName)
+      ? sessionDisplayName
+      : "";
+  const configuredGreetingName = client.greetingName.trim();
+  const greetingName = authenticatedDisplayName || configuredGreetingName || "there";
 
   return (
     <main
