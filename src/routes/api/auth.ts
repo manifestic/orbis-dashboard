@@ -102,7 +102,7 @@ export const Route = createFileRoute("/api/auth")({
         if (body.action === "highlevel_context") {
           if (typeof body.encryptedData !== "string" || !body.encryptedData.trim())
             return json({ authenticated: false, error: "signed_context_required" }, 400);
-          const result = loginHighLevelContext(body.encryptedData);
+          const result = await loginHighLevelContext(body.encryptedData);
           if (!result.ok)
             return json(
               { authenticated: false, error: "invalid_signed_context", message: result.message },

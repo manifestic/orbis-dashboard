@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { applySessionCookies, getCalvennSession } from "../../lib/command-center-auth";
-import { highLevelTokenForLocation } from "../../lib/highlevel-token";
+import { resolveHighLevelTokenForLocation } from "../../lib/highlevel-token";
 
 const HIGHLEVEL_API = "https://services.leadconnectorhq.com";
 const HIGHLEVEL_VERSION = "v3";
@@ -105,11 +105,7 @@ function normalizeConversations(body: HighLevelResponse) {
     return {
       id: text(conversation.id, conversation.conversationId),
       name,
-      channel: channelLabel(
-        conversation.lastMessageType,
-        conversation.channel,
-        conversation.type,
-      ),
+      channel: channelLabel(conversation.lastMessageType, conversation.channel, conversation.type),
       preview,
       lastMessageDate,
       initials: initials(name),
@@ -184,10 +180,7 @@ function normalizeTasks(body: HighLevelResponse) {
   });
 }
 
-function normalizeOpportunities(
-  body: HighLevelResponse,
-  pipelinesBody?: HighLevelResponse,
-) {
+function normalizeOpportunities(body: HighLevelResponse, pipelinesBody?: HighLevelResponse) {
   const pipelines = asArray(pipelinesBody?.pipelines);
   const stageNames = new Map<string, string>();
   for (const pipeline of pipelines) {
@@ -253,7 +246,7 @@ export const Route = createFileRoute("/api/dashboard-data")({
           );
         const locationId = auth.session.locationId;
 
-        const token = highLevelTokenForLocation(locationId);
+        const token = await resolveHighLevelTokenForLocation(locationId);
         if (!token) {
           return applySessionCookies(
             json(
@@ -339,6 +332,10 @@ export const Route = createFileRoute("/api/dashboard-data")({
                 tasks: taskResult.status === "fulfilled" ? "live" : "unavailable",
                 opportunities: opportunityResult.status === "fulfilled" ? "live" : "unavailable",
               },
+              message:
+                sourceStatus === "unavailable"
+                  ? "A HighLevel credential is configured, but it cannot read this location yet. Add a location-scoped Private Integration Token or connect the agency OAuth integration."
+                  : undefined,
             },
             sourceStatus === "unavailable" ? 502 : 200,
           ),

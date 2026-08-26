@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { applySessionCookies, getCalvennSession } from "../../lib/command-center-auth";
-import { highLevelTokenForLocation } from "../../lib/highlevel-token";
+import { resolveHighLevelTokenForLocation } from "../../lib/highlevel-token";
 
 const HIGHLEVEL_API = "https://services.leadconnectorhq.com";
 const HIGHLEVEL_VERSION = "v3";
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/api/conversation")({
         if (!conversationId)
           return applySessionCookies(json({ error: "missing_conversation_id" }, 400), auth.cookies);
         const lastMessageId = new URL(request.url).searchParams.get("lastMessageId")?.trim();
-        const token = highLevelTokenForLocation(auth.session.locationId);
+        const token = await resolveHighLevelTokenForLocation(auth.session.locationId);
         if (!token)
           return applySessionCookies(json({ error: "missing_credentials" }, 503), auth.cookies);
         const locationId = encodeURIComponent(auth.session.locationId);

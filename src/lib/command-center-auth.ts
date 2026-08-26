@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { decryptHighLevelUserContext, type HighLevelUserContext } from "./highlevel-user-context";
+import { getTenantByLocation, type TenantBrandProfile } from "./tenant-registry";
 
 const ACCESS_COOKIE = "cc_access_token";
 const REFRESH_COOKIE = "cc_refresh_token";
@@ -15,6 +16,7 @@ export type CommandCenterUser = {
   locationId: string;
   role: "viewer" | "operator";
   capabilities: string[];
+  companyId?: string;
 };
 
 export type CommandCenterSession = CommandCenterUser & {
@@ -32,7 +34,12 @@ type SupabaseTokenResponse = {
 const CALVENN_USER_ID = process.env.CALVENN_SUPABASE_USER_ID ?? "";
 const CALVENN_LOCATION_ID = process.env.CALVENN_LOCATION_ID ?? "";
 const CALVENN_CLIENT_NAME = process.env.CALVENN_CLIENT_NAME ?? "Your Best Health Quote";
-const COMMAND_CENTER_EMBED_SECRET = process.env.COMMAND_CENTER_EMBED_SECRET ?? "";
+const COMMAND_CENTER_EMBED_SECRETS = [
+  process.env.COMMAND_CENTER_EMBED_SECRET_V2?.trim(),
+  process.env.COMMAND_CENTER_EMBED_SECRET?.trim(),
+].filter((value): value is string => Boolean(value));
+const COMMAND_CENTER_EMBED_SECRET = COMMAND_CENTER_EMBED_SECRETS[0] ?? "";
+const COMMAND_CENTER_LAUNCHER_KEYS_JSON = process.env.COMMAND_CENTER_LAUNCHER_KEYS_JSON?.trim() ?? "";
 const COMMAND_CENTER_SESSION_SECRET =
   process.env.COMMAND_CENTER_SESSION_SECRET || COMMAND_CENTER_EMBED_SECRET;
 const HIGHLEVEL_APP_SHARED_SECRET = process.env.HIGHLEVEL_APP_SHARED_SECRET ?? "";
@@ -94,10 +101,17 @@ type TenantConfig = {
 };
 
 const READ_CAPABILITIES = ["inbox.read", "calendar.read", "opportunities.read", "reports.read"];
+const BUILT_IN_TENANTS: TenantConfig[] = [
+  { locationId: "yI8j40OmqLKKHFdQ1goC", clientName: "Adventure North Realty, LLC" },
+];
 
 function configuredTenants(): TenantConfig[] {
-  const raw = process.env.COMMAND_CENTER_TENANTS_JSON ?? "";
-  if (raw) {
+  const candidates: TenantConfig[] = [...BUILT_IN_TENANTS];
+  const previewLocationId = process.env.COMMAND_CENTER_TEST_LOCATION_ID?.trim() ?? "";
+  const previewClientName = process.env.COMMAND_CENTER_TEST_CLIENT_NAME?.trim() ?? "";
+  if (previewLocationId && previewClientName) candidates.push({ locationId: previewLocationId, clientName: previewClientName });
+  for (const raw of [process.env.COMMAND_CENTER_TENANTS_JSON, process.env.COMMAND_CENTER_TENANTS_JSON_EXTRA]) {
+    if (!raw) continue;
     try {
       const parsed = JSON.parse(raw) as unknown;
       const values = Array.isArray(parsed) ? parsed : Object.values(parsed ?? {});
@@ -111,11 +125,12 @@ function configuredTenants(): TenantConfig[] {
           companyId: typeof tenant.companyId === "string" ? tenant.companyId.trim() : undefined,
         }))
         .filter((tenant) => tenant.locationId && tenant.clientName);
-      if (normalized.length) return normalized;
+      candidates.push(...normalized);
     } catch {
-      // Fall back to the existing Calvenn configuration until the registry is configured.
+      // Ignore one malformed optional tenant map while preserving other entries.
     }
   }
+  if (candidates.length) return [...new Map(candidates.map((tenant) => [tenant.locationId, tenant])).values()];
   return CALVENN_LOCATION_ID
     ? [{ locationId: CALVENN_LOCATION_ID, clientName: CALVENN_CLIENT_NAME }]
     : [];
@@ -123,6 +138,14 @@ function configuredTenants(): TenantConfig[] {
 
 function tenantForLocation(locationId: string) {
   return configuredTenants().find((tenant) => tenant.locationId === locationId) ?? null;
+}
+
+function tenantConfig(tenant: TenantBrandProfile): TenantConfig {
+  return {
+    locationId: tenant.locationId,
+    clientName: tenant.clientName,
+    companyId: tenant.companyId,
+  };
 }
 
 function configuredOperatorEmails() {
@@ -144,6 +167,7 @@ function contextUser(context: HighLevelUserContext, tenant: TenantConfig): Comma
     locationId: tenant.locationId,
     role: isOperator ? "operator" : "viewer",
     capabilities: isOperator ? [...READ_CAPABILITIES, "inbox.reply"] : [...READ_CAPABILITIES],
+    companyId: context.companyId,
   };
 }
 
@@ -199,8 +223,6 @@ function highLevelUserFromSessionToken(token: string | null | undefined): Comman
       !Array.isArray(claims.user.capabilities)
     )
       return null;
-    const tenant = tenantForLocation(claims.user.locationId);
-    if (!tenant || tenant.clientName !== claims.user.clientName) return null;
     return {
       ...claims.user,
       capabilities: claims.user.capabilities.filter(
@@ -222,24 +244,24 @@ function base64Url(value: string | Buffer) {
   return Buffer.from(value).toString("base64url");
 }
 
-function embedSignature(encodedClaims: string) {
-  return createHmac("sha256", COMMAND_CENTER_EMBED_SECRET)
+function embedSignature(encodedClaims: string, secret = COMMAND_CENTER_EMBED_SECRET) {
+  return createHmac("sha256", secret)
     .update(encodedClaims)
     .digest("base64url");
 }
 
 function embedUser(token: string | null | undefined): CommandCenterUser | null {
-  if (!COMMAND_CENTER_EMBED_SECRET || !token) return null;
+  if (!COMMAND_CENTER_EMBED_SECRETS.length || !token) return null;
   const [encodedClaims, signature] = token.split(".");
   if (!encodedClaims || !signature) return null;
-  const expected = embedSignature(encodedClaims);
   const actualBuffer = Buffer.from(signature);
-  const expectedBuffer = Buffer.from(expected);
-  if (
-    actualBuffer.length !== expectedBuffer.length ||
-    !timingSafeEqual(actualBuffer, expectedBuffer)
-  )
-    return null;
+  const matchesSecret = COMMAND_CENTER_EMBED_SECRETS.some((secret) => {
+    const expectedBuffer = Buffer.from(embedSignature(encodedClaims, secret));
+    return (
+      actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer)
+    );
+  });
+  if (!matchesSecret) return null;
   try {
     const claims = JSON.parse(
       Buffer.from(encodedClaims, "base64url").toString("utf8"),
@@ -282,6 +304,30 @@ export function createCommandCenterEmbedToken(
   };
   const encodedClaims = base64Url(JSON.stringify(claims));
   return `${encodedClaims}.${embedSignature(encodedClaims)}`;
+}
+
+export function commandCenterLauncherKeyForLocation(locationId: string) {
+  const normalized = locationId.trim();
+  if (!normalized) return null;
+  if (COMMAND_CENTER_LAUNCHER_KEYS_JSON) {
+    try {
+      const parsed = JSON.parse(COMMAND_CENTER_LAUNCHER_KEYS_JSON) as Record<string, unknown>;
+      const configured = parsed[normalized];
+      if (typeof configured === "string" && configured.trim()) return configured.trim();
+    } catch {
+      // Fall through to the derived key while an optional map is malformed.
+    }
+  }
+  if (!COMMAND_CENTER_EMBED_SECRET) return null;
+  return base64Url(
+    createHmac("sha256", COMMAND_CENTER_EMBED_SECRET)
+      .update(`launcher:${normalized}`)
+      .digest(),
+  );
+}
+
+export function createCommandCenterEmbedCookie(token: string) {
+  return cookie(EMBED_COOKIE, token, COMMAND_CENTER_EMBED_TTL_SECONDS);
 }
 
 export async function revokeCalvennSession(request: Request) {
@@ -372,11 +418,27 @@ export async function getCalvennSession(
   request: Request,
 ): Promise<{ session: CommandCenterSession | null; cookies?: string[] }> {
   const jar = cookies(request);
+  const requestEmbedToken = new URL(request.url).searchParams.get("embedToken");
+  // An explicit tenant embed token is the strongest routing signal. This
+  // prevents a stale session from a different HighLevel location from
+  // winning when a user switches subaccounts or opens a new one.
+  if (requestEmbedToken) {
+    const embeddedUser = embedUser(requestEmbedToken);
+    if (embeddedUser) {
+      return {
+        session: { ...embeddedUser, accessToken: "" },
+        cookies: [cookie(EMBED_COOKIE, requestEmbedToken, COMMAND_CENTER_EMBED_TTL_SECONDS)],
+      };
+    }
+    // Never fall through to a stale Supabase or HighLevel cookie when an
+    // explicit tenant token is present. A bad embed token must fail closed,
+    // rather than risk rendering another client's workspace.
+    return { session: null, cookies: clearSessionCookies() };
+  }
   const highLevelUser = highLevelUserFromSessionToken(jar.get(HIGHLEVEL_SESSION_COOKIE));
   if (highLevelUser) {
     return { session: { ...highLevelUser, accessToken: "" } };
   }
-  const requestEmbedToken = new URL(request.url).searchParams.get("embedToken");
   const embedToken = requestEmbedToken || jar.get(EMBED_COOKIE);
   const embeddedUser = embedUser(embedToken);
   if (embeddedUser) {
@@ -402,7 +464,7 @@ export async function getCalvennSession(
   };
 }
 
-export function loginHighLevelContext(encryptedData: string) {
+export async function loginHighLevelContext(encryptedData: string) {
   if (!HIGHLEVEL_APP_SHARED_SECRET || !COMMAND_CENTER_SESSION_SECRET)
     return {
       ok: false as const,
@@ -411,7 +473,10 @@ export function loginHighLevelContext(encryptedData: string) {
   const context = decryptHighLevelUserContext(encryptedData, HIGHLEVEL_APP_SHARED_SECRET);
   if (!context)
     return { ok: false as const, message: "The HighLevel user context could not be verified." };
-  const tenant = tenantForLocation(context.activeLocation);
+  const registeredTenant = await getTenantByLocation(context.activeLocation);
+  const tenant = registeredTenant
+    ? tenantConfig(registeredTenant)
+    : tenantForLocation(context.activeLocation);
   if (!tenant) return { ok: false as const, message: "This HighLevel location is not registered." };
   if (tenant.companyId && tenant.companyId !== context.companyId)
     return { ok: false as const, message: "This HighLevel company is not registered." };

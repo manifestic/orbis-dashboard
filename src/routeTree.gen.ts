@@ -9,14 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WidgetRouteImport } from './routes/widget'
+import { Route as SetupTileRouteImport } from './routes/setup-tile'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiTestWidgetRouteImport } from './routes/api/test-widget'
+import { Route as ApiTenantRouteImport } from './routes/api/tenant'
+import { Route as ApiReviewUrlRouteImport } from './routes/api/review-url'
 import { Route as ApiReplyCapabilityRouteImport } from './routes/api/reply-capability'
 import { Route as ApiReplyRouteImport } from './routes/api/reply'
+import { Route as ApiLauncherKeyRouteImport } from './routes/api/launcher-key'
+import { Route as ApiHighlevelOauthRouteImport } from './routes/api/highlevel-oauth'
 import { Route as ApiDashboardDataRouteImport } from './routes/api/dashboard-data'
 import { Route as ApiConversationRouteImport } from './routes/api/conversation'
+import { Route as ApiCalendarRequestRouteImport } from './routes/api/calendar-request'
 import { Route as ApiAuthRouteImport } from './routes/api/auth'
+import { Route as ApiAiSuggestionRouteImport } from './routes/api/ai-suggestion'
 
+const WidgetRoute = WidgetRouteImport.update({
+  id: '/widget',
+  path: '/widget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupTileRoute = SetupTileRouteImport.update({
+  id: '/setup-tile',
+  path: '/setup-tile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -25,6 +44,21 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTestWidgetRoute = ApiTestWidgetRouteImport.update({
+  id: '/api/test-widget',
+  path: '/api/test-widget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTenantRoute = ApiTenantRouteImport.update({
+  id: '/api/tenant',
+  path: '/api/tenant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReviewUrlRoute = ApiReviewUrlRouteImport.update({
+  id: '/api/review-url',
+  path: '/api/review-url',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReplyCapabilityRoute = ApiReplyCapabilityRouteImport.update({
@@ -37,6 +71,16 @@ const ApiReplyRoute = ApiReplyRouteImport.update({
   path: '/api/reply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLauncherKeyRoute = ApiLauncherKeyRouteImport.update({
+  id: '/api/launcher-key',
+  path: '/api/launcher-key',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHighlevelOauthRoute = ApiHighlevelOauthRouteImport.update({
+  id: '/api/highlevel-oauth',
+  path: '/api/highlevel-oauth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDashboardDataRoute = ApiDashboardDataRouteImport.update({
   id: '/api/dashboard-data',
   path: '/api/dashboard-data',
@@ -47,82 +91,169 @@ const ApiConversationRoute = ApiConversationRouteImport.update({
   path: '/api/conversation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCalendarRequestRoute = ApiCalendarRequestRouteImport.update({
+  id: '/api/calendar-request',
+  path: '/api/calendar-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthRoute = ApiAuthRouteImport.update({
   id: '/api/auth',
   path: '/api/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiSuggestionRoute = ApiAiSuggestionRouteImport.update({
+  id: '/api/ai-suggestion',
+  path: '/api/ai-suggestion',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/setup-tile': typeof SetupTileRoute
+  '/widget': typeof WidgetRoute
+  '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
+  '/api/calendar-request': typeof ApiCalendarRequestRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
+  '/api/highlevel-oauth': typeof ApiHighlevelOauthRoute
+  '/api/launcher-key': typeof ApiLauncherKeyRoute
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
+  '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/tenant': typeof ApiTenantRoute
+  '/api/test-widget': typeof ApiTestWidgetRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/setup-tile': typeof SetupTileRoute
+  '/widget': typeof WidgetRoute
+  '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
+  '/api/calendar-request': typeof ApiCalendarRequestRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
+  '/api/highlevel-oauth': typeof ApiHighlevelOauthRoute
+  '/api/launcher-key': typeof ApiLauncherKeyRoute
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
+  '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/tenant': typeof ApiTenantRoute
+  '/api/test-widget': typeof ApiTestWidgetRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/setup-tile': typeof SetupTileRoute
+  '/widget': typeof WidgetRoute
+  '/api/ai-suggestion': typeof ApiAiSuggestionRoute
   '/api/auth': typeof ApiAuthRoute
+  '/api/calendar-request': typeof ApiCalendarRequestRoute
   '/api/conversation': typeof ApiConversationRoute
   '/api/dashboard-data': typeof ApiDashboardDataRoute
+  '/api/highlevel-oauth': typeof ApiHighlevelOauthRoute
+  '/api/launcher-key': typeof ApiLauncherKeyRoute
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
+  '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/tenant': typeof ApiTenantRoute
+  '/api/test-widget': typeof ApiTestWidgetRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/setup-tile'
+    | '/widget'
+    | '/api/ai-suggestion'
     | '/api/auth'
+    | '/api/calendar-request'
     | '/api/conversation'
     | '/api/dashboard-data'
+    | '/api/highlevel-oauth'
+    | '/api/launcher-key'
     | '/api/reply'
     | '/api/reply-capability'
+    | '/api/review-url'
+    | '/api/tenant'
+    | '/api/test-widget'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
+    | '/setup-tile'
+    | '/widget'
+    | '/api/ai-suggestion'
     | '/api/auth'
+    | '/api/calendar-request'
     | '/api/conversation'
     | '/api/dashboard-data'
+    | '/api/highlevel-oauth'
+    | '/api/launcher-key'
     | '/api/reply'
     | '/api/reply-capability'
+    | '/api/review-url'
+    | '/api/tenant'
+    | '/api/test-widget'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/setup-tile'
+    | '/widget'
+    | '/api/ai-suggestion'
     | '/api/auth'
+    | '/api/calendar-request'
     | '/api/conversation'
     | '/api/dashboard-data'
+    | '/api/highlevel-oauth'
+    | '/api/launcher-key'
     | '/api/reply'
     | '/api/reply-capability'
+    | '/api/review-url'
+    | '/api/tenant'
+    | '/api/test-widget'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  SetupTileRoute: typeof SetupTileRoute
+  WidgetRoute: typeof WidgetRoute
+  ApiAiSuggestionRoute: typeof ApiAiSuggestionRoute
   ApiAuthRoute: typeof ApiAuthRoute
+  ApiCalendarRequestRoute: typeof ApiCalendarRequestRoute
   ApiConversationRoute: typeof ApiConversationRoute
   ApiDashboardDataRoute: typeof ApiDashboardDataRoute
+  ApiHighlevelOauthRoute: typeof ApiHighlevelOauthRoute
+  ApiLauncherKeyRoute: typeof ApiLauncherKeyRoute
   ApiReplyRoute: typeof ApiReplyRoute
   ApiReplyCapabilityRoute: typeof ApiReplyCapabilityRoute
+  ApiReviewUrlRoute: typeof ApiReviewUrlRoute
+  ApiTenantRoute: typeof ApiTenantRoute
+  ApiTestWidgetRoute: typeof ApiTestWidgetRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/widget': {
+      id: '/widget'
+      path: '/widget'
+      fullPath: '/widget'
+      preLoaderRoute: typeof WidgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup-tile': {
+      id: '/setup-tile'
+      path: '/setup-tile'
+      fullPath: '/setup-tile'
+      preLoaderRoute: typeof SetupTileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -135,6 +266,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/test-widget': {
+      id: '/api/test-widget'
+      path: '/api/test-widget'
+      fullPath: '/api/test-widget'
+      preLoaderRoute: typeof ApiTestWidgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tenant': {
+      id: '/api/tenant'
+      path: '/api/tenant'
+      fullPath: '/api/tenant'
+      preLoaderRoute: typeof ApiTenantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/review-url': {
+      id: '/api/review-url'
+      path: '/api/review-url'
+      fullPath: '/api/review-url'
+      preLoaderRoute: typeof ApiReviewUrlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/reply-capability': {
@@ -151,6 +303,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/launcher-key': {
+      id: '/api/launcher-key'
+      path: '/api/launcher-key'
+      fullPath: '/api/launcher-key'
+      preLoaderRoute: typeof ApiLauncherKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/highlevel-oauth': {
+      id: '/api/highlevel-oauth'
+      path: '/api/highlevel-oauth'
+      fullPath: '/api/highlevel-oauth'
+      preLoaderRoute: typeof ApiHighlevelOauthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/dashboard-data': {
       id: '/api/dashboard-data'
       path: '/api/dashboard-data'
@@ -165,11 +331,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiConversationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/calendar-request': {
+      id: '/api/calendar-request'
+      path: '/api/calendar-request'
+      fullPath: '/api/calendar-request'
+      preLoaderRoute: typeof ApiCalendarRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth': {
       id: '/api/auth'
       path: '/api/auth'
       fullPath: '/api/auth'
       preLoaderRoute: typeof ApiAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-suggestion': {
+      id: '/api/ai-suggestion'
+      path: '/api/ai-suggestion'
+      fullPath: '/api/ai-suggestion'
+      preLoaderRoute: typeof ApiAiSuggestionRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -178,11 +358,20 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  SetupTileRoute: SetupTileRoute,
+  WidgetRoute: WidgetRoute,
+  ApiAiSuggestionRoute: ApiAiSuggestionRoute,
   ApiAuthRoute: ApiAuthRoute,
+  ApiCalendarRequestRoute: ApiCalendarRequestRoute,
   ApiConversationRoute: ApiConversationRoute,
   ApiDashboardDataRoute: ApiDashboardDataRoute,
+  ApiHighlevelOauthRoute: ApiHighlevelOauthRoute,
+  ApiLauncherKeyRoute: ApiLauncherKeyRoute,
   ApiReplyRoute: ApiReplyRoute,
   ApiReplyCapabilityRoute: ApiReplyCapabilityRoute,
+  ApiReviewUrlRoute: ApiReviewUrlRoute,
+  ApiTenantRoute: ApiTenantRoute,
+  ApiTestWidgetRoute: ApiTestWidgetRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
