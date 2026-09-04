@@ -407,6 +407,24 @@ const bgnDeliverables = [
   },
 ] as const;
 
+const bgnWebInsights = [
+  {
+    label: "BGN Primary Network Website",
+    detail: "Published public network website",
+    href: "https://bookkeepersgrowthnetwork.com/",
+  },
+  {
+    label: "BGN Working Website Preview",
+    detail: "Current internal working preview of the BGN site",
+    href: "https://vibrant-layers-studio.lovable.app/",
+  },
+  {
+    label: "BGN Operating System",
+    detail: "Tenant-scoped BGN operating-system dashboard",
+    href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+  },
+] as const;
+
 const calvennIntelligence = {
   scope: "Calvenn Starre · Your Best Health Quote",
   source: "Client-provided Intelligence snapshot + Calvenn Agent OS context",
@@ -2482,20 +2500,16 @@ function BgnWebInsightsModule({ client }: { client: ClientConfig }) {
     <FunctionalModule
       client={client}
       title="Web & Insights"
-      status="Destinations ready"
-      detail="The BGN public network and tenant-scoped operating-system surfaces are available here. Delivery review stays in the separate Deliverables module."
-      actions={[
-        {
-          label: "Bookkeepers Growth Network",
-          detail: "Open the public network website.",
-          href: "https://bookkeepersgrowthnetwork.com",
-        },
-        {
-          label: "BGN Operating System",
-          detail: "Open the tenant-scoped operating-system surface.",
-          href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
-        },
+      status="BGN assets connected"
+      detail="Pages, funnels, reports, and operating-system intelligence stay together here so the Dashboard can stay focused on today’s work."
+      facts={[
+        { label: "Pages", value: "BGN primary site + working preview" },
+        { label: "Funnels", value: "No BGN funnel is published in this workspace yet" },
+        { label: "Reports", value: "BGN Operating System + proposal review surfaces" },
+        { label: "Intelligence", value: "BGN Operating System context is available" },
+        { label: "Partnership", value: "No approved BGN partnership brief is linked yet" },
       ]}
+      actions={bgnWebInsights.map((item) => ({ ...item, target: "_blank" as const }))}
     />
   );
 }
@@ -2513,11 +2527,12 @@ function BgnContentModule({
     <FunctionalModule
       client={client}
       title="Content Review"
-      status="Content paths ready"
-      detail="Open the BGN content destination, Social Planner, and the current proposal review surface from one place."
+      status="Draft run not started"
+      detail="The BGN review paths are connected and ready for the first draft content run; nothing publishes or sends automatically."
       facts={[
-        { label: "Review destination", value: "The BGN HighLevel Content Review custom-menu destination is linked below." },
-        { label: "Publishing control", value: "Publishing and outbound changes stay in native HighLevel for explicit human action." },
+        { label: "Content batch", value: "Not created yet — no BGN content has been invented or published." },
+        { label: "Review destination", value: "HighLevel Content Review and Social Planner are connected below." },
+        { label: "Approval gate", value: "Draft and review only; publishing and outbound changes require explicit human action." },
       ]}
       actions={[
         {
