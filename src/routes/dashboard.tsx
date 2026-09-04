@@ -13,6 +13,7 @@ import {
   Inbox,
   Instagram,
   LayoutDashboard,
+  LifeBuoy,
   Linkedin,
   Mail,
   MessageCircle,
@@ -30,6 +31,7 @@ import {
 import { useEffect, useState, type CSSProperties } from "react";
 import { brandingForLocation } from "../lib/client-branding";
 import { MOBILE_APP_LINKS } from "../lib/mobile-app-links";
+import { VoiceAiWorkspace } from "../components/voice-ai-workspace";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -389,6 +391,11 @@ type DashboardSection =
 type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence" | "partnership";
 
 const BGN_LOCATION_ID = "iT5l30Z4yeReKnIiS61j";
+const BGN_VOICE_FACTS = [
+  "Bookkeepers Growth Network helps bookkeepers grow through member onboarding, practical resources, peer pods, and shared operating support.",
+  "Voice conversations should feel warm, clear, practical, and encouraging without making promises about revenue, results, or eligibility.",
+  "The first production BGN voice agent is not activated from this dashboard; settings here are a tenant-scoped review draft until the approved HighLevel connection is verified.",
+] as const;
 
 const bgnDeliverables = [
   {
@@ -461,6 +468,18 @@ const bgnWorkspaceLinks = [
     detail: "Tenant-scoped operating-system surface",
     kind: "page",
     href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+  },
+  {
+    label: "Proposal Review Hub",
+    detail: "Current BGN proposal and delivery review",
+    kind: "page",
+    href: "https://bgn-proposal-review-hub.vercel.app/",
+  },
+  {
+    label: "BGN Proposal v5",
+    detail: "Latest BGN proposal presentation",
+    kind: "page",
+    href: "https://bgn-proposal-v5.vercel.app/",
   },
   {
     label: "Request an invitation",
@@ -855,11 +874,15 @@ function ClientCommandCenter() {
       ? ghl("/custom-menu-link/473f9ef0-f446-4725-8f22-4e0e60af04f3")
       : client.reviewUrl || (client.locationId ? ghl("/marketing/social-planner") : undefined);
   const goToSection = (section: DashboardSection) => {
-    setActiveSection(section);
+    const nextSection: DashboardSection =
+      client.locationId === BGN_LOCATION_ID && (section === "deliverables" || section === "intelligence")
+        ? "websites"
+        : section;
+    setActiveSection(nextSection);
     const params = new URLSearchParams(window.location.search);
-    if (section === "overview") params.delete("section");
-    else params.set("section", section);
-    if (section === "websites") params.set("websiteTab", websiteTab);
+    if (nextSection === "overview") params.delete("section");
+    else params.set("section", nextSection);
+    if (nextSection === "websites") params.set("websiteTab", websiteTab === "intelligence" && client.locationId === BGN_LOCATION_ID ? "pages" : websiteTab);
     else params.delete("websiteTab");
     window.history.pushState(
       {},
@@ -1098,6 +1121,7 @@ function ClientCommandCenter() {
     );
 
   const clientDataRequested = Boolean(client.locationId);
+  const isBgn = client.locationId === BGN_LOCATION_ID;
   const isAnovite = client.locationId === "HDgk8bXoo6ZE8BAnxFXr";
   const liveSourceStatus = liveState.sources?.status;
   const demoDataActive = demoMode || !clientDataRequested;
@@ -1208,9 +1232,9 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
                 <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
-                <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "deliverables"} onClick={() => goToSection("deliverables")} />
+                {!isBgn && <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "deliverables"} onClick={() => goToSection("deliverables")} />}
                 <SideNavItem top icon={FileText} label="Documents" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
-                <SideNavItem top icon={Search} label="Intelligence" active={activeSection === "intelligence"} onClick={() => goToSection("intelligence")} />
+                {!isBgn && <SideNavItem top icon={Search} label="Intelligence" active={activeSection === "intelligence"} onClick={() => goToSection("intelligence")} />}
                 <SideNavItem top icon={CircleAlert} label="Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
                 <SideNavItem top icon={Sparkles} label="Voice AI" active={activeSection === "voice-ai"} onClick={() => goToSection("voice-ai")} />
               </div>
@@ -2957,22 +2981,15 @@ function DashboardSectionView({
             actionLabel={client.locationId === BGN_LOCATION_ID ? "Open BGN Operating System" : undefined}
           />
         )}
-        {section === "support" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Support"
-            detail="Support requests and setup guidance without sending or changing client records."
-            href={inboxHref}
-            actionLabel="Open inbox"
-          />
-        )}
+        {section === "support" && <HelpSupportArea clientName={client.name} inboxHref={inboxHref} locationId={client.locationId} />}
         {section === "voice-ai" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Voice AI"
-            detail="Open the Voice AI setup path in HighLevel."
-            href={ghlHref(client.locationId, "/ai-agents/getting-started")}
-            actionLabel="Open setup"
+          <VoiceAiWorkspace
+            clientName={client.name}
+            locationId={client.locationId}
+            agentId={undefined}
+            demoMode={false}
+            highLevelVoiceHref={ghlHref(client.locationId, "/ai-agents/voice-ai")}
+            tenantFacts={client.locationId === BGN_LOCATION_ID ? BGN_VOICE_FACTS : undefined}
           />
         )}
         {section === "reports" && <ReportsCard client={client} />}
@@ -3469,7 +3486,121 @@ function ContentCard({
   );
 }
 
-type ContentReviewTab = "dashboard" | "social" | "blogs" | "ideas" | "library";
+const SUPPORT_CATEGORIES = [
+  "Dashboard",
+  "Content Review",
+  "Web & Insights",
+  "Voice AI",
+  "Other",
+] as const;
+
+function HelpSupportArea({
+  clientName,
+  locationId,
+  inboxHref,
+}: {
+  clientName: string;
+  locationId: string;
+  inboxHref?: string;
+}) {
+  const [category, setCategory] = useState<(typeof SUPPORT_CATEGORIES)[number]>("Dashboard");
+  const [message, setMessage] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
+  const [status, setStatus] = useState<{ kind: "idle" | "loading" | "success" | "error"; text: string }>({
+    kind: "idle",
+    text: "Requests are reviewed by Manifestic Ops before any account-level action.",
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/support-request", { cache: "no-store" })
+      .then(async (response) => {
+        const body = (await response.json().catch(() => ({}))) as { csrfToken?: string; error?: string };
+        if (!response.ok || !body.csrfToken) throw new Error(body.error || "support_unavailable");
+        if (!cancelled) setCsrfToken(body.csrfToken);
+      })
+      .catch(() => {
+        if (!cancelled) setStatus({ kind: "error", text: "Support is unavailable right now. Open the inbox or try again shortly." });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmed = message.trim();
+    if (!trimmed) {
+      setStatus({ kind: "error", text: "Tell us what you need help with before submitting." });
+      return;
+    }
+    if (!csrfToken) {
+      setStatus({ kind: "error", text: "Support security is still loading. Try again in a moment." });
+      return;
+    }
+    setStatus({ kind: "loading", text: "Sending your request to Manifestic Ops…" });
+    try {
+      const response = await fetch("/api/support-request", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrfToken },
+        body: JSON.stringify({
+          action: "create",
+          category,
+          message: trimmed,
+          locationId,
+          idempotencyKey: `support-${crypto.randomUUID().replaceAll("-", "")}`,
+        }),
+      });
+      const body = (await response.json().catch(() => ({}))) as { message?: string; error?: string };
+      if (!response.ok) throw new Error(body.message || body.error || "support_request_unavailable");
+      setMessage("");
+      setStatus({ kind: "success", text: body.message || "Your request was sent to Manifestic Ops." });
+    } catch (error) {
+      setStatus({
+        kind: "error",
+        text: error instanceof Error && error.message === "support_notifications_unconfigured"
+          ? "Support notifications are not configured yet. Open the inbox and contact Manifestic Ops directly."
+          : "We couldn’t submit that request. Nothing was changed; please try again.",
+      });
+    }
+  };
+
+  return (
+    <section className="ybq-module-shell rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Manifestic Ops</p>
+          <h3 className="mt-1 text-lg font-semibold text-white">Message support</h3>
+          <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
+            Send a tenant-scoped request about {clientName} from this workspace. This does not change HighLevel records.
+          </p>
+        </div>
+        <LifeBuoy className="h-5 w-5 text-cyan-300" />
+      </div>
+      <form onSubmit={submit} className="mt-6 grid gap-4 md:grid-cols-[220px_1fr]">
+        <label className="grid gap-2 text-xs font-semibold text-slate-300">
+          Topic
+          <select value={category} onChange={(event) => setCategory(event.target.value as (typeof SUPPORT_CATEGORIES)[number])} className="w-full rounded-xl border border-[#a8c0cc] bg-white px-3 py-3 text-sm font-normal text-[#102336] outline-none focus:border-[#1377b8]">
+            {SUPPORT_CATEGORIES.map((option) => <option key={option} value={option}>{option}</option>)}
+          </select>
+        </label>
+        <label className="grid gap-2 text-xs font-semibold text-slate-300">
+          What do you need help with?
+          <textarea value={message} onChange={(event) => setMessage(event.target.value)} required rows={5} maxLength={4000} placeholder="Describe the issue or request…" className="w-full resize-y rounded-xl border border-[#a8c0cc] bg-white px-3 py-3 text-sm font-normal text-[#102336] outline-none placeholder:text-[#466174] focus:border-[#1377b8]" />
+        </label>
+        <div className="flex flex-wrap items-center justify-between gap-3 md:col-span-2">
+          <p aria-live="polite" className={`text-xs ${status.kind === "error" ? "text-rose-300" : status.kind === "success" ? "text-emerald-300" : "text-slate-500"}`}>{status.text}</p>
+          <div className="flex flex-wrap gap-2">
+            {inboxHref && <a href={inboxHref} target="_top" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white">Open inbox <ArrowUpRight className="h-3.5 w-3.5" /></a>}
+            <button type="submit" disabled={status.kind === "loading"} className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-xs font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50">{status.kind === "loading" ? "Sending…" : "Send to support"} <ArrowUpRight className="h-3.5 w-3.5" /></button>
+          </div>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+type ContentReviewTab = "dashboard" | "social" | "direction" | "blogs" | "ideas" | "library";
 
 function ContentReviewCard({
   clientName,
@@ -3533,8 +3664,9 @@ function ContentReviewPrototype({
 }) {
   const [tab, setTab] = useState<ContentReviewTab>("dashboard");
   const tabs: Array<{ id: ContentReviewTab; label: string; count: string }> = [
-    { id: "dashboard", label: "Content dashboard", count: "—" },
+    { id: "dashboard", label: "Dashboard", count: "—" },
     { id: "social", label: "Social posts", count: "—" },
+    { id: "direction", label: "Ideas & Direction", count: "—" },
     { id: "blogs", label: "Blogs", count: "—" },
     { id: "ideas", label: "Video ideas", count: "—" },
     { id: "library", label: "Library", count: "—" },
@@ -3551,8 +3683,9 @@ function ContentReviewPrototype({
             {clientName} content review workspace
           </h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
-            A reusable review surface for visible status, separate wording/media versions, and
-            human approval. The first {clientName} content run has not been created yet.
+            The same review structure used for the approved Calvin template, with BGN’s own
+            tenant-scoped content and branding. The first {clientName} content run has not been
+            created yet, so no other client’s posts or ideas are shown here.
           </p>
         </div>
         <span className="rounded-full border border-amber-300/20 bg-amber-300/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-200">
@@ -3576,9 +3709,9 @@ function ContentReviewPrototype({
         <div className="mt-5 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.05] p-5">
           <p className="text-sm font-semibold text-white">Live content review workspace</p>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
-            No content batch exists for this tenant yet. Use the connected HighLevel Social Planner
-            to prepare the first draft run; this embedded workspace will show the tenant-specific
-            batch once it is provisioned.
+            No BGN content batch exists for this tenant yet. Use the connected HighLevel Social
+            Planner to prepare the first draft run; this workspace will show BGN-specific posts,
+            ideas, direction, and approvals once that run is provisioned.
           </p>
           {nativeReviewHref ? (
             <a
@@ -3720,18 +3853,21 @@ function ClientWebsitesCard({
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
 }) {
-  const tabs: Array<{ id: WebsiteTab; label: string; description: string }> = [
+  const allTabs: Array<{ id: WebsiteTab; label: string; description: string }> = [
     { id: "pages", label: "Pages", description: "Public sites, pillar pages, and briefs" },
     { id: "funnels", label: "Funnels", description: "Quote, matching, and conversion flows" },
     { id: "reports", label: "Reports", description: "Agent OS intelligence and research" },
     { id: "intelligence", label: "Intelligence", description: "Editable business context · setup gated" },
     { id: "partnership", label: "Partnership", description: "Co-op context · terms review" },
   ];
+  const tabs = allTabs.filter((tab) => client.locationId !== BGN_LOCATION_ID || tab.id !== "intelligence");
+  const activeWebsiteTab: WebsiteTab =
+    client.locationId === BGN_LOCATION_ID && websiteTab === "intelligence" ? "pages" : websiteTab;
   const destinationLinks = client.locationId === BGN_LOCATION_ID ? bgnWorkspaceLinks : workspaceLinks;
   const clientReports = client.locationId === BGN_LOCATION_ID ? bgnReports : reports;
   const intelligence = client.locationId === BGN_LOCATION_ID ? bgnIntelligence : calvennIntelligence;
   const partnership = client.locationId === BGN_LOCATION_ID ? bgnPartnership : calvennPartnership;
-  const visibleLinks = destinationLinks.filter((link) => link.kind === websiteTab.slice(0, -1));
+  const visibleLinks = destinationLinks.filter((link) => link.kind === activeWebsiteTab.slice(0, -1));
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
@@ -3754,9 +3890,9 @@ function ClientWebsitesCard({
               key={tab.id}
               type="button"
               role="tab"
-              aria-selected={websiteTab === tab.id}
+              aria-selected={activeWebsiteTab === tab.id}
               onClick={() => onWebsiteTabChange(tab.id)}
-              className={`shrink-0 rounded-t-xl px-4 py-3 text-left transition ${websiteTab === tab.id ? "border-b-2 border-[#1377b8] bg-[#e8f4fa] text-[#1377b8]" : "text-[#466174] hover:bg-[#f3f8fb]"}`}
+              className={`shrink-0 rounded-t-xl px-4 py-3 text-left transition ${activeWebsiteTab === tab.id ? "border-b-2 border-[#1377b8] bg-[#e8f4fa] text-[#1377b8]" : "text-[#466174] hover:bg-[#f3f8fb]"}`}
             >
               <span className="block text-xs font-bold">{tab.label}</span>
               <span className="mt-1 block text-[10px] opacity-75">{tab.description}</span>
@@ -3767,13 +3903,13 @@ function ClientWebsitesCard({
 
       <div className="mt-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-          {tabs.find((tab) => tab.id === websiteTab)?.description}
+          {tabs.find((tab) => tab.id === activeWebsiteTab)?.description}
         </p>
-        {websiteTab === "intelligence" ? (
+        {activeWebsiteTab === "intelligence" ? (
           <IntelligencePreview data={intelligence} />
-        ) : websiteTab === "partnership" ? (
+        ) : activeWebsiteTab === "partnership" ? (
           <PartnershipPreview data={partnership} />
-        ) : websiteTab === "reports" ? (
+        ) : activeWebsiteTab === "reports" ? (
           clientReports.length ? (
             <div className="mt-3 grid gap-2 md:grid-cols-2">
               {clientReports.map((report) => {
@@ -3826,7 +3962,7 @@ function ClientWebsitesCard({
           </div>
         )}
       </div>
-      {websiteTab === "pages" && sitesHref && (
+      {activeWebsiteTab === "pages" && sitesHref && (
         <a
           href={sitesHref}
           target="_blank"
