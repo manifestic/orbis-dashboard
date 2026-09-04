@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiTestWidgetRouteImport } from './routes/api/test-widget'
 import { Route as ApiTenantRouteImport } from './routes/api/tenant'
+import { Route as ApiSupportRequestRouteImport } from './routes/api/support-request'
 import { Route as ApiReviewUrlRouteImport } from './routes/api/review-url'
 import { Route as ApiReplyCapabilityRouteImport } from './routes/api/reply-capability'
 import { Route as ApiReplyRouteImport } from './routes/api/reply'
@@ -54,6 +55,11 @@ const ApiTestWidgetRoute = ApiTestWidgetRouteImport.update({
 const ApiTenantRoute = ApiTenantRouteImport.update({
   id: '/api/tenant',
   path: '/api/tenant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSupportRequestRoute = ApiSupportRequestRouteImport.update({
+  id: '/api/support-request',
+  path: '/api/support-request',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReviewUrlRoute = ApiReviewUrlRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
   '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/support-request': typeof ApiSupportRequestRoute
   '/api/tenant': typeof ApiTenantRoute
   '/api/test-widget': typeof ApiTestWidgetRoute
 }
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
   '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/support-request': typeof ApiSupportRequestRoute
   '/api/tenant': typeof ApiTenantRoute
   '/api/test-widget': typeof ApiTestWidgetRoute
 }
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/api/reply': typeof ApiReplyRoute
   '/api/reply-capability': typeof ApiReplyCapabilityRoute
   '/api/review-url': typeof ApiReviewUrlRoute
+  '/api/support-request': typeof ApiSupportRequestRoute
   '/api/tenant': typeof ApiTenantRoute
   '/api/test-widget': typeof ApiTestWidgetRoute
 }
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/api/reply'
     | '/api/reply-capability'
     | '/api/review-url'
+    | '/api/support-request'
     | '/api/tenant'
     | '/api/test-widget'
   fileRoutesByTo: FileRoutesByTo
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/api/reply'
     | '/api/reply-capability'
     | '/api/review-url'
+    | '/api/support-request'
     | '/api/tenant'
     | '/api/test-widget'
   id:
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/api/reply'
     | '/api/reply-capability'
     | '/api/review-url'
+    | '/api/support-request'
     | '/api/tenant'
     | '/api/test-widget'
   fileRoutesById: FileRoutesById
@@ -234,6 +246,7 @@ export interface RootRouteChildren {
   ApiReplyRoute: typeof ApiReplyRoute
   ApiReplyCapabilityRoute: typeof ApiReplyCapabilityRoute
   ApiReviewUrlRoute: typeof ApiReviewUrlRoute
+  ApiSupportRequestRoute: typeof ApiSupportRequestRoute
   ApiTenantRoute: typeof ApiTenantRoute
   ApiTestWidgetRoute: typeof ApiTestWidgetRoute
 }
@@ -280,6 +293,13 @@ declare module '@tanstack/react-router' {
       path: '/api/tenant'
       fullPath: '/api/tenant'
       preLoaderRoute: typeof ApiTenantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/support-request': {
+      id: '/api/support-request'
+      path: '/api/support-request'
+      fullPath: '/api/support-request'
+      preLoaderRoute: typeof ApiSupportRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/review-url': {
@@ -370,6 +390,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReplyRoute: ApiReplyRoute,
   ApiReplyCapabilityRoute: ApiReplyCapabilityRoute,
   ApiReviewUrlRoute: ApiReviewUrlRoute,
+  ApiSupportRequestRoute: ApiSupportRequestRoute,
   ApiTenantRoute: ApiTenantRoute,
   ApiTestWidgetRoute: ApiTestWidgetRoute,
 }
