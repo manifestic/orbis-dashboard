@@ -387,7 +387,8 @@ type DashboardSection =
   | "documents"
   | "intelligence"
   | "support"
-  | "voice-ai";
+  | "voice-ai"
+  | "members";
 type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence" | "partnership";
 
 const BGN_LOCATION_ID = "iT5l30Z4yeReKnIiS61j";
@@ -1080,7 +1081,7 @@ function ClientCommandCenter() {
     const requestedSection = params.get("section") as DashboardSection | null;
     if (
       requestedSection &&
-        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "reports", "deliverables", "documents", "intelligence", "support", "voice-ai"].includes(
+        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "reports", "deliverables", "documents", "intelligence", "support", "voice-ai", "members"].includes(
         requestedSection,
       )
     )
@@ -1175,6 +1176,7 @@ function ClientCommandCenter() {
     intelligence: "Intelligence",
     support: "Support",
     "voice-ai": "Voice AI",
+    members: "Memberships",
   };
   const activeLabel = sectionLabels[activeSection];
   const greetingName =
@@ -1237,6 +1239,7 @@ function ClientCommandCenter() {
                 {!isBgn && <SideNavItem top icon={Search} label="Intelligence" active={activeSection === "intelligence"} onClick={() => goToSection("intelligence")} />}
                 <SideNavItem top icon={CircleAlert} label="Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
                 <SideNavItem top icon={Sparkles} label="Voice AI" active={activeSection === "voice-ai"} onClick={() => goToSection("voice-ai")} />
+                {isBgn && <SideNavItem top icon={UsersRound} label="Memberships" active={activeSection === "members"} onClick={() => goToSection("members")} />}
               </div>
             </nav>
 
@@ -2891,6 +2894,7 @@ function DashboardSectionView({
     intelligence: "Review tenant-scoped business context and decision support.",
     support: "Find the right support path without leaving the client workspace.",
     "voice-ai": "Review the Voice AI workspace and setup path.",
+    members: "Give members a clean path to the BGN portal, courses, communities, and credentials.",
   };
   const sectionLabel = labels[section];
   return (
@@ -2992,8 +2996,67 @@ function DashboardSectionView({
             tenantFacts={client.locationId === BGN_LOCATION_ID ? BGN_VOICE_FACTS : undefined}
           />
         )}
+        {section === "members" && <MembershipsWorkspace client={client} />}
         {section === "reports" && <ReportsCard client={client} />}
       </div>
+    </section>
+  );
+}
+
+function MembershipsWorkspace({ client }: { client: ClientConfig }) {
+  const destinations = [
+    {
+      label: "Client Portal",
+      detail: "Member access, invitations, and portal activity.",
+      href: ghlHref(client.locationId, "/memberships/client-portal/dashboard"),
+    },
+    {
+      label: "Courses",
+      detail: "Manage the learning experience for members.",
+      href: ghlHref(client.locationId, "/memberships/courses/dashboard-v2"),
+    },
+    {
+      label: "Communities",
+      detail: "Open the community management area when needed.",
+      href: ghlHref(client.locationId, "/memberships/communities/community-groups"),
+    },
+    {
+      label: "Credentials",
+      detail: "Review certificates and member credentials.",
+      href: ghlHref(client.locationId, "/memberships/certificates/create-certificates"),
+    },
+  ];
+
+  return (
+    <section className="rounded-2xl border border-[#dbe5ed] bg-white/80 p-5 shadow-[0_14px_35px_-28px_rgba(16,35,54,0.6)] sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-700">BGN member experience</p>
+          <h3 className="mt-1 text-lg font-semibold text-[#102336]">Memberships</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#466174]">
+            Open BGN’s member tools from one clean workspace. Each destination opens in a separate HighLevel tab so the Command Center does not nest another full HighLevel shell inside itself.
+          </p>
+        </div>
+        <UsersRound className="h-5 w-5 text-cyan-700" />
+      </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        {destinations.map((destination) => (
+          <a
+            key={destination.label}
+            href={destination.href}
+            target="_blank"
+            rel="noreferrer"
+            className="group rounded-xl border border-[#dbe5ed] bg-white px-4 py-4 transition hover:-translate-y-0.5 hover:border-cyan-500/50 hover:shadow-[0_12px_24px_-18px_rgba(19,119,184,0.65)]"
+          >
+            <span className="flex items-center justify-between gap-3 text-sm font-semibold text-[#102336]">
+              {destination.label}
+              <ArrowUpRight className="h-4 w-4 text-cyan-700 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
+            <span className="mt-1 block text-xs leading-relaxed text-[#466174]">{destination.detail}</span>
+          </a>
+        ))}
+      </div>
+      <p className="mt-5 text-xs text-[#466174]">Tenant: {client.name} · No member or community data is changed from this dashboard.</p>
     </section>
   );
 }
