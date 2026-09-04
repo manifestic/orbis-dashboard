@@ -20,7 +20,9 @@ function message(body: string, status: number) {
  * that URL eventually leaves a tenant with an old secret/signature. This
  * route stores a location-scoped launcher key in HighLevel. The key is not the
  * dashboard bearer token; the server exchanges it for an HttpOnly cookie and
- * keeps the signed token out of the saved URL and redirect history.
+ * carries a short-lived signed fallback only in the redirect fragment when a
+ * browser blocks the cross-site iframe cookie. The saved GHL URL never contains
+ * the signed token.
  */
 export const Route = createFileRoute("/widget")({
   server: {
@@ -44,6 +46,9 @@ export const Route = createFileRoute("/widget")({
         destination.searchParams.set("locationId", locationId);
         const section = source.searchParams.get("section")?.trim();
         if (section) destination.searchParams.set("section", section);
+        // The fragment is not sent in HTTP requests or referrers. The dashboard
+        // reads it only to recover when the iframe cannot retain Set-Cookie.
+        destination.hash = `embedToken=${encodeURIComponent(token)}`;
         return new Response(null, {
           status: 302,
           headers: {

@@ -40,6 +40,10 @@ const COMMAND_CENTER_EMBED_SECRETS = [
 ].filter((value): value is string => Boolean(value));
 const COMMAND_CENTER_EMBED_SECRET = COMMAND_CENTER_EMBED_SECRETS[0] ?? "";
 const COMMAND_CENTER_LAUNCHER_KEYS_JSON = process.env.COMMAND_CENTER_LAUNCHER_KEYS_JSON?.trim() ?? "";
+const COMMAND_CENTER_LAUNCHER_KEYS_JSON_EXTRA = process.env.COMMAND_CENTER_LAUNCHER_KEYS_JSON_EXTRA?.trim() ?? "";
+const COMMAND_CENTER_LAUNCHER_KEYS_JSON_ANOVITE = process.env.COMMAND_CENTER_LAUNCHER_KEYS_JSON_ANOVITE?.trim() ?? "";
+const COMMAND_CENTER_LAUNCHER_KEYS_JSON_JESSE = process.env.COMMAND_CENTER_LAUNCHER_KEYS_JSON_JESSE?.trim() ?? "";
+const COMMAND_CENTER_LAUNCHER_KEYS_JSON_BGN = process.env.COMMAND_CENTER_LAUNCHER_KEYS_JSON_BGN?.trim() ?? "";
 const COMMAND_CENTER_SESSION_SECRET =
   process.env.COMMAND_CENTER_SESSION_SECRET || COMMAND_CENTER_EMBED_SECRET;
 const HIGHLEVEL_APP_SHARED_SECRET = process.env.HIGHLEVEL_APP_SHARED_SECRET ?? "";
@@ -102,6 +106,7 @@ type TenantConfig = {
 
 const READ_CAPABILITIES = ["inbox.read", "calendar.read", "opportunities.read", "reports.read"];
 const BUILT_IN_TENANTS: TenantConfig[] = [
+  { locationId: "HDgk8bXoo6ZE8BAnxFXr", clientName: "Anovite Builder" },
   { locationId: "yI8j40OmqLKKHFdQ1goC", clientName: "Adventure North Realty, LLC" },
 ];
 
@@ -110,7 +115,11 @@ function configuredTenants(): TenantConfig[] {
   const previewLocationId = process.env.COMMAND_CENTER_TEST_LOCATION_ID?.trim() ?? "";
   const previewClientName = process.env.COMMAND_CENTER_TEST_CLIENT_NAME?.trim() ?? "";
   if (previewLocationId && previewClientName) candidates.push({ locationId: previewLocationId, clientName: previewClientName });
-  for (const raw of [process.env.COMMAND_CENTER_TENANTS_JSON, process.env.COMMAND_CENTER_TENANTS_JSON_EXTRA]) {
+  for (const raw of [
+    process.env.COMMAND_CENTER_TENANTS_JSON,
+    process.env.COMMAND_CENTER_TENANTS_JSON_EXTRA,
+    process.env.COMMAND_CENTER_TENANTS_JSON_BGN,
+  ]) {
     if (!raw) continue;
     try {
       const parsed = JSON.parse(raw) as unknown;
@@ -309,13 +318,20 @@ export function createCommandCenterEmbedToken(
 export function commandCenterLauncherKeyForLocation(locationId: string) {
   const normalized = locationId.trim();
   if (!normalized) return null;
-  if (COMMAND_CENTER_LAUNCHER_KEYS_JSON) {
+  for (const raw of [
+    COMMAND_CENTER_LAUNCHER_KEYS_JSON_JESSE,
+    COMMAND_CENTER_LAUNCHER_KEYS_JSON_ANOVITE,
+    COMMAND_CENTER_LAUNCHER_KEYS_JSON_EXTRA,
+    COMMAND_CENTER_LAUNCHER_KEYS_JSON_BGN,
+    COMMAND_CENTER_LAUNCHER_KEYS_JSON,
+  ]) {
+    if (!raw) continue;
     try {
-      const parsed = JSON.parse(COMMAND_CENTER_LAUNCHER_KEYS_JSON) as Record<string, unknown>;
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
       const configured = parsed[normalized];
       if (typeof configured === "string" && configured.trim()) return configured.trim();
     } catch {
-      // Fall through to the derived key while an optional map is malformed.
+      // Continue through the optional maps, then fall back to the derived key.
     }
   }
   if (!COMMAND_CENTER_EMBED_SECRET) return null;

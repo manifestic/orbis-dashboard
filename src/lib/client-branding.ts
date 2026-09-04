@@ -16,14 +16,22 @@ const DEFAULT_BRANDING: ClientBranding = {
 };
 
 const TENANT_BRANDING: Record<string, ClientBranding> = {
+  HDgk8bXoo6ZE8BAnxFXr: {
+    logoUrl: "/assets/anovite-brand-logo.png",
+    greetingName: "Anovite team",
+    primaryColor: "#73bff0",
+    accentColor: "#1f789f",
+    inkColor: "#12344a",
+    mutedColor: "#4f6b7b",
+  },
   QsbCjo5HFBGuRG0AKms0: {
     logoUrl:
-      "https://assets.cdn.filesafe.space/QsbCjo5HFBGuRG0AKms0/media/5e87639f-90b5-4c90-94d9-393a5a224611.png",
+      "https://affordablehealthcare.solutions/wp-content/uploads/2022/11/cropped-Website-Logo_84776_Affordable-Healthcare-Solutions_Flat_BR_04.png",
     greetingName: "Calvenn",
-    primaryColor: "#1377b8",
-    accentColor: "#0e9a85",
-    inkColor: "#102336",
-    mutedColor: "#466174",
+    primaryColor: "#0066cc",
+    accentColor: "#f4a300",
+    inkColor: "#2d3748",
+    mutedColor: "#4a5568",
   },
   B2WqoVF535ixA9CbywEh: {
     logoUrl:

@@ -14,6 +14,7 @@ Create a repeatable path from a new HighLevel sub-account to a tenant-scoped Man
 4. Set the HighLevel dashboard widget to the stable tenant launcher URL:
    `https://orbis-landing-mauve.vercel.app/widget?locationId=<EXACT_LOCATION_ID>&launcherKey=<ROTATABLE_LOCATION_KEY>`
    The launcher rejects a bare location ID, validates the location-scoped key server-side, and exchanges it for an HttpOnly fresh signed handoff. Never save a URL containing a client name, review key, or signed embed token, and never record the launcher key in chat, docs, source, or logs.
+   Before declaring the widget ready, compare the key in the saved GHL URL with the server-side key resolver for that exact location. A `403` or “not authorized for the requested location” means the launcher-key map is out of sync; repair the tenant-scoped secret override or rotate the saved URL, then reload and re-test. Do not weaken the check to accept any key for a registered location.
 5. Add six location-specific custom menu entries—Content Review, Deliverables, Documents, Intelligence, Support, and Voice AI—using the same stable launcher plus the appropriate section query. Keep each client’s six rows assigned only to that client; do not make one Calvenn URL serve Jesse.
 6. Open the new account and confirm the embedded dashboard requests the active HighLevel signed context. The saved main widget must use the stable launcher—not a static `/dashboard?...&embedToken=` URL. Confirm the iframe, live-data links, and tenant registry all resolve to the new location.
 7. Run onboarding:
@@ -24,6 +25,7 @@ Create a repeatable path from a new HighLevel sub-account to a tenant-scoped Man
    - save as `brand_review`, then mark `ready` only after human approval.
 8. Configure native HighLevel connections and permissions one at a time. Verify each connection in the new location before enabling an automation.
 9. Verify the left menu, dashboard widget, branding, and empty-state behavior after refresh and location switch. Use the in-app browser to click all six custom entries and verify the target tenant, section, and no-login result. A bare location-only launcher must return an authorization failure.
+   For Content Review specifically, confirm the command-center top navigation (Getting Started, Dashboard, Inbox, Calendar, Opportunities, Content Review, Web & Insights), all seven visible in one row with `scrollWidth === clientWidth`, `Live HighLevel data`, and one nested private review workspace for the same tenant/agent and active batch. The shell loading by itself is not sufficient.
 10. Record every pass/fail result in the client `PROJECT.md`, including evidence, missing assets, and the next gate. Never report `READY` from a saved form, deployment, or URL readback alone.
 
 ## Scalable HighLevel credential path
@@ -54,6 +56,9 @@ The OAuth tables are defined in `supabase/migrations/20260824_command_center_hig
 - The saved widget URL is the stable `/widget?locationId=...&launcherKey=...` launcher, not a stale `/dashboard?...&embedToken=...` URL. The launcher key is rotatable and location-scoped.
 - A fresh authorized load of the launcher redirects to a dashboard without putting the bearer token in the URL, and the rendered dashboard is authenticated without a second login. A bare location-only launcher is rejected.
 - All six client-specific menu rows are present, assigned to the intended account, and click-tested in the app browser; a second client remains unchanged.
+- The launcher key embedded in the saved GHL URL matches the server-side tenant resolver, and the authorized load does not show a location authorization error.
+- The Content Review module resolves a tenant-scoped review URL/key and active batch; review keys are stored only in a sensitive server-side map or per-tenant override.
+- A six-family default pack has 18 distinct media URLs, three per family, mapped to stable content IDs and verified against the client manifest/contact sheet. If an owner rejects post-composited overlays, replace media in place with the approved clean or model-integrated-text asset and increment only the media version; do not create a duplicate queue.
 - Setup Center clearly shows whether branding is pending, under review, or approved.
 - Live data remains honestly unavailable until a scoped HighLevel credential is provisioned.
 - OAuth connections and webhook records are server-only and protected by RLS; the browser receives only tenant-scoped data.

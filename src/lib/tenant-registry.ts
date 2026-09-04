@@ -14,6 +14,17 @@ export type TenantBrandProfile = {
 const TABLE = "command_center_tenants";
 const BUILT_IN_TENANT_PROFILES: TenantBrandProfile[] = [
   {
+    locationId: "HDgk8bXoo6ZE8BAnxFXr",
+    clientName: "Anovite Builder",
+    websiteUrl: "https://anovite.com",
+    logoUrl: "/assets/anovite-brand-logo.png",
+    primaryColor: "#73bff0",
+    accentColor: "#1f789f",
+    inkColor: "#12344a",
+    mutedColor: "#4f6b7b",
+    onboardingStatus: "ready",
+  },
+  {
     locationId: "yI8j40OmqLKKHFdQ1goC",
     clientName: "Adventure North Realty, LLC",
     websiteUrl: "https://jesse-house-quest.lovable.app",
@@ -47,7 +58,11 @@ function envTenants(): TenantBrandProfile[] {
         onboardingStatus: "pending",
       },
     );
-  for (const raw of [process.env.COMMAND_CENTER_TENANTS_JSON, process.env.COMMAND_CENTER_TENANTS_JSON_EXTRA]) {
+  for (const raw of [
+    process.env.COMMAND_CENTER_TENANTS_JSON,
+    process.env.COMMAND_CENTER_TENANTS_JSON_EXTRA,
+    process.env.COMMAND_CENTER_TENANTS_JSON_BGN,
+  ]) {
     if (!raw?.trim()) continue;
     try {
       const parsed = JSON.parse(raw) as unknown;
