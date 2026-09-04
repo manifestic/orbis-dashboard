@@ -382,6 +382,31 @@ type DashboardSection =
   | "voice-ai";
 type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence" | "partnership";
 
+const BGN_LOCATION_ID = "iT5l30Z4yeReKnIiS61j";
+
+const bgnDeliverables = [
+  {
+    label: "Bookkeepers Growth Network",
+    detail: "Primary public site",
+    href: "https://bookkeepersgrowthnetwork.com",
+  },
+  {
+    label: "BGN Operating System",
+    detail: "Tenant-scoped dashboard prototype",
+    href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+  },
+  {
+    label: "Proposal Review Hub",
+    detail: "Current proposal and delivery review",
+    href: "https://bgn-proposal-review-hub.vercel.app/",
+  },
+  {
+    label: "BGN Proposal v5",
+    detail: "Latest proposal presentation",
+    href: "https://bgn-proposal-v5.vercel.app/",
+  },
+] as const;
+
 const calvennIntelligence = {
   scope: "Calvenn Starre · Your Best Health Quote",
   source: "Client-provided Intelligence snapshot + Calvenn Agent OS context",
@@ -992,10 +1017,7 @@ function ClientCommandCenter() {
     support: "Support",
     "voice-ai": "Voice AI",
   };
-  const activeLabel =
-    activeSection === "websites" && client.locationId === "iT5l30Z4yeReKnIiS61j"
-      ? "Deliverables"
-      : sectionLabels[activeSection];
+  const activeLabel = sectionLabels[activeSection];
   const greetingName =
     client.greetingName || personalGreetingName(authState.user?.displayName, client.name);
 
@@ -1050,14 +1072,8 @@ function ClientCommandCenter() {
                 <SideNavItem top icon={CalendarDays} label="Calendar" active={activeSection === "calendar"} onClick={() => goToSection("calendar")} />
                 <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
-                {client.locationId === "iT5l30Z4yeReKnIiS61j" ? (
-                  <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
-                ) : (
-                  <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
-                )}
-                {client.locationId !== "iT5l30Z4yeReKnIiS61j" && (
-                  <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "deliverables"} onClick={() => goToSection("deliverables")} />
-                )}
+                <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "deliverables"} onClick={() => goToSection("deliverables")} />
                 <SideNavItem top icon={FileText} label="Documents" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
                 <SideNavItem top icon={Search} label="Intelligence" active={activeSection === "intelligence"} onClick={() => goToSection("intelligence")} />
                 <SideNavItem top icon={CircleAlert} label="Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
@@ -2353,6 +2369,298 @@ function PortalLinkRow({
   );
 }
 
+function ghlHref(locationId: string, path: string) {
+  return locationId
+    ? `https://app.gohighlevel.com/v2/location/${locationId}${path}`
+    : undefined;
+}
+
+type FunctionalModuleAction = {
+  label: string;
+  detail: string;
+  href?: string;
+  target?: "_top" | "_blank";
+};
+
+function FunctionalModule({
+  client,
+  title,
+  detail,
+  status,
+  actions,
+  facts,
+}: {
+  client: ClientConfig;
+  title: string;
+  detail: string;
+  status: string;
+  actions: FunctionalModuleAction[];
+  facts?: Array<{ label: string; value: string }>;
+}) {
+  return (
+    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+            Tenant workspace
+          </p>
+          <h3 className="mt-1 text-lg font-semibold text-white">{client.name} · {title}</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">{detail}</p>
+        </div>
+        <span className="shrink-0 rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200">
+          {status}
+        </span>
+      </div>
+      {facts && facts.length > 0 && (
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          {facts.map((fact) => (
+            <div key={fact.label} className="rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">{fact.label}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-200">{fact.value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        {actions.map((action) => (
+          action.href ? (
+            <a
+              key={action.label}
+              href={action.href}
+              target={action.target ?? "_blank"}
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.05] p-4 transition hover:border-cyan-300/35 hover:bg-cyan-300/[0.1]"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-300/[0.12] text-cyan-200">
+                <ArrowUpRight className="h-4 w-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-slate-100">{action.label}</span>
+                <span className="mt-1 block text-xs leading-relaxed text-slate-400">{action.detail}</span>
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-cyan-200" />
+            </a>
+          ) : (
+            <div key={action.label} className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-4">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] text-slate-400">
+                <PanelTop className="h-4 w-4" />
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-slate-200">{action.label}</span>
+                <span className="mt-1 block text-xs leading-relaxed text-slate-400">{action.detail}</span>
+              </span>
+            </div>
+          )
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function BgnDeliverablesModule({ client }: { client: ClientConfig }) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Deliverables"
+      status="Open workspace"
+      detail="The BGN sites, operating-system surface, and proposal destinations are available from one tenant-scoped module."
+      actions={bgnDeliverables.map((item) => ({ ...item, target: "_blank" as const }))}
+    />
+  );
+}
+
+function BgnWebInsightsModule({ client }: { client: ClientConfig }) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Web & Insights"
+      status="Destinations ready"
+      detail="The BGN public network and tenant-scoped operating-system surfaces are available here. Delivery review stays in the separate Deliverables module."
+      actions={[
+        {
+          label: "Bookkeepers Growth Network",
+          detail: "Open the public network website.",
+          href: "https://bookkeepersgrowthnetwork.com",
+        },
+        {
+          label: "BGN Operating System",
+          detail: "Open the tenant-scoped operating-system surface.",
+          href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+        },
+      ]}
+    />
+  );
+}
+
+function BgnContentModule({
+  client,
+  plannerHref,
+  calendarSettingsHref,
+}: {
+  client: ClientConfig;
+  plannerHref?: string;
+  calendarSettingsHref?: string;
+}) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Content Review"
+      status="Content paths ready"
+      detail="Open the BGN content destination, Social Planner, and the current proposal review surface from one place."
+      facts={[
+        { label: "Review destination", value: "The BGN HighLevel Content Review custom-menu destination is linked below." },
+        { label: "Publishing control", value: "Publishing and outbound changes stay in native HighLevel for explicit human action." },
+      ]}
+      actions={[
+        {
+          label: "Open BGN Content Review",
+          detail: "Open the tenant’s configured HighLevel content workspace.",
+          href: ghlHref(client.locationId, "/custom-menu-link/9ef57efe-683f-4170-b9a2-1bfb735aedcf"),
+          target: "_top",
+        },
+        {
+          label: "Open Social Planner",
+          detail: "Connect channels and manage scheduled content in HighLevel.",
+          href: plannerHref,
+          target: "_top",
+        },
+        {
+          label: "Proposal Review Hub",
+          detail: "Open the BGN proposal and delivery review surface.",
+          href: "https://bgn-proposal-review-hub.vercel.app/",
+        },
+        {
+          label: "Calendar settings",
+          detail: "Connect the calendar used for content and network scheduling.",
+          href: calendarSettingsHref,
+          target: "_top",
+        },
+      ]}
+    />
+  );
+}
+
+function BgnDocumentsModule({ client, mediaHref }: { client: ClientConfig; mediaHref?: string }) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Documents"
+      status="Connected destinations"
+      detail="Open the BGN document and proposal destinations, or manage tenant media in native HighLevel."
+      actions={[
+        {
+          label: "HighLevel Media Storage",
+          detail: "Open the BGN asset library in this sub-account.",
+          href: mediaHref,
+          target: "_top",
+        },
+        {
+          label: "Proposal Review Hub",
+          detail: "Open the current BGN proposal workspace.",
+          href: "https://bgn-proposal-review-hub.vercel.app/",
+        },
+        {
+          label: "BGN Operating System",
+          detail: "Open the tenant-scoped OS dashboard and working files.",
+          href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+        },
+      ]}
+    />
+  );
+}
+
+function BgnIntelligenceModule({ client }: { client: ClientConfig }) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Intelligence"
+      status="Context mapped"
+      detail="BGN operating context is organized around the network, member onboarding, pods, resources, and the BGN operating system."
+      facts={[
+        { label: "Operating layer", value: "HighLevel owns identity, onboarding, status, permissions, community, email, and workflows." },
+        { label: "Member layer", value: "The authenticated BGN OS holds long-form profiles, matching, private data, and document review." },
+        { label: "Next build lane", value: "Connect the BGN assistant and member-facing OS workflow after the sub-account foundation is verified." },
+      ]}
+      actions={[
+        {
+          label: "Open BGN Operating System",
+          detail: "Use the current tenant-scoped OS surface for context and decisions.",
+          href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+        },
+        {
+          label: "Open BGN website",
+          detail: "View the public network positioning and resources.",
+          href: client.websiteUrl || "https://bookkeepersgrowthnetwork.com",
+        },
+      ]}
+    />
+  );
+}
+
+function BgnSupportModule({ client, inboxHref }: { client: ClientConfig; inboxHref?: string }) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Support"
+      status="Support paths ready"
+      detail="Use the native HighLevel paths below for tenant support, inbox work, and AI configuration."
+      actions={[
+        {
+          label: "Open BGN inbox",
+          detail: "Read and respond to conversations in native HighLevel.",
+          href: inboxHref,
+          target: "_top",
+        },
+        {
+          label: "Company settings",
+          detail: "Review BGN business identity and account settings.",
+          href: ghlHref(client.locationId, "/settings/company"),
+          target: "_top",
+        },
+        {
+          label: "AI Agents setup",
+          detail: "Open the native HighLevel AI configuration path.",
+          href: ghlHref(client.locationId, "/ai-agents/getting-started"),
+          target: "_top",
+        },
+      ]}
+    />
+  );
+}
+
+function BgnVoiceAiModule({ client }: { client: ClientConfig }) {
+  return (
+    <FunctionalModule
+      client={client}
+      title="Voice AI"
+      status="Ready to configure"
+      detail="The HighLevel AI setup path is live for BGN. The separate Orb agent connection remains the next provisioning step, so this module gives you the correct launch points without activating calls."
+      facts={[
+        { label: "HighLevel", value: "AI Agents setup is available in the BGN sub-account." },
+        { label: "Orb connection", value: "Agent ID and calendar connection are still pending provisioning." },
+      ]}
+      actions={[
+        {
+          label: "Open HighLevel AI Agents",
+          detail: "Configure the BGN voice and conversation agent path.",
+          href: ghlHref(client.locationId, "/ai-agents/getting-started"),
+          target: "_top",
+        },
+        {
+          label: "Open BGN Operating System",
+          detail: "Continue the BGN assistant and member-OS setup path.",
+          href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+        },
+        {
+          label: "Book a BGN setup session",
+          detail: "Open the existing scheduling lane for the remaining Orb setup.",
+          href: "https://cal.com/employer-saving-group/30min",
+        },
+      ]}
+    />
+  );
+}
+
 function DashboardSectionView({
   client,
   section,
@@ -2423,10 +2731,7 @@ function DashboardSectionView({
     support: "Find the right support path without leaving the client workspace.",
     "voice-ai": "Review the Voice AI workspace and setup path.",
   };
-  const sectionLabel =
-    section === "websites" && client.locationId === "iT5l30Z4yeReKnIiS61j"
-      ? "Deliverables"
-      : labels[section];
+  const sectionLabel = labels[section];
   return (
     <section className="mt-8 pb-10 rounded-2xl border border-white/[0.09] bg-white/[0.035] p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -2471,14 +2776,22 @@ function DashboardSectionView({
           </div>
         )}
         {section === "content" && (
-          <ContentReviewCard
-            clientName={client.name}
-            reviewUrl={client.reviewUrl}
-            nativeReviewHref={contentReviewHref}
-            plannerHref={plannerHref}
-            socialHref={plannerHref}
-            calendarSettingsHref={calendarSettingsHref}
-          />
+          client.locationId === BGN_LOCATION_ID ? (
+            <BgnContentModule
+              client={client}
+              plannerHref={plannerHref}
+              calendarSettingsHref={calendarSettingsHref}
+            />
+          ) : (
+            <ContentReviewCard
+              clientName={client.name}
+              reviewUrl={client.reviewUrl}
+              nativeReviewHref={contentReviewHref}
+              plannerHref={plannerHref}
+              socialHref={plannerHref}
+              calendarSettingsHref={calendarSettingsHref}
+            />
+          )
         )}
         {section === "websites" && (
           <WebsitesCard
@@ -2489,41 +2802,65 @@ function DashboardSectionView({
           />
         )}
         {section === "deliverables" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Deliverables"
-            detail="Client-ready websites, funnels, and delivery items are organized here for review."
-            href={client.websiteUrl || undefined}
-            actionLabel="Open primary site"
-          />
+          client.locationId === BGN_LOCATION_ID ? (
+            <BgnDeliverablesModule client={client} />
+          ) : (
+            <WorkspaceModuleCard
+              client={client}
+              title="Deliverables"
+              detail="Client-ready websites, funnels, and delivery items are organized here for review."
+              href={client.websiteUrl || undefined}
+              actionLabel="Open primary site"
+            />
+          )
         )}
         {section === "documents" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Documents"
-            detail="Approved documents and working files stay tenant-scoped here. This surface is review-only until its document store is connected."
-          />
+          client.locationId === BGN_LOCATION_ID ? (
+            <BgnDocumentsModule client={client} mediaHref={ghlHref(client.locationId, "/media-storage")} />
+          ) : (
+            <WorkspaceModuleCard
+              client={client}
+              title="Documents"
+              detail="Approved documents and working files stay tenant-scoped here."
+              statusLabel="Workspace ready"
+            />
+          )
         )}
         {section === "intelligence" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Intelligence"
-            detail="Tenant-scoped business context and decision support will appear here when the canonical context store is connected."
-          />
+          client.locationId === BGN_LOCATION_ID ? (
+            <BgnIntelligenceModule client={client} />
+          ) : (
+            <WorkspaceModuleCard
+              client={client}
+              title="Intelligence"
+              detail="Tenant-scoped business context and decision support."
+              statusLabel="Workspace ready"
+            />
+          )
         )}
         {section === "support" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Support"
-            detail="Support requests and setup guidance will appear here without sending or changing client records."
-          />
+          client.locationId === BGN_LOCATION_ID ? (
+            <BgnSupportModule client={client} inboxHref={inboxHref} />
+          ) : (
+            <WorkspaceModuleCard
+              client={client}
+              title="Support"
+              detail="Support requests and setup guidance without sending or changing client records."
+              statusLabel="Workspace ready"
+            />
+          )
         )}
         {section === "voice-ai" && (
-          <WorkspaceModuleCard
-            client={client}
-            title="Voice AI"
-            detail="Review the Voice AI setup path in HighLevel. No calls or automations are started from this workspace."
-          />
+          client.locationId === BGN_LOCATION_ID ? (
+            <BgnVoiceAiModule client={client} />
+          ) : (
+            <WorkspaceModuleCard
+              client={client}
+              title="Voice AI"
+              detail="Open the Voice AI setup path in HighLevel."
+              statusLabel="Open setup"
+            />
+          )
         )}
         {section === "reports" && <ReportsCard client={client} />}
       </div>
@@ -3193,15 +3530,7 @@ function WebsitesCard({
   onWebsiteTabChange: (tab: WebsiteTab) => void;
 }) {
   if (client.locationId === "iT5l30Z4yeReKnIiS61j") {
-    return (
-      <WorkspaceModuleCard
-        client={client}
-        title="Deliverables"
-        detail="Client-ready websites, funnels, and delivery items are organized here for review."
-        href={client.websiteUrl || undefined}
-        actionLabel="Open primary site"
-      />
-    );
+    return <BgnWebInsightsModule client={client} />;
   }
   if (client.locationId !== "QsbCjo5HFBGuRG0AKms0") {
     const href = sitesHref || client.websiteUrl;
