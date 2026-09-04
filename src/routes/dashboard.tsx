@@ -374,7 +374,12 @@ type DashboardSection =
   | "opportunities"
   | "content"
   | "websites"
-  | "reports";
+  | "reports"
+  | "deliverables"
+  | "documents"
+  | "intelligence"
+  | "support"
+  | "voice-ai";
 type WebsiteTab = "pages" | "funnels" | "reports" | "intelligence" | "partnership";
 
 const calvennIntelligence = {
@@ -504,13 +509,16 @@ const SYNTHETIC_DEMO_REVIEWS = [
 function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
   const locationId = params.get("locationId")?.trim() ?? "";
   const requestedName = params.get("clientName")?.trim() ?? "";
+  const isAnovite = locationId === "HDgk8bXoo6ZE8BAnxFXr" || /anovite/i.test(requestedName);
   const isKevin =
     locationId === "B2WqoVF535ixA9CbywEh" || /station survival|kevin/i.test(requestedName);
   const isAdaptive = locationId === "mR9xcnpfPlueBXs9yIk9" || /adaptive crm/i.test(requestedName);
   const isCalvenn = locationId === "QsbCjo5HFBGuRG0AKms0";
   const name =
-    requestedName ||
-    (isKevin
+    (isCalvenn ? "Affordable Healthcare Solutions" : requestedName) ||
+    (isAnovite
+      ? "Anovite Builder"
+      : isKevin
       ? "Station Survival Co."
       : isAdaptive
         ? "Adaptive CRM Core — Master"
@@ -521,41 +529,51 @@ function clientConfigFromQuery(params: URLSearchParams): ClientConfig {
   return {
     locationId,
     name,
-    logoUrl: params.get("logoUrl")?.trim() || branding.logoUrl,
+    logoUrl: isCalvenn ? branding.logoUrl : params.get("logoUrl")?.trim() || branding.logoUrl,
     greetingName: branding.greetingName,
-    reviewUrl: params.get("reviewUrl")?.trim() || "",
+    reviewUrl:
+      params.get("reviewUrl")?.trim() ||
+      (isAnovite ? "https://anovite-content-proof-pack.vercel.app/" : ""),
     websiteUrl:
       params.get("websiteUrl")?.trim() ||
-      (isKevin
+      (isAnovite
+        ? "https://anovite.com"
+        : isKevin
         ? "https://stationsurvivalco.com"
         : isCalvenn
-          ? "https://yourbesthealthquote.vercel.app/"
+          ? "https://affordablehealthcare.solutions/"
           : ""),
     websiteName:
       params.get("websiteName")?.trim() ||
-      (isKevin
+      (isAnovite
+        ? "Anovite official website"
+        : isKevin
         ? "Station Survival Co. website"
         : isCalvenn
-          ? "Your Best Health Quote"
+          ? "Affordable Healthcare Solutions"
           : "Client website"),
     footerLabel:
       params.get("footerLabel")?.trim() ||
-      (isKevin
+      (isAnovite
+        ? "Anovite affiliate workspace"
+        : isKevin
         ? "Firefighter gear view"
         : isCalvenn
           ? "Healthcare sales view"
           : "Client command center"),
     footerText:
       params.get("footerText")?.trim() ||
-      (isKevin
+      (isAnovite
+        ? "A focused workspace configured around Anovite’s prospect follow-up, associate ownership, and approved communication flows."
+        : isKevin
         ? "A focused workspace configured around Station Survival Co.'s gear, content, and customer conversations."
         : isCalvenn
           ? "A focused workspace configured around the work Calvenn actually needs to do."
           : `A focused workspace configured around the work ${name} actually needs to do.`),
-    primaryColor: params.get("primaryColor")?.trim() || branding.primaryColor,
-    accentColor: params.get("accentColor")?.trim() || branding.accentColor,
-    inkColor: params.get("inkColor")?.trim() || branding.inkColor,
-    mutedColor: params.get("mutedColor")?.trim() || branding.mutedColor,
+    primaryColor: isCalvenn ? branding.primaryColor : params.get("primaryColor")?.trim() || branding.primaryColor,
+    accentColor: isCalvenn ? branding.accentColor : params.get("accentColor")?.trim() || branding.accentColor,
+    inkColor: isCalvenn ? branding.inkColor : params.get("inkColor")?.trim() || branding.inkColor,
+    mutedColor: isCalvenn ? branding.mutedColor : params.get("mutedColor")?.trim() || branding.mutedColor,
   };
 }
 
@@ -654,6 +672,7 @@ function ClientCommandCenter() {
   const [hydrated, setHydrated] = useState(false);
   const [authState, setAuthState] = useState<AuthState>({ status: "loading" });
   const [demoMode, setDemoMode] = useState(false);
+  const [embedHandoffToken, setEmbedHandoffToken] = useState("");
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [websiteTab, setWebsiteTab] = useState<WebsiteTab>("pages");
   const [selectedConversation, setSelectedConversation] = useState(conversations[0].name);
@@ -693,7 +712,7 @@ function ClientCommandCenter() {
     window.history.pushState(
       {},
       "",
-      `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`,
+      `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}${window.location.hash}`,
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -706,7 +725,7 @@ function ClientCommandCenter() {
     window.history.pushState(
       {},
       "",
-      `${window.location.pathname}?${params.toString()}`,
+      `${window.location.pathname}?${params.toString()}${window.location.hash}`,
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -717,7 +736,7 @@ function ClientCommandCenter() {
     window.history.replaceState(
       {},
       "",
-      `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`,
+      `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}${window.location.hash}`,
     );
     setDemoMode(next);
   };
@@ -730,8 +749,7 @@ function ClientCommandCenter() {
       // the already-signed, tenant-scoped embed token for this read-only request
       // so the live dashboard does not silently fall back to preview mode.
       const dataParams = new URLSearchParams({ locationId: client.locationId });
-      const embedToken = new URLSearchParams(window.location.search).get("embedToken")?.trim();
-      if (embedToken) dataParams.set("embedToken", embedToken);
+      if (embedHandoffToken) dataParams.set("embedToken", embedHandoffToken);
       const response = await fetch(
         `/api/dashboard-data?${dataParams.toString()}`,
         { cache: "no-store" },
@@ -764,6 +782,11 @@ function ClientCommandCenter() {
   useEffect(() => {
     setHydrated(true);
     const params = new URLSearchParams(window.location.search);
+    const initialEmbedToken =
+      params.get("embedToken")?.trim() ||
+      new URLSearchParams(window.location.hash.replace(/^#/, "")).get("embedToken")?.trim() ||
+      "";
+    setEmbedHandoffToken(initialEmbedToken);
     setDemoMode(["1", "true", "yes"].includes((params.get("demo") ?? "").toLowerCase()));
     const requestedLocationId = params.get("locationId")?.trim() ?? "";
     void (async () => {
@@ -772,7 +795,7 @@ function ClientCommandCenter() {
         setClient(requestedClient);
       }
       try {
-        const embedToken = params.get("embedToken")?.trim() ?? "";
+        const embedToken = initialEmbedToken;
         let response: Response | null = null;
         type AuthPayload = {
           authenticated?: boolean;
@@ -874,7 +897,7 @@ function ClientCommandCenter() {
     const requestedSection = params.get("section") as DashboardSection | null;
     if (
       requestedSection &&
-        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "reports"].includes(
+        ["getting-started", "overview", "inbox", "calendar", "opportunities", "content", "websites", "reports", "deliverables", "documents", "intelligence", "support", "voice-ai"].includes(
         requestedSection,
       )
     )
@@ -902,7 +925,7 @@ function ClientCommandCenter() {
     void refreshLiveData();
     const interval = window.setInterval(() => void refreshLiveData(), 60_000);
     return () => window.clearInterval(interval);
-  }, [client.locationId, authState.status, demoMode]);
+  }, [client.locationId, authState.status, demoMode, embedHandoffToken]);
 
   if (!hydrated) {
     return <DashboardBootScreen />;
@@ -915,8 +938,19 @@ function ClientCommandCenter() {
     );
 
   const clientDataRequested = Boolean(client.locationId);
+  const isAnovite = client.locationId === "HDgk8bXoo6ZE8BAnxFXr";
   const liveSourceStatus = liveState.sources?.status;
   const demoDataActive = demoMode || !clientDataRequested;
+  const demoDataForClient: LiveDashboardData = isAnovite
+    ? {
+        ...demoData,
+        tasks: [
+          { id: "anovite-demo-task-001", label: "Review the warm-market launch flow", due: "Due today", owner: "Anovite", urgent: true },
+          { id: "anovite-demo-task-002", label: "Confirm associate ownership mapping", due: "Demo due", owner: "Anovite", urgent: false },
+          { id: "anovite-demo-task-003", label: "Approve the first sample content pack", due: "Demo due", owner: "Anovite", urgent: false },
+        ],
+      }
+    : demoData;
   const isLive = Boolean(
     !demoMode &&
     client.locationId && liveState.status === "ready" && liveSourceStatus === "live",
@@ -926,14 +960,14 @@ function ClientCommandCenter() {
     client.locationId && liveState.status === "ready" && liveSourceStatus === "partial",
   );
   const calendarReadAvailable = liveState.sources?.appointments === "live";
-  const visibleConversations = demoDataActive ? demoData.conversations : liveState.data.conversations;
-  const visibleAppointments = demoDataActive ? demoData.appointments : liveState.data.appointments;
-  const visibleTasks = demoDataActive ? demoData.tasks : liveState.data.tasks;
+  const visibleConversations = demoDataActive ? demoDataForClient.conversations : liveState.data.conversations;
+  const visibleAppointments = demoDataActive ? demoDataForClient.appointments : liveState.data.appointments;
+  const visibleTasks = demoDataActive ? demoDataForClient.tasks : liveState.data.tasks;
   const visibleOpportunities = demoDataActive
-    ? demoData.opportunities
+    ? demoDataForClient.opportunities
     : liveState.data.opportunities;
   const unreadCount = demoDataActive
-    ? demoData.conversations.reduce(
+    ? demoDataForClient.conversations.reduce(
         (total, item) => total + (item.unread ? 1 : 0),
         0,
       )
@@ -952,14 +986,23 @@ function ClientCommandCenter() {
     content: "Content Review",
     websites: "Web & Insights",
     reports: "Reports",
+    deliverables: "Deliverables",
+    documents: "Documents",
+    intelligence: "Intelligence",
+    support: "Support",
+    "voice-ai": "Voice AI",
   };
-  const activeLabel = sectionLabels[activeSection];
+  const activeLabel =
+    activeSection === "websites" && client.locationId === "iT5l30Z4yeReKnIiS61j"
+      ? "Deliverables"
+      : sectionLabels[activeSection];
   const greetingName =
     client.greetingName || personalGreetingName(authState.user?.displayName, client.name);
 
   return (
     <main
       className="ybq-dashboard min-h-screen overflow-x-hidden bg-[#f5f8fb] text-[#102336]"
+      data-location-id={client.locationId}
       style={
         {
           "--ybq-blue": client.primaryColor,
@@ -970,7 +1013,9 @@ function ClientCommandCenter() {
       }
     >
       <style>{`
-        .ybq-dashboard { --ybq-blue:#1377b8; --ybq-teal:#0e9a85; --ybq-ink:#102336; --ybq-muted:#466174; --ybq-line:#dbe5ed; --ybq-amber:#8a5200; --ybq-green:#087b68; }
+        .ybq-dashboard { --ybq-blue:#1377b8; --ybq-blue-soft:#e8f4fa; --ybq-teal:#0e9a85; --ybq-ink:#102336; --ybq-muted:#466174; --ybq-line:#dbe5ed; --ybq-amber:#8a5200; --ybq-green:#087b68; }
+        .ybq-dashboard[data-location-id="QsbCjo5HFBGuRG0AKms0"] { --ybq-blue:#0066cc; --ybq-blue-soft:#e8f1fb; --ybq-teal:#f4a300; --ybq-ink:#2d3748; --ybq-muted:#4a5568; --ybq-line:#d5e2f0; --ybq-amber:#8a5200; background:#f7fafc!important; color:var(--ybq-ink)!important; }
+        .ybq-dashboard[data-location-id="QsbCjo5HFBGuRG0AKms0"] [class*="text-violet-"] { color:#8a5200!important; }
         .ybq-dashboard aside { background:#fff!important; border-color:var(--ybq-line)!important; }
         .ybq-dashboard [class*="bg-[#0b0f1a]"], .ybq-dashboard [class*="bg-white/[0.025]"], .ybq-dashboard [class*="bg-white/[0.035]"], .ybq-dashboard [class*="bg-white/[0.04]"], .ybq-dashboard [class*="bg-white/[0.045]"] { background:#fff!important; }
         .ybq-dashboard [class*="border-white/"] { border-color:var(--ybq-line)!important; }
@@ -997,20 +1042,41 @@ function ClientCommandCenter() {
       <div className="relative z-10 flex min-h-screen">
         <section className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:px-10 lg:py-8">
           <header className="mx-auto max-w-[1380px]">
-            <nav aria-label="Command Center sections" className="overflow-x-auto rounded-2xl border border-[#dbe5ed] bg-white/80 p-2 shadow-[0_14px_35px_-28px_rgba(16,35,54,0.6)]">
-              <div className="flex min-w-max items-center gap-1">
+            <nav aria-label="Command Center sections" className="overflow-hidden rounded-2xl border border-[#dbe5ed] bg-white/80 p-2 shadow-[0_14px_35px_-28px_rgba(16,35,54,0.6)]">
+              <div className="flex w-full items-center gap-1">
                 <SideNavItem top icon={CheckCircle2} label="Getting Started" active={activeSection === "getting-started"} onClick={() => goToSection("getting-started")} />
                 <SideNavItem top icon={LayoutDashboard} label="Dashboard" active={activeSection === "overview"} onClick={() => goToSection("overview")} />
                 <SideNavItem top icon={Inbox} label="Inbox" badge={`${unreadCount}`} active={activeSection === "inbox"} onClick={() => goToSection("inbox")} />
                 <SideNavItem top icon={CalendarDays} label="Calendar" active={activeSection === "calendar"} onClick={() => goToSection("calendar")} />
                 <SideNavItem top icon={UsersRound} label="Opportunities" active={activeSection === "opportunities"} onClick={() => goToSection("opportunities")} />
                 <SideNavItem top icon={MessageCircle} label="Content Review" active={activeSection === "content"} onClick={() => goToSection("content")} />
-                <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                {client.locationId === "iT5l30Z4yeReKnIiS61j" ? (
+                  <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                ) : (
+                  <SideNavItem top icon={Globe2} label="Web & Insights" active={activeSection === "websites"} onClick={() => goToSection("websites")} />
+                )}
+                {client.locationId !== "iT5l30Z4yeReKnIiS61j" && (
+                  <SideNavItem top icon={PanelTop} label="Deliverables" active={activeSection === "deliverables"} onClick={() => goToSection("deliverables")} />
+                )}
+                <SideNavItem top icon={FileText} label="Documents" active={activeSection === "documents"} onClick={() => goToSection("documents")} />
+                <SideNavItem top icon={Search} label="Intelligence" active={activeSection === "intelligence"} onClick={() => goToSection("intelligence")} />
+                <SideNavItem top icon={CircleAlert} label="Support" active={activeSection === "support"} onClick={() => goToSection("support")} />
+                <SideNavItem top icon={Sparkles} label="Voice AI" active={activeSection === "voice-ai"} onClick={() => goToSection("voice-ai")} />
               </div>
             </nav>
 
             <div className="mt-6">
-              <div>
+              <div className="flex items-center gap-4">
+                {client.logoUrl && (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#dbe5ed] bg-white p-2 shadow-[0_10px_24px_-18px_rgba(16,35,54,0.65)]">
+                    <img
+                      src={client.logoUrl}
+                      alt={`${client.name} logo`}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                )}
+                <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
                   Client Command Center
                 </p>
@@ -1026,6 +1092,7 @@ function ClientCommandCenter() {
                     ? "Today’s docket, next moves, conversations, and follow-up in one focused view."
                     : `A focused ${activeLabel.toLowerCase()} workspace inside the Command Center.`}
                 </p>
+                </div>
               </div>
             </div>
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#dbe5ed] bg-white/75 px-3 py-2.5 shadow-[0_12px_30px_-26px_rgba(16,35,54,0.7)]">
@@ -1160,7 +1227,9 @@ function ClientCommandCenter() {
             <div className="border-t border-white/[0.07] py-6 text-xs leading-relaxed text-slate-600">
               {isLive || isPartial
                 ? "Live read-only HighLevel data · Actions that send or change records open in native HighLevel."
-                : "Demo preview · Add the scoped HighLevel server credential to replace sample records with live data."}
+                : demoDataActive
+                  ? "Synthetic preview · Nothing here reads from, writes to, sends, publishes, books, or activates automation in HighLevel."
+                  : "Dashboard shell ready · Add the scoped HighLevel server credential to show live records."}
             </div>
           </header>
         </section>
@@ -1214,7 +1283,7 @@ function SideNavItem({
   top?: boolean;
 }) {
   const className = top
-    ? `inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium whitespace-nowrap transition ${active ? "bg-[#e8f4fa] text-[#1377b8]" : "text-[#466174] hover:bg-[#f1f7fa] hover:text-[#102336]"}`
+    ? `inline-flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl px-1.5 py-2 text-[11px] font-medium whitespace-nowrap transition ${active ? "bg-[color:var(--ybq-blue-soft)] text-[color:var(--ybq-blue)]" : "text-[color:var(--ybq-muted)] hover:bg-[#f1f7fa] hover:text-[color:var(--ybq-ink)]"}`
     : `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left ${active ? "bg-cyan-300/10 text-cyan-100" : "text-slate-500 hover:bg-white/[0.04] hover:text-slate-200"}`;
   const content = (
     <>
@@ -2332,6 +2401,11 @@ function DashboardSectionView({
     content: "Content Review",
     websites: "Web & Insights",
     reports: "Reports",
+    deliverables: "Deliverables",
+    documents: "Documents",
+    intelligence: "Intelligence",
+    support: "Support",
+    "voice-ai": "Voice AI",
   };
   const detail: Record<DashboardSection, string> = {
     "getting-started": "Connect the essentials and install the mobile app.",
@@ -2343,7 +2417,16 @@ function DashboardSectionView({
     content: "Keep approvals, Social Planner, and connection actions together.",
     websites: "Open the client’s public sites and landing pages.",
     reports: "Open intelligence and reporting in one place.",
+    deliverables: "Review client-ready websites, funnels, and delivery items.",
+    documents: "Keep approved client documents and working files together.",
+    intelligence: "Review tenant-scoped business context and decision support.",
+    support: "Find the right support path without leaving the client workspace.",
+    "voice-ai": "Review the Voice AI workspace and setup path.",
   };
+  const sectionLabel =
+    section === "websites" && client.locationId === "iT5l30Z4yeReKnIiS61j"
+      ? "Deliverables"
+      : labels[section];
   return (
     <section className="mt-8 pb-10 rounded-2xl border border-white/[0.09] bg-white/[0.035] p-5 shadow-[0_18px_60px_-30px_rgba(14,165,233,0.25)] sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -2351,7 +2434,7 @@ function DashboardSectionView({
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">
             Command Center module
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">{labels[section]}</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">{sectionLabel}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">{detail[section]}</p>
         </div>
         <div className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.07] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">
@@ -2405,8 +2488,90 @@ function DashboardSectionView({
             onWebsiteTabChange={onWebsiteTabChange}
           />
         )}
+        {section === "deliverables" && (
+          <WorkspaceModuleCard
+            client={client}
+            title="Deliverables"
+            detail="Client-ready websites, funnels, and delivery items are organized here for review."
+            href={client.websiteUrl || undefined}
+            actionLabel="Open primary site"
+          />
+        )}
+        {section === "documents" && (
+          <WorkspaceModuleCard
+            client={client}
+            title="Documents"
+            detail="Approved documents and working files stay tenant-scoped here. This surface is review-only until its document store is connected."
+          />
+        )}
+        {section === "intelligence" && (
+          <WorkspaceModuleCard
+            client={client}
+            title="Intelligence"
+            detail="Tenant-scoped business context and decision support will appear here when the canonical context store is connected."
+          />
+        )}
+        {section === "support" && (
+          <WorkspaceModuleCard
+            client={client}
+            title="Support"
+            detail="Support requests and setup guidance will appear here without sending or changing client records."
+          />
+        )}
+        {section === "voice-ai" && (
+          <WorkspaceModuleCard
+            client={client}
+            title="Voice AI"
+            detail="Review the Voice AI setup path in HighLevel. No calls or automations are started from this workspace."
+          />
+        )}
         {section === "reports" && <ReportsCard client={client} />}
       </div>
+    </section>
+  );
+}
+
+function WorkspaceModuleCard({
+  client,
+  title,
+  detail,
+  href,
+  actionLabel,
+  statusLabel = "Review-only",
+}: {
+  client: ClientConfig;
+  title: string;
+  detail: string;
+  href?: string;
+  actionLabel?: string;
+  statusLabel?: string;
+}) {
+  return (
+    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+            Tenant workspace
+          </p>
+          <h3 className="mt-1 text-lg font-semibold text-white">{client.name} · {title}</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">{detail}</p>
+        </div>
+        <PanelTop className="h-5 w-5 text-cyan-300" />
+      </div>
+      {href && actionLabel ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-cyan-300"
+        >
+          {actionLabel} <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      ) : (
+        <span className="mt-5 inline-flex items-center rounded-full border border-cyan-300/30 bg-cyan-300/[0.07] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-200">
+          {statusLabel}
+        </span>
+      )}
     </section>
   );
 }
@@ -3027,6 +3192,17 @@ function WebsitesCard({
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
 }) {
+  if (client.locationId === "iT5l30Z4yeReKnIiS61j") {
+    return (
+      <WorkspaceModuleCard
+        client={client}
+        title="Deliverables"
+        detail="Client-ready websites, funnels, and delivery items are organized here for review."
+        href={client.websiteUrl || undefined}
+        actionLabel="Open primary site"
+      />
+    );
+  }
   if (client.locationId !== "QsbCjo5HFBGuRG0AKms0") {
     const href = sitesHref || client.websiteUrl;
     return (
