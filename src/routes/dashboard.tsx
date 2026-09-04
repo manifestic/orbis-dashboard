@@ -1073,7 +1073,7 @@ function ClientCommandCenter() {
         <section className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:px-10 lg:py-8">
           <header className="mx-auto max-w-[1380px]">
             <nav aria-label="Command Center sections" className="overflow-hidden rounded-2xl border border-[#dbe5ed] bg-white/80 p-2 shadow-[0_14px_35px_-28px_rgba(16,35,54,0.6)]">
-              <div className="flex w-full items-center gap-1">
+              <div className="flex w-full flex-wrap items-center justify-center gap-1">
                 <SideNavItem top icon={CheckCircle2} label="Getting Started" active={activeSection === "getting-started"} onClick={() => goToSection("getting-started")} />
                 <SideNavItem top icon={LayoutDashboard} label="Dashboard" active={activeSection === "overview"} onClick={() => goToSection("overview")} />
                 <SideNavItem top icon={Inbox} label="Inbox" badge={`${unreadCount}`} active={activeSection === "inbox"} onClick={() => goToSection("inbox")} />
@@ -1307,12 +1307,12 @@ function SideNavItem({
   top?: boolean;
 }) {
   const className = top
-    ? `inline-flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl px-1.5 py-2 text-[11px] font-medium whitespace-nowrap transition ${active ? "bg-[color:var(--ybq-blue-soft)] text-[color:var(--ybq-blue)]" : "text-[color:var(--ybq-muted)] hover:bg-[#f1f7fa] hover:text-[color:var(--ybq-ink)]"}`
+    ? `inline-flex min-w-[7rem] flex-1 items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium whitespace-nowrap transition ${active ? "bg-[color:var(--ybq-blue-soft)] text-[color:var(--ybq-blue)]" : "text-[color:var(--ybq-muted)] hover:bg-[#f1f7fa] hover:text-[color:var(--ybq-ink)]"}`
     : `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left ${active ? "bg-cyan-300/10 text-cyan-100" : "text-slate-500 hover:bg-white/[0.04] hover:text-slate-200"}`;
   const content = (
     <>
-      <Icon className="h-4 w-4" />
-      <span className="flex-1">{label}</span>
+      <Icon className="h-4 w-4 shrink-0" />
+      <span className={top ? "text-center" : "flex-1"}>{label}</span>
       {badge && (
         <span className={top ? "rounded-full bg-[#dff3ef] px-1.5 py-0.5 text-[10px] text-[#087b68]" : "rounded-full bg-violet-400/15 px-1.5 py-0.5 text-[10px] text-violet-200"}>
           {badge}
