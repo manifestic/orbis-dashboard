@@ -12,6 +12,7 @@ function locationTokenMap() {
   for (const raw of [
     process.env.COMMAND_CENTER_HIGHLEVEL_TOKENS_JSON,
     process.env.COMMAND_CENTER_HIGHLEVEL_TOKENS_JSON_EXTRA,
+    process.env.COMMAND_CENTER_HIGHLEVEL_TOKENS_JSON_BGN,
   ]) {
     if (!raw?.trim()) continue;
     try {
