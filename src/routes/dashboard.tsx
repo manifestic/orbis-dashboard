@@ -323,6 +323,7 @@ type SetupStatusGridProps = {
   calendarSettingsHref?: string;
   plannerHref?: string;
   socialMessagingHref?: string;
+  calendarTypes?: readonly string[];
 };
 type CalendarRequestFormState = {
   calendarType: string;
@@ -337,6 +338,11 @@ const PROPOSED_CALENDAR_TYPES = [
   "Medicare Consultation",
   "Health Insurance Consultation",
   "General Benefits Review",
+] as const;
+const BGN_PROPOSED_CALENDAR_TYPES = [
+  "Member onboarding call",
+  "Growth network orientation",
+  "Partner / member support",
 ] as const;
 type AuthState = {
   status: "loading" | "authenticated" | "unauthenticated" | "error";
@@ -433,16 +439,52 @@ const bgnWorkspaceLinks = [
     href: "https://bookkeepersgrowthnetwork.com/",
   },
   {
-    label: "BGN working site preview",
-    detail: "Current internal working site preview",
+    label: "Member experience",
+    detail: "What members can access and use",
     kind: "page",
-    href: "https://vibrant-layers-studio.lovable.app/",
+    href: "https://bookkeepersgrowthnetwork.com/member-experience",
+  },
+  {
+    label: "Solutions & resources",
+    detail: "BGN growth pathways and resources",
+    kind: "page",
+    href: "https://bookkeepersgrowthnetwork.com/solutions",
+  },
+  {
+    label: "Connected intelligence",
+    detail: "QuickBooks and connected intelligence overview",
+    kind: "page",
+    href: "https://bookkeepersgrowthnetwork.com/connected-intelligence",
   },
   {
     label: "BGN Operating System",
     detail: "Tenant-scoped operating-system surface",
     kind: "page",
     href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+  },
+  {
+    label: "Request an invitation",
+    detail: "Public BGN invitation request path",
+    kind: "funnel",
+    href: "https://bookkeepersgrowthnetwork.com/join",
+  },
+  {
+    label: "How BGN works",
+    detail: "Network model and member path",
+    kind: "funnel",
+    href: "https://bookkeepersgrowthnetwork.com/how-it-works",
+  },
+  {
+    label: "Learning & practical AI",
+    detail: "Learning resources and practical AI",
+    kind: "funnel",
+    href: "https://bookkeepersgrowthnetwork.com/learning",
+  },
+  {
+    label: "Member preview",
+    detail: "Preview the member-facing workspace",
+    kind: "funnel",
+    href: "https://bookkeepersgrowthnetwork.com/member",
   },
 ] as const;
 
@@ -811,7 +853,7 @@ function ClientCommandCenter() {
   const contentReviewHref =
     client.locationId === "QsbCjo5HFBGuRG0AKms0"
       ? ghl("/custom-menu-link/473f9ef0-f446-4725-8f22-4e0e60af04f3")
-      : client.reviewUrl || undefined;
+      : client.reviewUrl || (client.locationId ? ghl("/marketing/social-planner") : undefined);
   const goToSection = (section: DashboardSection) => {
     setActiveSection(section);
     const params = new URLSearchParams(window.location.search);
@@ -1647,6 +1689,7 @@ function SetupStatusGrid({
   calendarSettingsHref,
   plannerHref,
   socialMessagingHref,
+  calendarTypes = PROPOSED_CALENDAR_TYPES,
 }: SetupStatusGridProps) {
   const items = [
     {
@@ -1674,6 +1717,7 @@ function SetupStatusGrid({
       <CalendarSetupCard
         calendarReadAvailable={calendarReadAvailable}
         calendarSettingsHref={calendarSettingsHref}
+        calendarTypes={calendarTypes}
       />
       {items.map(({ label, status, detail, icon: Icon, href, action }) => (
         <article key={label} className="rounded-2xl border border-[#dbe5ed] bg-white/85 p-5 shadow-[0_14px_30px_-26px_rgba(16,35,54,0.55)]">
@@ -1716,13 +1760,15 @@ function SetupStatusGrid({
 function CalendarSetupCard({
   calendarReadAvailable,
   calendarSettingsHref,
+  calendarTypes = PROPOSED_CALENDAR_TYPES,
 }: {
   calendarReadAvailable: boolean;
   calendarSettingsHref?: string;
+  calendarTypes?: readonly string[];
 }) {
   const [request, setRequest] = useState<CalendarRequestFormState>({
-    calendarType: PROPOSED_CALENDAR_TYPES[0],
-    serviceName: PROPOSED_CALENDAR_TYPES[0],
+    calendarType: calendarTypes[0] ?? "Custom",
+    serviceName: calendarTypes[0] ?? "Custom",
     durationMinutes: "30",
     availability: "",
     bufferRules: "",
@@ -1736,7 +1782,7 @@ function CalendarSetupCard({
     setRequest((current) => ({
       ...current,
       calendarType,
-      serviceName: PROPOSED_CALENDAR_TYPES.includes(calendarType as (typeof PROPOSED_CALENDAR_TYPES)[number])
+      serviceName: calendarTypes.includes(calendarType)
         ? calendarType
         : current.serviceName,
     }));
@@ -1818,7 +1864,7 @@ function CalendarSetupCard({
         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8a5200]">Proposed setup targets · examples only</p>
         <p className="mt-2 text-[11px] leading-relaxed text-[#466174]">These are ideas, not created or verified calendars.</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          {[...PROPOSED_CALENDAR_TYPES, "Custom calendar"].map((target) => (
+          {[...calendarTypes, "Custom calendar"].map((target) => (
             <button key={target} type="button" onClick={() => chooseCalendarType(target === "Custom calendar" ? "Custom" : target)} className={`rounded-xl border px-3 py-2 text-[11px] font-semibold transition ${request.calendarType === (target === "Custom calendar" ? "Custom" : target) ? "border-[#1377b8] bg-[#e8f4fb] text-[#1377b8]" : "border-[#cddfe8] bg-white text-[#466174] hover:border-[#8bc9dc]"}`}>
               {target}
             </button>
@@ -1836,11 +1882,11 @@ function CalendarSetupCard({
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-[11px] font-semibold text-[#466174]">Calendar type
             <select className={fieldClass} value={request.calendarType} onChange={(event) => chooseCalendarType(event.target.value)}>
-              {[...PROPOSED_CALENDAR_TYPES, "Custom"].map((option) => <option key={option}>{option}</option>)}
+              {[...calendarTypes, "Custom"].map((option) => <option key={option}>{option}</option>)}
             </select>
           </label>
           <label className="text-[11px] font-semibold text-[#466174]">Service name
-            <input className={fieldClass} value={request.serviceName} onChange={(event) => setRequest((current) => ({ ...current, serviceName: event.target.value }))} placeholder="e.g. Medicare Consultation" required />
+            <input className={fieldClass} value={request.serviceName} onChange={(event) => setRequest((current) => ({ ...current, serviceName: event.target.value }))} placeholder={`e.g. ${calendarTypes[0] ?? "Member onboarding call"}`} required />
           </label>
           <label className="text-[11px] font-semibold text-[#466174]">Duration in minutes
             <input className={fieldClass} type="number" min="15" max="240" step="15" value={request.durationMinutes} onChange={(event) => setRequest((current) => ({ ...current, durationMinutes: event.target.value }))} required />
@@ -1910,6 +1956,7 @@ function GettingStartedView({
             calendarSettingsHref={calendarSettingsHref}
             plannerHref={plannerHref}
             socialMessagingHref={socialMessagingHref}
+            calendarTypes={client.locationId === BGN_LOCATION_ID ? BGN_PROPOSED_CALENDAR_TYPES : PROPOSED_CALENDAR_TYPES}
           />
         </div>
       </section>
@@ -3504,8 +3551,8 @@ function ContentReviewPrototype({
             {clientName} content review workspace
           </h3>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
-            One active batch, visible status, and separate wording/media versions. This reusable
-            template is waiting for {clientName}'s client-specific review link.
+            A reusable review surface for visible status, separate wording/media versions, and
+            human approval. The first {clientName} content run has not been created yet.
           </p>
         </div>
         <span className="rounded-full border border-amber-300/20 bg-amber-300/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-200">
@@ -3529,9 +3576,9 @@ function ContentReviewPrototype({
         <div className="mt-5 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.05] p-5">
           <p className="text-sm font-semibold text-white">Live content review workspace</p>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
-            The tenant-specific review link is not configured in this embedded Command Center
-            surface yet. Use the verified HighLevel Content Review workspace to see the live batch
-            and its Social posts, Blogs, Video ideas, and Library destinations.
+            No content batch exists for this tenant yet. Use the connected HighLevel Social Planner
+            to prepare the first draft run; this embedded workspace will show the tenant-specific
+            batch once it is provisioned.
           </p>
           {nativeReviewHref ? (
             <a
@@ -3727,27 +3774,37 @@ function ClientWebsitesCard({
         ) : websiteTab === "partnership" ? (
           <PartnershipPreview data={partnership} />
         ) : websiteTab === "reports" ? (
-          <div className="mt-3 grid gap-2 md:grid-cols-2">
-            {clientReports.map((report) => {
-              const Icon = report.icon;
-              return (
-                <a
-                  key={report.href}
-                  href={report.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-3 text-left transition hover:border-emerald-300/25 hover:bg-white/[0.05]"
-                >
-                  <Icon className="h-4 w-4 shrink-0 text-emerald-300" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-medium text-slate-200">{report.name}</span>
-                    <span className="mt-1 block truncate text-[10px] text-slate-600">{report.detail} · {report.updated}</span>
-                  </span>
-                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-600 transition group-hover:text-emerald-300" />
-                </a>
-              );
-            })}
-          </div>
+          clientReports.length ? (
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
+              {clientReports.map((report) => {
+                const Icon = report.icon;
+                return (
+                  <a
+                    key={report.href}
+                    href={report.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-3 text-left transition hover:border-emerald-300/25 hover:bg-white/[0.05]"
+                  >
+                    <Icon className="h-4 w-4 shrink-0 text-emerald-300" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs font-medium text-slate-200">{report.name}</span>
+                      <span className="mt-1 block truncate text-[10px] text-slate-600">{report.detail} · {report.updated}</span>
+                    </span>
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-600 transition group-hover:text-emerald-300" />
+                  </a>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-3 rounded-xl border border-white/[0.06] bg-[#0b0f1a] p-4">
+              <p className="text-xs font-medium text-slate-200">No BGN reports are configured yet</p>
+              <p className="mt-1 text-[10px] leading-relaxed text-slate-600">
+                Audience, search, competitive, and content reports will appear here after they are
+                created and assigned to this BGN workspace.
+              </p>
+            </div>
+          )
         ) : (
           <div className="mt-3 grid gap-2 md:grid-cols-2">
             {visibleLinks.map((link) => (
