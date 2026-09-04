@@ -425,6 +425,73 @@ const bgnWebInsights = [
   },
 ] as const;
 
+const bgnWorkspaceLinks = [
+  {
+    label: "Bookkeepers Growth Network",
+    detail: "Primary public network website",
+    kind: "page",
+    href: "https://bookkeepersgrowthnetwork.com/",
+  },
+  {
+    label: "BGN working site preview",
+    detail: "Current internal working site preview",
+    kind: "page",
+    href: "https://vibrant-layers-studio.lovable.app/",
+  },
+  {
+    label: "BGN Operating System",
+    detail: "Tenant-scoped operating-system surface",
+    kind: "page",
+    href: "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard",
+  },
+] as const;
+
+const bgnReports = [] as const;
+
+const bgnIntelligence = {
+  confidence: "Medium confidence · review before using for recommendations",
+  source: "BGN project records + BGN Agent OS context",
+  scope: "Bookkeepers Growth Network",
+  identity: [
+    { label: "Category", value: "Bookkeeper growth network", status: "mapped", source: "BGN project context" },
+    { label: "Contact", value: "Dave Harvey", status: "mapped", source: "BGN client record" },
+    { label: "Role", value: "Network owner / operator", status: "mapped", source: "BGN project context" },
+    { label: "Business stage", value: "Operating network with member onboarding in progress", status: "review", source: "BGN project context" },
+    { label: "Model", value: "Member network, resources, pods, and operating support", status: "mapped", source: "BGN Agent OS context" },
+    { label: "Website", value: "bookkeepersgrowthnetwork.com", status: "mapped", source: "Existing BGN site" },
+  ],
+  context: [
+    { label: "Description", value: "A network and operating environment for bookkeepers, with member onboarding, resources, pods, and shared growth support.", status: "review", source: "BGN Agent OS context" },
+    { label: "What they provide", value: "Member onboarding, network resources, operating guidance, and growth collaboration.", status: "mapped", source: "BGN project context" },
+    { label: "Audience", value: "Bookkeepers and prospective network members", status: "mapped", source: "BGN project context" },
+    { label: "Program layers", value: "Membership, pods, resources, onboarding, and operating system", status: "mapped", source: "BGN Agent OS context" },
+    { label: "Operating footprint", value: "Tenant-scoped BGN workspace; member/community data remains outside this read-only setup pass", status: "review", source: "Onboarding scope" },
+  ],
+  relationship: [
+    { label: "Gives", value: "Network access, onboarding structure, resources, and growth support", status: "mapped", source: "BGN project context" },
+    { label: "Wants", value: "A consistent member experience and repeatable onboarding workflow", status: "mapped", source: "BGN operating goal" },
+    { label: "Opportunities / partners", value: "No specific partnership terms are approved or mapped here yet", status: "needs-setup", source: "BGN context boundary" },
+    { label: "Network notes", value: "The BGN Operating System is the current tenant-scoped context surface", status: "review", source: "Existing BGN OS" },
+    { label: "Missing fields", value: "Approved content pillars · member intake fields · reporting definitions · partnership terms", status: "needs-setup", source: "BGN onboarding open loop" },
+  ],
+  buildout: [
+    { label: "Command Center", status: "Live preview", detail: "Branded dashboard shell and tenant-scoped navigation" },
+    { label: "Content Review", status: "Live route", detail: "Review workspace remains approval-gated" },
+    { label: "Web & Insights", status: "This module", detail: "Pages, funnels, reports, and context in one place" },
+    { label: "Live outbound inbox", status: "Setup gated", detail: "Read-only conversation view; sending safeguards remain incomplete" },
+  ],
+} as const;
+
+const bgnPartnership = {
+  status: "Preview · needs setup",
+  lastAnalyzed: "BGN partnership context has not been approved or mapped yet",
+  source: "BGN project context",
+  weBringThem: ["No confirmed 'we bring them' partnership discussion is mapped into the canonical context store yet."],
+  theyBringUs: ["No confirmed 'they bring us' partnership discussion is mapped into the canonical context store yet."],
+  coopIdeas: ["No co-op idea is promoted here until an owner confirms it as a proposal."],
+  terms: ["Commission percentages, referral terms, exclusivity, attribution, and payment timing are not established here."],
+} as const;
+
 const calvennIntelligence = {
   scope: "Calvenn Starre · Your Best Health Quote",
   source: "Client-provided Intelligence snapshot + Calvenn Agent OS context",
@@ -2799,22 +2866,14 @@ function DashboardSectionView({
           </div>
         )}
         {section === "content" && (
-          client.locationId === BGN_LOCATION_ID ? (
-            <BgnContentModule
-              client={client}
-              plannerHref={plannerHref}
-              calendarSettingsHref={calendarSettingsHref}
-            />
-          ) : (
-            <ContentReviewCard
-              clientName={client.name}
-              reviewUrl={client.reviewUrl}
-              nativeReviewHref={contentReviewHref}
-              plannerHref={plannerHref}
-              socialHref={plannerHref}
-              calendarSettingsHref={calendarSettingsHref}
-            />
-          )
+          <ContentReviewCard
+            clientName={client.name}
+            reviewUrl={client.reviewUrl}
+            nativeReviewHref={contentReviewHref}
+            plannerHref={plannerHref}
+            socialHref={plannerHref}
+            calendarSettingsHref={calendarSettingsHref}
+          />
         )}
         {section === "websites" && (
           <WebsitesCard
@@ -2825,65 +2884,49 @@ function DashboardSectionView({
           />
         )}
         {section === "deliverables" && (
-          client.locationId === BGN_LOCATION_ID ? (
-            <BgnDeliverablesModule client={client} />
-          ) : (
-            <WorkspaceModuleCard
-              client={client}
-              title="Deliverables"
-              detail="Client-ready websites, funnels, and delivery items are organized here for review."
-              href={client.websiteUrl || undefined}
-              actionLabel="Open primary site"
-            />
-          )
+          <WorkspaceModuleCard
+            client={client}
+            title="Deliverables"
+            detail="Client-ready websites, funnels, and delivery items are organized here for review."
+            href={client.websiteUrl || "https://bookkeepersgrowthnetwork.com/"}
+            actionLabel="Open primary site"
+          />
         )}
         {section === "documents" && (
-          client.locationId === BGN_LOCATION_ID ? (
-            <BgnDocumentsModule client={client} mediaHref={ghlHref(client.locationId, "/media-storage")} />
-          ) : (
-            <WorkspaceModuleCard
-              client={client}
-              title="Documents"
-              detail="Approved documents and working files stay tenant-scoped here."
-              statusLabel="Workspace ready"
-            />
-          )
+          <WorkspaceModuleCard
+            client={client}
+            title="Documents"
+            detail="Approved documents and working files stay tenant-scoped here."
+            href={ghlHref(client.locationId, "/media-storage")}
+            actionLabel="Open Media Storage"
+          />
         )}
         {section === "intelligence" && (
-          client.locationId === BGN_LOCATION_ID ? (
-            <BgnIntelligenceModule client={client} />
-          ) : (
-            <WorkspaceModuleCard
-              client={client}
-              title="Intelligence"
-              detail="Tenant-scoped business context and decision support."
-              statusLabel="Workspace ready"
-            />
-          )
+          <WorkspaceModuleCard
+            client={client}
+            title="Intelligence"
+            detail="Tenant-scoped business context and decision support."
+            href={client.locationId === BGN_LOCATION_ID ? "https://bgn-os-dashboard.vercel.app/bgn-os/dashboard" : undefined}
+            actionLabel={client.locationId === BGN_LOCATION_ID ? "Open BGN Operating System" : undefined}
+          />
         )}
         {section === "support" && (
-          client.locationId === BGN_LOCATION_ID ? (
-            <BgnSupportModule client={client} inboxHref={inboxHref} />
-          ) : (
-            <WorkspaceModuleCard
-              client={client}
-              title="Support"
-              detail="Support requests and setup guidance without sending or changing client records."
-              statusLabel="Workspace ready"
-            />
-          )
+          <WorkspaceModuleCard
+            client={client}
+            title="Support"
+            detail="Support requests and setup guidance without sending or changing client records."
+            href={inboxHref}
+            actionLabel="Open inbox"
+          />
         )}
         {section === "voice-ai" && (
-          client.locationId === BGN_LOCATION_ID ? (
-            <BgnVoiceAiModule client={client} />
-          ) : (
-            <WorkspaceModuleCard
-              client={client}
-              title="Voice AI"
-              detail="Open the Voice AI setup path in HighLevel."
-              statusLabel="Open setup"
-            />
-          )
+          <WorkspaceModuleCard
+            client={client}
+            title="Voice AI"
+            detail="Open the Voice AI setup path in HighLevel."
+            href={ghlHref(client.locationId, "/ai-agents/getting-started")}
+            actionLabel="Open setup"
+          />
         )}
         {section === "reports" && <ReportsCard client={client} />}
       </div>
@@ -3552,10 +3595,17 @@ function WebsitesCard({
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
 }) {
-  if (client.locationId === "iT5l30Z4yeReKnIiS61j") {
-    return <BgnWebInsightsModule client={client} />;
-  }
   if (client.locationId !== "QsbCjo5HFBGuRG0AKms0") {
+    if (client.locationId === BGN_LOCATION_ID) {
+      return (
+        <ClientWebsitesCard
+          sitesHref={sitesHref || "https://bookkeepersgrowthnetwork.com/"}
+          websiteTab={websiteTab}
+          onWebsiteTabChange={onWebsiteTabChange}
+          client={client}
+        />
+      );
+    }
     const href = sitesHref || client.websiteUrl;
     return (
       <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
@@ -3607,15 +3657,18 @@ function WebsitesCard({
       sitesHref={sitesHref}
       websiteTab={websiteTab}
       onWebsiteTabChange={onWebsiteTabChange}
+      client={client}
     />
   );
 }
 
 function ClientWebsitesCard({
+  client,
   sitesHref,
   websiteTab,
   onWebsiteTabChange,
 }: {
+  client: ClientConfig;
   sitesHref?: string;
   websiteTab: WebsiteTab;
   onWebsiteTabChange: (tab: WebsiteTab) => void;
@@ -3627,7 +3680,11 @@ function ClientWebsitesCard({
     { id: "intelligence", label: "Intelligence", description: "Editable business context · setup gated" },
     { id: "partnership", label: "Partnership", description: "Co-op context · terms review" },
   ];
-  const visibleLinks = workspaceLinks.filter((link) => link.kind === websiteTab.slice(0, -1));
+  const destinationLinks = client.locationId === BGN_LOCATION_ID ? bgnWorkspaceLinks : workspaceLinks;
+  const clientReports = client.locationId === BGN_LOCATION_ID ? bgnReports : reports;
+  const intelligence = client.locationId === BGN_LOCATION_ID ? bgnIntelligence : calvennIntelligence;
+  const partnership = client.locationId === BGN_LOCATION_ID ? bgnPartnership : calvennPartnership;
+  const visibleLinks = destinationLinks.filter((link) => link.kind === websiteTab.slice(0, -1));
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
@@ -3666,12 +3723,12 @@ function ClientWebsitesCard({
           {tabs.find((tab) => tab.id === websiteTab)?.description}
         </p>
         {websiteTab === "intelligence" ? (
-          <IntelligencePreview />
+          <IntelligencePreview data={intelligence} />
         ) : websiteTab === "partnership" ? (
-          <PartnershipPreview />
+          <PartnershipPreview data={partnership} />
         ) : websiteTab === "reports" ? (
           <div className="mt-3 grid gap-2 md:grid-cols-2">
-            {reports.map((report) => {
+            {clientReports.map((report) => {
               const Icon = report.icon;
               return (
                 <a
@@ -3726,11 +3783,23 @@ function ClientWebsitesCard({
   );
 }
 
-function IntelligencePreview() {
+function IntelligencePreview({
+  data,
+}: {
+  data: {
+    confidence: string;
+    source: string;
+    scope: string;
+    identity: ReadonlyArray<{ label: string; value: string; status: string; source: string }>;
+    context: ReadonlyArray<{ label: string; value: string; status: string; source: string }>;
+    relationship: ReadonlyArray<{ label: string; value: string; status: string; source: string }>;
+    buildout: ReadonlyArray<{ label: string; status: string; detail: string }>;
+  };
+}) {
   const fieldGroups = [
-    { title: "Business identity", items: calvennIntelligence.identity },
-    { title: "Description, niche, and audience", items: calvennIntelligence.context },
-    { title: "Gives, wants, and network", items: calvennIntelligence.relationship },
+    { title: "Business identity", items: data.identity },
+    { title: "Description, niche, and audience", items: data.context },
+    { title: "Gives, wants, and network", items: data.relationship },
   ];
   return (
     <div className="space-y-5">
@@ -3739,11 +3808,11 @@ function IntelligencePreview() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-[10px] font-black uppercase tracking-[0.14em]">Preview · needs setup</p>
             <span className="rounded-full bg-amber-200 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.1em]">
-              {calvennIntelligence.confidence}
+              {data.confidence}
             </span>
           </div>
           <p className="mt-2 max-w-3xl text-xs leading-relaxed">
-            {calvennIntelligence.source}. Values are tenant-scoped to {calvennIntelligence.scope}.
+            {data.source}. Values are tenant-scoped to {data.scope}.
             Editing is unavailable until the canonical context store, audit path, and owner approval
             flow are connected. Nothing here writes to HighLevel, Agent OS, or a client record.
           </p>
@@ -3778,7 +3847,7 @@ function IntelligencePreview() {
         </div>
         <p className="mt-3 text-sm leading-relaxed text-[#466174]">
           The client-provided snapshot intentionally leaves these fields open. Do not treat them as
-          facts until Calvenn or an authorized owner confirms them.
+          facts until the client or an authorized owner confirms them.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {[
@@ -3807,7 +3876,7 @@ function IntelligencePreview() {
           <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#466174]">No writes</span>
         </div>
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {calvennIntelligence.buildout.map((item) => (
+          {data.buildout.map((item) => (
             <div key={item.label} className="rounded-xl border border-[#dbe5ed] bg-[#f8fbfd] p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-[#102336]">{item.label}</p>
@@ -3857,23 +3926,35 @@ function IntelligenceFieldGroup({
   );
 }
 
-function PartnershipPreview() {
+function PartnershipPreview({
+  data,
+}: {
+  data: {
+    status: string;
+    lastAnalyzed: string;
+    source: string;
+    weBringThem: ReadonlyArray<string>;
+    theyBringUs: ReadonlyArray<string>;
+    coopIdeas: ReadonlyArray<string>;
+    terms: ReadonlyArray<string>;
+  };
+}) {
   const groups = [
-    { title: "We bring them", tone: "blue", items: calvennPartnership.weBringThem, badge: "Confirmed discussion" },
-    { title: "They bring us", tone: "blue", items: calvennPartnership.theyBringUs, badge: "Confirmed discussion" },
-    { title: "Co-op ideas", tone: "teal", items: calvennPartnership.coopIdeas, badge: "Proposed" },
-    { title: "Commission / terms", tone: "amber", items: calvennPartnership.terms, badge: "Not discussed" },
+    { title: "We bring them", tone: "blue", items: data.weBringThem, badge: "Confirmed discussion" },
+    { title: "They bring us", tone: "blue", items: data.theyBringUs, badge: "Confirmed discussion" },
+    { title: "Co-op ideas", tone: "teal", items: data.coopIdeas, badge: "Proposed" },
+    { title: "Commission / terms", tone: "amber", items: data.terms, badge: "Not discussed" },
   ] as const;
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-4 rounded-2xl border border-amber-300/45 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em]">{calvennPartnership.status}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.14em]">{data.status}</p>
             <span className="rounded-full bg-amber-200 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.1em]">Tenant scoped</span>
           </div>
           <p className="mt-2 max-w-3xl text-xs leading-relaxed">
-            Source: {calvennPartnership.source}. {calvennPartnership.lastAnalyzed}. This view keeps
+            Source: {data.source}. {data.lastAnalyzed}. This view keeps
             confirmed discussion, proposed ideas, and terms that have not been discussed separate.
             It does not create agreements or trigger outreach.
           </p>
