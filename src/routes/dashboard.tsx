@@ -828,26 +828,34 @@ function ClientCommandCenter() {
           message?: string;
         };
         let payload: AuthPayload | undefined;
-        const encryptedContext = await requestHighLevelSignedContext();
-        if (encryptedContext) {
-          const handoffResponse = await fetch("/api/auth", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ action: "highlevel_context", encryptedData: encryptedContext }),
-            cache: "no-store",
-          });
-          const handoffPayload = (await handoffResponse.json()) as AuthPayload;
-          if (handoffResponse.ok && handoffPayload.authenticated && handoffPayload.user) {
-            response = handoffResponse;
-            payload = handoffPayload;
-          }
-        }
-        if (!payload) {
+        if (embedToken) {
+          // A location-scoped launcher token is authoritative. Do not ask an
+          // outer shell for identity first: a stale session from another
+          // tenant must never be allowed to populate this workspace.
           const authUrl = embedToken
             ? `/api/auth?embedToken=${encodeURIComponent(embedToken)}`
             : "/api/auth";
           response = await fetch(authUrl, { cache: "no-store" });
           payload = (await response.json()) as AuthPayload;
+        } else {
+          const encryptedContext = await requestHighLevelSignedContext();
+          if (encryptedContext) {
+            const handoffResponse = await fetch("/api/auth", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ action: "highlevel_context", encryptedData: encryptedContext }),
+              cache: "no-store",
+            });
+            const handoffPayload = (await handoffResponse.json()) as AuthPayload;
+            if (handoffResponse.ok && handoffPayload.authenticated && handoffPayload.user) {
+              response = handoffResponse;
+              payload = handoffPayload;
+            }
+          }
+          if (!payload) {
+            response = await fetch("/api/auth", { cache: "no-store" });
+            payload = (await response.json()) as AuthPayload;
+          }
         }
         const authPayload = payload;
         if (!response || !authPayload) throw new Error("Authentication is unavailable.");
